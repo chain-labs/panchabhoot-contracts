@@ -17,11 +17,11 @@ module.exports = {
   },
   rules: {
     "node/no-unsupported-features/es-syntax": [
-      "error",
+      "warn",
       { ignores: ["modules"] },
     ],
     "node/no-unpublished-import": [
-      "error",
+      "warn",
       {
         allowModules: [
           "hardhat",

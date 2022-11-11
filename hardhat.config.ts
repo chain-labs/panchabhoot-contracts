@@ -1,4 +1,4 @@
-import { checkForUndefined } from './utils/checkers';
+import { checkForUndefined } from "./utils/checkers";
 import dotenv from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
 import { NetworkUserConfig } from "hardhat/types";
@@ -8,12 +8,15 @@ import "hardhat-tracer";
 import "hardhat-deploy";
 dotenv.config({ path: "./.env" });
 
-const { INFURA_KEY, ETHERSCAN_KEY, PRIVATE_KEY, MNEMONIC } = process.env;
+const { INFURA_KEY, ETHERSCAN_KEY, PRIVATE_KEY, MNEMONIC, NOT_CI } =
+  process.env;
 
-checkForUndefined("INFURA_KEY", INFURA_KEY);
-checkForUndefined("ETHERSCAN_KEY", ETHERSCAN_KEY);
-checkForUndefined("PRIVATE_KEY", PRIVATE_KEY);
-checkForUndefined("MNEMONIC", MNEMONIC);
+if (NOT_CI === "true") {
+  checkForUndefined("INFURA_KEY", INFURA_KEY);
+  checkForUndefined("ETHERSCAN_KEY", ETHERSCAN_KEY);
+  checkForUndefined("PRIVATE_KEY", PRIVATE_KEY);
+  checkForUndefined("MNEMONIC", MNEMONIC);
+}
 
 const OPTIMIZER_RUNS = 1000;
 
@@ -34,7 +37,7 @@ const sharedCompilerConfig = {
 // Order of priority for account/signer generation:
 // 1) .env/PRIVATE_KEY
 // 2) .env/MNEMONIC
-// 3) ./mnemonic.txt
+// 3) default mnemonic
 if (PRIVATE_KEY) {
   sharedNetworkConfig.accounts = [PRIVATE_KEY];
 } else if (MNEMONIC) {
@@ -42,7 +45,9 @@ if (PRIVATE_KEY) {
     mnemonic: MNEMONIC,
   };
 } else {
-  throw Error("No Private Key or Mnemonic supplied");
+  sharedNetworkConfig.accounts = {
+    mnemonic: "Life is tufff",
+  };
 }
 
 const config: HardhatUserConfig = {
