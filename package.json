@@ -10,6 +10,7 @@
     "compile": "hardhat compile",
     "format": "npx prettier --write \"**/*.ts\" \"**/*.sol\"",
     "lint": "eslint . --ext .ts && solhint 'contracts/**/*.sol'",
+    "lint.fix": "eslint . --ext .ts --fix && solhint 'contracts/**/*.sol' --fix",
     "coverage": "hardhat coverage",
     "test": "hardhat test"
   },

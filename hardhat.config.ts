@@ -1,4 +1,4 @@
-import { checkForUndefined } from './utils/checkers';
+import { checkForUndefined } from "./utils/checkers";
 import dotenv from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
 import { NetworkUserConfig } from "hardhat/types";
@@ -8,12 +8,15 @@ import "hardhat-tracer";
 import "hardhat-deploy";
 dotenv.config({ path: "./.env" });
 
-const { INFURA_KEY, ETHERSCAN_KEY, PRIVATE_KEY, MNEMONIC } = process.env;
+const { INFURA_KEY, ETHERSCAN_KEY, PRIVATE_KEY, MNEMONIC, NOT_CI } =
+  process.env;
 
-checkForUndefined("INFURA_KEY", INFURA_KEY);
-checkForUndefined("ETHERSCAN_KEY", ETHERSCAN_KEY);
-checkForUndefined("PRIVATE_KEY", PRIVATE_KEY);
-checkForUndefined("MNEMONIC", MNEMONIC);
+if (NOT_CI === "true") {
+  checkForUndefined("INFURA_KEY", INFURA_KEY);
+  checkForUndefined("ETHERSCAN_KEY", ETHERSCAN_KEY);
+  checkForUndefined("PRIVATE_KEY", PRIVATE_KEY);
+  checkForUndefined("MNEMONIC", MNEMONIC);
+}
 
 const OPTIMIZER_RUNS = 1000;
 
