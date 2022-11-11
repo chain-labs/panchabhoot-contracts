@@ -37,7 +37,7 @@ const sharedCompilerConfig = {
 // Order of priority for account/signer generation:
 // 1) .env/PRIVATE_KEY
 // 2) .env/MNEMONIC
-// 3) ./mnemonic.txt
+// 3) default mnemonic
 if (PRIVATE_KEY) {
   sharedNetworkConfig.accounts = [PRIVATE_KEY];
 } else if (MNEMONIC) {
@@ -45,7 +45,9 @@ if (PRIVATE_KEY) {
     mnemonic: MNEMONIC,
   };
 } else {
-  throw Error("No Private Key or Mnemonic supplied");
+  sharedNetworkConfig.accounts = {
+    mnemonic: "Life is tufff",
+  };
 }
 
 const config: HardhatUserConfig = {
