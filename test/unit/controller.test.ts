@@ -147,5 +147,46 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
         );
       });
     });
+    context("Pause and unpause controller", () => {
+      context("Pause controller", () => {
+        beforeEach("!! ensure controller is unpaused", async () => {
+          expect(await controllerInstance.paused()).to.equal(false);
+        });
+        it("controller cannot be paused by non owner", async () => {
+          await expect(
+            controllerInstance.connect(notOwner).pause()
+          ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+        });
+        it("controller cannot be unpaused when it is already unpaused", async () => {
+          await expect(
+            controllerInstance.connect(notOwner).unpause()
+          ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+        });
+        it("controller can only be paused by owner", async () => {
+          await controllerInstance.connect(owner).pause();
+          expect(await controllerInstance.paused()).to.equal(true);
+        });
+      });
+      context("Unpause Controller", () => {
+        beforeEach("!! ensure controller is paused", async () => {
+          await controllerInstance.connect(owner).pause();
+          expect(await controllerInstance.paused()).to.equal(true);
+        });
+        it("controller cannot be unpaused by non owner", async () => {
+          await expect(
+            controllerInstance.connect(notOwner).unpause()
+          ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+        });
+        it("controller cannot be unpaused when it is already paused", async () => {
+          await expect(
+            controllerInstance.connect(notOwner).pause()
+          ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+        });
+        it("controller can only be paused by owner", async () => {
+          await controllerInstance.connect(owner).unpause();
+          expect(await controllerInstance.paused()).to.equal(false);
+        });
+      });
+    });
   });
 });

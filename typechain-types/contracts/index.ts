@@ -3,5 +3,3 @@
 /* eslint-disable */
 import type * as controller from "./Controller";
 export type { controller };
-import type * as example from "./Example";
-export type { example };

@@ -2,4 +2,3 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as controller from "./Controller";
-export * as example from "./Example";

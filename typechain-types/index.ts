@@ -32,5 +32,3 @@ export type { ControllerStorage } from "./contracts/Controller/ControllerStorage
 export { ControllerStorage__factory } from "./factories/contracts/Controller/ControllerStorage__factory";
 export type { IController } from "./contracts/Controller/IController";
 export { IController__factory } from "./factories/contracts/Controller/IController__factory";
-export type { Example } from "./contracts/Example/Example";
-export { Example__factory } from "./factories/contracts/Example/Example__factory";
