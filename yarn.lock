@@ -3077,6 +3077,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"erc721a@npm:^4.2.3":
+  version: 4.2.3
+  resolution: "erc721a@npm:4.2.3"
+  checksum: 0b2223678219d9b4a228da880cca9aab396ebe9cb59baf34a5501d4d9d297024d492ee5335c1983cd4c3bd15deef5e162c4837d27ac5ab5bf66e01591ead425c
+  languageName: node
+  linkType: hard
+
 "err-code@npm:^2.0.2":
   version: 2.0.3
   resolution: "err-code@npm:2.0.3"
@@ -6583,6 +6590,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.42.1
     chai: ^4.2.0
     dotenv: ^16.0.3
+    erc721a: ^4.2.3
     eslint: ^8.27.0
     eslint-config-prettier: ^8.5.0
     eslint-config-standard: ^17.0.0
