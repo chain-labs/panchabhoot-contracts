@@ -1,6 +1,8 @@
 import {
   INITIALIZABLE_ALREADY_INITIALIZED,
   OWNABLE_NOT_OWNER,
+  PAUSABLE_NOT_PAUSED,
+  PAUSABLE_PAUSED,
 } from "./../ERROR_STRINGS";
 // eslint-disable-next-line
 import { Controller__factory } from "./../../typechain-types/factories/contracts/Controller/Controller__factory";
@@ -145,6 +147,47 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
         expect(await controllerInstance.getKeyCard()).to.be.equal(
           newKeyCardInstance.address
         );
+      });
+    });
+    context("Pause and unpause controller", () => {
+      context("Pause controller", () => {
+        beforeEach("!! ensure controller is unpaused", async () => {
+          expect(await controllerInstance.paused()).to.equal(false);
+        });
+        it("controller cannot be paused by non owner", async () => {
+          await expect(
+            controllerInstance.connect(notOwner).pause()
+          ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+        });
+        it("controller cannot be unpaused when it is already unpaused", async () => {
+          await expect(
+            controllerInstance.connect(owner).unpause()
+          ).to.be.revertedWith(PAUSABLE_NOT_PAUSED);
+        });
+        it("controller can only be paused by owner", async () => {
+          await controllerInstance.connect(owner).pause();
+          expect(await controllerInstance.paused()).to.equal(true);
+        });
+      });
+      context("Unpause Controller", () => {
+        beforeEach("!! ensure controller is paused", async () => {
+          await controllerInstance.connect(owner).pause();
+          expect(await controllerInstance.paused()).to.equal(true);
+        });
+        it("controller cannot be unpaused by non owner", async () => {
+          await expect(
+            controllerInstance.connect(notOwner).unpause()
+          ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+        });
+        it("controller cannot be unpaused when it is already paused", async () => {
+          await expect(
+            controllerInstance.connect(owner).pause()
+          ).to.be.revertedWith(PAUSABLE_PAUSED);
+        });
+        it("controller can only be paused by owner", async () => {
+          await controllerInstance.connect(owner).unpause();
+          expect(await controllerInstance.paused()).to.equal(false);
+        });
       });
     });
   });

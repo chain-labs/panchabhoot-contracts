@@ -9,7 +9,6 @@ import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/se
 import {PaymentSplitterUpgradeable} from "@openzeppelin/contracts-upgradeable/finance/PaymentSplitterUpgradeable.sol";
 
 contract Controller is
-    // IController,
     PausableUpgradeable,
     Ownable2StepUpgradeable,
     ReentrancyGuardUpgradeable,
@@ -41,11 +40,19 @@ contract Controller is
         _setKeyCard(_newKeyCard);
     }
 
-    function getAvatar() external view returns(address) {
+    function getAvatar() external view returns (address) {
         return _getAvatar();
     }
 
-    function getKeyCard() external view returns(address) {
+    function getKeyCard() external view returns (address) {
         return _getKeyCard();
+    }
+
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
     }
 }
