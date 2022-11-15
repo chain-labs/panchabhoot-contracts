@@ -67,10 +67,6 @@ interface IController {
 
     function getDiscountSigner() external view returns (address);
 
-    function getNAME() external pure returns (string memory);
-
-    function getVERSION() external pure returns (string memory);
-
     function getSales(uint64 _saleId)
         external
         view
