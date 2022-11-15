@@ -1,6 +1,8 @@
 import {
   INITIALIZABLE_ALREADY_INITIALIZED,
   OWNABLE_NOT_OWNER,
+  PAUSABLE_NOT_PAUSED,
+  PAUSABLE_PAUSED,
 } from "./../ERROR_STRINGS";
 // eslint-disable-next-line
 import { Controller__factory } from "./../../typechain-types/factories/contracts/Controller/Controller__factory";
@@ -159,8 +161,8 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
         });
         it("controller cannot be unpaused when it is already unpaused", async () => {
           await expect(
-            controllerInstance.connect(notOwner).unpause()
-          ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+            controllerInstance.connect(owner).unpause()
+          ).to.be.revertedWith(PAUSABLE_NOT_PAUSED);
         });
         it("controller can only be paused by owner", async () => {
           await controllerInstance.connect(owner).pause();
@@ -179,8 +181,8 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
         });
         it("controller cannot be unpaused when it is already paused", async () => {
           await expect(
-            controllerInstance.connect(notOwner).pause()
-          ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+            controllerInstance.connect(owner).pause()
+          ).to.be.revertedWith(PAUSABLE_PAUSED);
         });
         it("controller can only be paused by owner", async () => {
           await controllerInstance.connect(owner).unpause();
