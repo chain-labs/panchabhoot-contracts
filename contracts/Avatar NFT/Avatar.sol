@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
-contract Avatar is ERC721A, ERC2981, Pausable, AccessControl, ERC721Burnable, ReentrancyGuard, AvatarInternal, AvatarStorage {
+contract Avatar is ERC721A, ERC2981, Pausable, AccessControl, ERC721Burnable, ReentrancyGuard, AvatarInternal {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
