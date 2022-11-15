@@ -10,16 +10,15 @@ interface IController {
     }
 
     struct SaleCategory {
-        uint64 saleId;
-        uint96 startTime;
-        uint96 endTime;
         uint256 price;
         bytes32 merkleRoot;
         uint64 perWalletLimit;
         uint64 perTransactionLimit;
         uint64 numberOfTokensInThisSale;
         uint64 totalTokensSoldInThisSale;
-        uint120 keyCardPerAvatar;
+        uint64 keyCardPerAvatar;
+        uint96 startTime;
+        uint96 endTime;
         PHASE_ID phase;
         bool paused;
         bool isDiscountEnabled;

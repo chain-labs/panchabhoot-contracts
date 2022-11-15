@@ -2,7 +2,6 @@
 pragma solidity 0.8.17;
 
 import {ControllerInternal} from "./ControllerInternal.sol";
-import {IController} from "./IController.sol";
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import {Ownable2StepUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
@@ -38,6 +37,38 @@ contract Controller is
 
     function setKeyCard(address _newKeyCard) external onlyOwner {
         _setKeyCard(_newKeyCard);
+    }
+
+    function addSale(
+        uint96 _startTime,
+        uint96 _endTime,
+        uint256 _price,
+        bytes32 _merkleRoot,
+        uint64 _perWalletLimit,
+        uint64 _perTransactionLimit,
+        uint64 _numberOfTokensInThisSale,
+        uint64 _totalTokensSoldInThisSale,
+        uint64 _keyCardPerAvatar,
+        PHASE_ID _phase,
+        bool _isDiscountEnabled
+    ) external onlyOwner {
+        _addSaleCategory(
+            _startTime,
+            _endTime,
+            _price,
+            _merkleRoot,
+            _perWalletLimit,
+            _perTransactionLimit,
+            _numberOfTokensInThisSale,
+            _totalTokensSoldInThisSale,
+            _keyCardPerAvatar,
+            _phase,
+            _isDiscountEnabled
+        );
+    }
+
+    function getSaleCategory(uint256 _saleCategoryId) external view returns(SaleCategory memory) {
+        return _getSaleCategory(_saleCategoryId);
     }
 
     function getAvatar() external view returns (address) {
