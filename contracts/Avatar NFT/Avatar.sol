@@ -8,10 +8,9 @@ import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "https://github.com/ProjectOpenSea/operator-filter-registry/blob/main/src/OperatorFilterer.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
-contract Avatar is ERC721A, ERC2981, Pausable, AccessControl, ERC721Burnable, ReentrancyGuard, OperatorFilterer, AvatarInternal, AvatarStorage {
+contract Avatar is ERC721A, ERC2981, Pausable, AccessControl, ERC721Burnable, ReentrancyGuard, AvatarInternal, AvatarStorage {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
