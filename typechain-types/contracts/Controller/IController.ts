@@ -9,7 +9,6 @@ import type {
   CallOverrides,
   ContractTransaction,
   Overrides,
-  PayableOverrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -26,16 +25,15 @@ import type {
 
 export declare namespace IController {
   export type SaleCategoryStruct = {
-    saleId: PromiseOrValue<BigNumberish>;
-    startTime: PromiseOrValue<BigNumberish>;
-    endTime: PromiseOrValue<BigNumberish>;
     price: PromiseOrValue<BigNumberish>;
     merkleRoot: PromiseOrValue<BytesLike>;
     perWalletLimit: PromiseOrValue<BigNumberish>;
     perTransactionLimit: PromiseOrValue<BigNumberish>;
-    numberOfTokensInThisSale: PromiseOrValue<BigNumberish>;
-    totalTokensSoldInThisSale: PromiseOrValue<BigNumberish>;
+    supply: PromiseOrValue<BigNumberish>;
+    tokensMinted: PromiseOrValue<BigNumberish>;
     keyCardPerAvatar: PromiseOrValue<BigNumberish>;
+    startTime: PromiseOrValue<BigNumberish>;
+    endTime: PromiseOrValue<BigNumberish>;
     phase: PromiseOrValue<BigNumberish>;
     paused: PromiseOrValue<boolean>;
     isDiscountEnabled: PromiseOrValue<boolean>;
@@ -43,10 +41,9 @@ export declare namespace IController {
 
   export type SaleCategoryStructOutput = [
     BigNumber,
-    BigNumber,
-    BigNumber,
-    BigNumber,
     string,
+    BigNumber,
+    BigNumber,
     BigNumber,
     BigNumber,
     BigNumber,
@@ -56,16 +53,15 @@ export declare namespace IController {
     boolean,
     boolean
   ] & {
-    saleId: BigNumber;
-    startTime: BigNumber;
-    endTime: BigNumber;
     price: BigNumber;
     merkleRoot: string;
     perWalletLimit: BigNumber;
     perTransactionLimit: BigNumber;
-    numberOfTokensInThisSale: BigNumber;
-    totalTokensSoldInThisSale: BigNumber;
+    supply: BigNumber;
+    tokensMinted: BigNumber;
     keyCardPerAvatar: BigNumber;
+    startTime: BigNumber;
+    endTime: BigNumber;
     phase: number;
     paused: boolean;
     isDiscountEnabled: boolean;
@@ -74,114 +70,57 @@ export declare namespace IController {
 
 export interface IControllerInterface extends utils.Interface {
   functions: {
-    "addSale()": FunctionFragment;
-    "editSale()": FunctionFragment;
+    "addSale(uint96,uint96,uint256,bytes32,uint64,uint64,uint64,uint64,uint8,bool)": FunctionFragment;
     "getAvatar()": FunctionFragment;
-    "getDiscountSigner()": FunctionFragment;
-    "getIntervalToReserve()": FunctionFragment;
-    "getMemberKeyCard()": FunctionFragment;
-    "getNAME()": FunctionFragment;
+    "getKeyCard()": FunctionFragment;
+    "getSaleCategory(uint256)": FunctionFragment;
     "getSaleCategoryCounter()": FunctionFragment;
-    "getSales(uint64)": FunctionFragment;
-    "getTokenMintedByAccountInPhase(uint8)": FunctionFragment;
-    "getTokensToReserve()": FunctionFragment;
-    "getVERSION()": FunctionFragment;
-    "mintAvatar(address,uint256)": FunctionFragment;
-    "mintAvatarAtDiscount(address,uint256,uint256,uint256,uint256,bytes)": FunctionFragment;
-    "mintAvatarWithAllowlist(address,uint256,bytes32[])": FunctionFragment;
     "pause()": FunctionFragment;
     "setAvatar(address)": FunctionFragment;
-    "setDiscountSigner(address)": FunctionFragment;
-    "setIntervalToReserve(uint256)": FunctionFragment;
     "setKeyCard(address)": FunctionFragment;
-    "setTokensToReserve(uint256)": FunctionFragment;
     "unpause()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
       | "addSale"
-      | "editSale"
       | "getAvatar"
-      | "getDiscountSigner"
-      | "getIntervalToReserve"
-      | "getMemberKeyCard"
-      | "getNAME"
+      | "getKeyCard"
+      | "getSaleCategory"
       | "getSaleCategoryCounter"
-      | "getSales"
-      | "getTokenMintedByAccountInPhase"
-      | "getTokensToReserve"
-      | "getVERSION"
-      | "mintAvatar"
-      | "mintAvatarAtDiscount"
-      | "mintAvatarWithAllowlist"
       | "pause"
       | "setAvatar"
-      | "setDiscountSigner"
-      | "setIntervalToReserve"
       | "setKeyCard"
-      | "setTokensToReserve"
       | "unpause"
   ): FunctionFragment;
 
-  encodeFunctionData(functionFragment: "addSale", values?: undefined): string;
-  encodeFunctionData(functionFragment: "editSale", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "addSale",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<boolean>
+    ]
+  ): string;
   encodeFunctionData(functionFragment: "getAvatar", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "getDiscountSigner",
+    functionFragment: "getKeyCard",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getIntervalToReserve",
-    values?: undefined
+    functionFragment: "getSaleCategory",
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
-  encodeFunctionData(
-    functionFragment: "getMemberKeyCard",
-    values?: undefined
-  ): string;
-  encodeFunctionData(functionFragment: "getNAME", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getSaleCategoryCounter",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getSales",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getTokenMintedByAccountInPhase",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getTokensToReserve",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getVERSION",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "mintAvatar",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "mintAvatarAtDiscount",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "mintAvatarWithAllowlist",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>[]
-    ]
   ): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(
@@ -189,77 +128,25 @@ export interface IControllerInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "setDiscountSigner",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setIntervalToReserve",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "setKeyCard",
     values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setTokensToReserve",
-    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "addSale", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "editSale", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getAvatar", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getKeyCard", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getDiscountSigner",
+    functionFragment: "getSaleCategory",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "getIntervalToReserve",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getMemberKeyCard",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "getNAME", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getSaleCategoryCounter",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "getSales", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "getTokenMintedByAccountInPhase",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getTokensToReserve",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "getVERSION", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "mintAvatar", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "mintAvatarAtDiscount",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "mintAvatarWithAllowlist",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setAvatar", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "setDiscountSigner",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setIntervalToReserve",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "setKeyCard", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "setTokensToReserve",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
 
   events: {};
@@ -293,61 +180,29 @@ export interface IController extends BaseContract {
 
   functions: {
     addSale(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    editSale(
+      _startTime: PromiseOrValue<BigNumberish>,
+      _endTime: PromiseOrValue<BigNumberish>,
+      _price: PromiseOrValue<BigNumberish>,
+      _merkleRoot: PromiseOrValue<BytesLike>,
+      _perWalletLimit: PromiseOrValue<BigNumberish>,
+      _perTransactionLimit: PromiseOrValue<BigNumberish>,
+      _supply: PromiseOrValue<BigNumberish>,
+      _keyCardPerAvatar: PromiseOrValue<BigNumberish>,
+      _phase: PromiseOrValue<BigNumberish>,
+      _isDiscountEnabled: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     getAvatar(overrides?: CallOverrides): Promise<[string]>;
 
-    getDiscountSigner(overrides?: CallOverrides): Promise<[string]>;
+    getKeyCard(overrides?: CallOverrides): Promise<[string]>;
 
-    getIntervalToReserve(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    getMemberKeyCard(overrides?: CallOverrides): Promise<[string]>;
-
-    getNAME(overrides?: CallOverrides): Promise<[string]>;
-
-    getSaleCategoryCounter(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    getSales(
-      _saleId: PromiseOrValue<BigNumberish>,
+    getSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[IController.SaleCategoryStructOutput]>;
 
-    getTokenMintedByAccountInPhase(
-      _phaseId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    getTokensToReserve(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    getVERSION(overrides?: CallOverrides): Promise<[string]>;
-
-    mintAvatar(
-      _receiver: PromiseOrValue<string>,
-      _quantity: PromiseOrValue<BigNumberish>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    mintAvatarAtDiscount(
-      _receiver: PromiseOrValue<string>,
-      _quantity: PromiseOrValue<BigNumberish>,
-      _discountedPrice: PromiseOrValue<BigNumberish>,
-      _validUntil: PromiseOrValue<BigNumberish>,
-      _discountCodeHash: PromiseOrValue<BigNumberish>,
-      _discountSignature: PromiseOrValue<BytesLike>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    mintAvatarWithAllowlist(
-      _receiver: PromiseOrValue<string>,
-      _quantity: PromiseOrValue<BigNumberish>,
-      _proofs: PromiseOrValue<BytesLike>[],
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+    getSaleCategoryCounter(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     pause(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -358,23 +213,8 @@ export interface IController extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    setDiscountSigner(
-      _newDiscountSigner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setIntervalToReserve(
-      _newIntervalToReserve: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     setKeyCard(
       arg0: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setTokensToReserve(
-      _newTokensToReserve: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -384,61 +224,29 @@ export interface IController extends BaseContract {
   };
 
   addSale(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  editSale(
+    _startTime: PromiseOrValue<BigNumberish>,
+    _endTime: PromiseOrValue<BigNumberish>,
+    _price: PromiseOrValue<BigNumberish>,
+    _merkleRoot: PromiseOrValue<BytesLike>,
+    _perWalletLimit: PromiseOrValue<BigNumberish>,
+    _perTransactionLimit: PromiseOrValue<BigNumberish>,
+    _supply: PromiseOrValue<BigNumberish>,
+    _keyCardPerAvatar: PromiseOrValue<BigNumberish>,
+    _phase: PromiseOrValue<BigNumberish>,
+    _isDiscountEnabled: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   getAvatar(overrides?: CallOverrides): Promise<string>;
 
-  getDiscountSigner(overrides?: CallOverrides): Promise<string>;
+  getKeyCard(overrides?: CallOverrides): Promise<string>;
 
-  getIntervalToReserve(overrides?: CallOverrides): Promise<BigNumber>;
-
-  getMemberKeyCard(overrides?: CallOverrides): Promise<string>;
-
-  getNAME(overrides?: CallOverrides): Promise<string>;
-
-  getSaleCategoryCounter(overrides?: CallOverrides): Promise<BigNumber>;
-
-  getSales(
-    _saleId: PromiseOrValue<BigNumberish>,
+  getSaleCategory(
+    _saleCategoryId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<IController.SaleCategoryStructOutput>;
 
-  getTokenMintedByAccountInPhase(
-    _phaseId: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  getTokensToReserve(overrides?: CallOverrides): Promise<BigNumber>;
-
-  getVERSION(overrides?: CallOverrides): Promise<string>;
-
-  mintAvatar(
-    _receiver: PromiseOrValue<string>,
-    _quantity: PromiseOrValue<BigNumberish>,
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  mintAvatarAtDiscount(
-    _receiver: PromiseOrValue<string>,
-    _quantity: PromiseOrValue<BigNumberish>,
-    _discountedPrice: PromiseOrValue<BigNumberish>,
-    _validUntil: PromiseOrValue<BigNumberish>,
-    _discountCodeHash: PromiseOrValue<BigNumberish>,
-    _discountSignature: PromiseOrValue<BytesLike>,
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  mintAvatarWithAllowlist(
-    _receiver: PromiseOrValue<string>,
-    _quantity: PromiseOrValue<BigNumberish>,
-    _proofs: PromiseOrValue<BytesLike>[],
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getSaleCategoryCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
   pause(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -449,23 +257,8 @@ export interface IController extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  setDiscountSigner(
-    _newDiscountSigner: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setIntervalToReserve(
-    _newIntervalToReserve: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   setKeyCard(
     arg0: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setTokensToReserve(
-    _newTokensToReserve: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -474,58 +267,30 @@ export interface IController extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    addSale(overrides?: CallOverrides): Promise<void>;
-
-    editSale(overrides?: CallOverrides): Promise<void>;
+    addSale(
+      _startTime: PromiseOrValue<BigNumberish>,
+      _endTime: PromiseOrValue<BigNumberish>,
+      _price: PromiseOrValue<BigNumberish>,
+      _merkleRoot: PromiseOrValue<BytesLike>,
+      _perWalletLimit: PromiseOrValue<BigNumberish>,
+      _perTransactionLimit: PromiseOrValue<BigNumberish>,
+      _supply: PromiseOrValue<BigNumberish>,
+      _keyCardPerAvatar: PromiseOrValue<BigNumberish>,
+      _phase: PromiseOrValue<BigNumberish>,
+      _isDiscountEnabled: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     getAvatar(overrides?: CallOverrides): Promise<string>;
 
-    getDiscountSigner(overrides?: CallOverrides): Promise<string>;
+    getKeyCard(overrides?: CallOverrides): Promise<string>;
 
-    getIntervalToReserve(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getMemberKeyCard(overrides?: CallOverrides): Promise<string>;
-
-    getNAME(overrides?: CallOverrides): Promise<string>;
-
-    getSaleCategoryCounter(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getSales(
-      _saleId: PromiseOrValue<BigNumberish>,
+    getSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<IController.SaleCategoryStructOutput>;
 
-    getTokenMintedByAccountInPhase(
-      _phaseId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getTokensToReserve(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getVERSION(overrides?: CallOverrides): Promise<string>;
-
-    mintAvatar(
-      _receiver: PromiseOrValue<string>,
-      _quantity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    mintAvatarAtDiscount(
-      _receiver: PromiseOrValue<string>,
-      _quantity: PromiseOrValue<BigNumberish>,
-      _discountedPrice: PromiseOrValue<BigNumberish>,
-      _validUntil: PromiseOrValue<BigNumberish>,
-      _discountCodeHash: PromiseOrValue<BigNumberish>,
-      _discountSignature: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    mintAvatarWithAllowlist(
-      _receiver: PromiseOrValue<string>,
-      _quantity: PromiseOrValue<BigNumberish>,
-      _proofs: PromiseOrValue<BytesLike>[],
-      overrides?: CallOverrides
-    ): Promise<void>;
+    getSaleCategoryCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
     pause(overrides?: CallOverrides): Promise<void>;
 
@@ -534,23 +299,8 @@ export interface IController extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setDiscountSigner(
-      _newDiscountSigner: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setIntervalToReserve(
-      _newIntervalToReserve: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     setKeyCard(
       arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setTokensToReserve(
-      _newTokensToReserve: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -561,61 +311,29 @@ export interface IController extends BaseContract {
 
   estimateGas: {
     addSale(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    editSale(
+      _startTime: PromiseOrValue<BigNumberish>,
+      _endTime: PromiseOrValue<BigNumberish>,
+      _price: PromiseOrValue<BigNumberish>,
+      _merkleRoot: PromiseOrValue<BytesLike>,
+      _perWalletLimit: PromiseOrValue<BigNumberish>,
+      _perTransactionLimit: PromiseOrValue<BigNumberish>,
+      _supply: PromiseOrValue<BigNumberish>,
+      _keyCardPerAvatar: PromiseOrValue<BigNumberish>,
+      _phase: PromiseOrValue<BigNumberish>,
+      _isDiscountEnabled: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     getAvatar(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getDiscountSigner(overrides?: CallOverrides): Promise<BigNumber>;
+    getKeyCard(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getIntervalToReserve(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getMemberKeyCard(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getNAME(overrides?: CallOverrides): Promise<BigNumber>;
+    getSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getSaleCategoryCounter(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getSales(
-      _saleId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getTokenMintedByAccountInPhase(
-      _phaseId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getTokensToReserve(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getVERSION(overrides?: CallOverrides): Promise<BigNumber>;
-
-    mintAvatar(
-      _receiver: PromiseOrValue<string>,
-      _quantity: PromiseOrValue<BigNumberish>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    mintAvatarAtDiscount(
-      _receiver: PromiseOrValue<string>,
-      _quantity: PromiseOrValue<BigNumberish>,
-      _discountedPrice: PromiseOrValue<BigNumberish>,
-      _validUntil: PromiseOrValue<BigNumberish>,
-      _discountCodeHash: PromiseOrValue<BigNumberish>,
-      _discountSignature: PromiseOrValue<BytesLike>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    mintAvatarWithAllowlist(
-      _receiver: PromiseOrValue<string>,
-      _quantity: PromiseOrValue<BigNumberish>,
-      _proofs: PromiseOrValue<BytesLike>[],
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
 
     pause(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -626,23 +344,8 @@ export interface IController extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    setDiscountSigner(
-      _newDiscountSigner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setIntervalToReserve(
-      _newIntervalToReserve: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     setKeyCard(
       arg0: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setTokensToReserve(
-      _newTokensToReserve: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -653,66 +356,30 @@ export interface IController extends BaseContract {
 
   populateTransaction: {
     addSale(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    editSale(
+      _startTime: PromiseOrValue<BigNumberish>,
+      _endTime: PromiseOrValue<BigNumberish>,
+      _price: PromiseOrValue<BigNumberish>,
+      _merkleRoot: PromiseOrValue<BytesLike>,
+      _perWalletLimit: PromiseOrValue<BigNumberish>,
+      _perTransactionLimit: PromiseOrValue<BigNumberish>,
+      _supply: PromiseOrValue<BigNumberish>,
+      _keyCardPerAvatar: PromiseOrValue<BigNumberish>,
+      _phase: PromiseOrValue<BigNumberish>,
+      _isDiscountEnabled: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     getAvatar(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getDiscountSigner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getKeyCard(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getIntervalToReserve(
+    getSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    getMemberKeyCard(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getNAME(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getSaleCategoryCounter(
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getSales(
-      _saleId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getTokenMintedByAccountInPhase(
-      _phaseId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getTokensToReserve(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getVERSION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    mintAvatar(
-      _receiver: PromiseOrValue<string>,
-      _quantity: PromiseOrValue<BigNumberish>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    mintAvatarAtDiscount(
-      _receiver: PromiseOrValue<string>,
-      _quantity: PromiseOrValue<BigNumberish>,
-      _discountedPrice: PromiseOrValue<BigNumberish>,
-      _validUntil: PromiseOrValue<BigNumberish>,
-      _discountCodeHash: PromiseOrValue<BigNumberish>,
-      _discountSignature: PromiseOrValue<BytesLike>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    mintAvatarWithAllowlist(
-      _receiver: PromiseOrValue<string>,
-      _quantity: PromiseOrValue<BigNumberish>,
-      _proofs: PromiseOrValue<BytesLike>[],
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     pause(
@@ -724,23 +391,8 @@ export interface IController extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    setDiscountSigner(
-      _newDiscountSigner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setIntervalToReserve(
-      _newIntervalToReserve: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     setKeyCard(
       arg0: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setTokensToReserve(
-      _newTokensToReserve: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -27,13 +27,67 @@ import type {
   PromiseOrValue,
 } from "../../common";
 
+export declare namespace IController {
+  export type SaleCategoryStruct = {
+    price: PromiseOrValue<BigNumberish>;
+    merkleRoot: PromiseOrValue<BytesLike>;
+    perWalletLimit: PromiseOrValue<BigNumberish>;
+    perTransactionLimit: PromiseOrValue<BigNumberish>;
+    supply: PromiseOrValue<BigNumberish>;
+    tokensMinted: PromiseOrValue<BigNumberish>;
+    keyCardPerAvatar: PromiseOrValue<BigNumberish>;
+    startTime: PromiseOrValue<BigNumberish>;
+    endTime: PromiseOrValue<BigNumberish>;
+    phase: PromiseOrValue<BigNumberish>;
+    paused: PromiseOrValue<boolean>;
+    isDiscountEnabled: PromiseOrValue<boolean>;
+  };
+
+  export type SaleCategoryStructOutput = [
+    BigNumber,
+    string,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    number,
+    boolean,
+    boolean
+  ] & {
+    price: BigNumber;
+    merkleRoot: string;
+    perWalletLimit: BigNumber;
+    perTransactionLimit: BigNumber;
+    supply: BigNumber;
+    tokensMinted: BigNumber;
+    keyCardPerAvatar: BigNumber;
+    startTime: BigNumber;
+    endTime: BigNumber;
+    phase: number;
+    paused: boolean;
+    isDiscountEnabled: boolean;
+  };
+}
+
 export interface ControllerInterface extends utils.Interface {
   functions: {
     "NAME()": FunctionFragment;
     "VERSION()": FunctionFragment;
     "acceptOwnership()": FunctionFragment;
+    "addSale(uint96,uint96,uint256,bytes32,uint64,uint64,uint64,uint64,uint8,bool)": FunctionFragment;
+    "editKeyCardRatioOfSaleCategory(uint256,uint64)": FunctionFragment;
+    "editMerkleRootOfSaleCategory(uint256,bytes32)": FunctionFragment;
+    "editPerLimitOfSaleCategory(uint256,uint64,uint64)": FunctionFragment;
+    "editPriceOfSaleCategory(uint256,uint256)": FunctionFragment;
+    "editSaleTimeOfSaleCategory(uint256,uint96,uint96)": FunctionFragment;
+    "editSupplyOfSaleCategory(uint256,uint64)": FunctionFragment;
     "getAvatar()": FunctionFragment;
     "getKeyCard()": FunctionFragment;
+    "getSaleCategory(uint256)": FunctionFragment;
+    "getSaleCategoryCounter()": FunctionFragment;
     "initialize(address,address,address[],uint256[])": FunctionFragment;
     "owner()": FunctionFragment;
     "pause()": FunctionFragment;
@@ -50,6 +104,7 @@ export interface ControllerInterface extends utils.Interface {
     "setAvatar(address)": FunctionFragment;
     "setKeyCard(address)": FunctionFragment;
     "shares(address)": FunctionFragment;
+    "toggleDiscountOfSaleCategory(uint256,bool)": FunctionFragment;
     "totalReleased(address)": FunctionFragment;
     "totalReleased()": FunctionFragment;
     "totalShares()": FunctionFragment;
@@ -62,8 +117,17 @@ export interface ControllerInterface extends utils.Interface {
       | "NAME"
       | "VERSION"
       | "acceptOwnership"
+      | "addSale"
+      | "editKeyCardRatioOfSaleCategory"
+      | "editMerkleRootOfSaleCategory"
+      | "editPerLimitOfSaleCategory"
+      | "editPriceOfSaleCategory"
+      | "editSaleTimeOfSaleCategory"
+      | "editSupplyOfSaleCategory"
       | "getAvatar"
       | "getKeyCard"
+      | "getSaleCategory"
+      | "getSaleCategoryCounter"
       | "initialize"
       | "owner"
       | "pause"
@@ -80,6 +144,7 @@ export interface ControllerInterface extends utils.Interface {
       | "setAvatar"
       | "setKeyCard"
       | "shares"
+      | "toggleDiscountOfSaleCategory"
       | "totalReleased(address)"
       | "totalReleased()"
       | "totalShares"
@@ -93,9 +158,64 @@ export interface ControllerInterface extends utils.Interface {
     functionFragment: "acceptOwnership",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "addSale",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<boolean>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "editKeyCardRatioOfSaleCategory",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "editMerkleRootOfSaleCategory",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "editPerLimitOfSaleCategory",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "editPriceOfSaleCategory",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "editSaleTimeOfSaleCategory",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "editSupplyOfSaleCategory",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
   encodeFunctionData(functionFragment: "getAvatar", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getKeyCard",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getSaleCategory",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getSaleCategoryCounter",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -159,6 +279,10 @@ export interface ControllerInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "toggleDiscountOfSaleCategory",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<boolean>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "totalReleased(address)",
     values: [PromiseOrValue<string>]
   ): string;
@@ -182,8 +306,41 @@ export interface ControllerInterface extends utils.Interface {
     functionFragment: "acceptOwnership",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "addSale", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "editKeyCardRatioOfSaleCategory",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "editMerkleRootOfSaleCategory",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "editPerLimitOfSaleCategory",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "editPriceOfSaleCategory",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "editSaleTimeOfSaleCategory",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "editSupplyOfSaleCategory",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getAvatar", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getKeyCard", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getSaleCategory",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getSaleCategoryCounter",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
@@ -225,6 +382,10 @@ export interface ControllerInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "setKeyCard", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "shares", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "toggleDiscountOfSaleCategory",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "totalReleased(address)",
     data: BytesLike
   ): Result;
@@ -243,31 +404,75 @@ export interface ControllerInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
 
   events: {
+    "AddedSaleCategory(uint256,uint8)": EventFragment;
     "AvatarUpdated(address,address)": EventFragment;
+    "DiscountDisabledOnSaleCategory(uint256)": EventFragment;
+    "DiscountEnabledOnSaleCategory(uint256)": EventFragment;
     "ERC20PaymentReleased(address,address,uint256)": EventFragment;
     "Initialized(uint8)": EventFragment;
+    "KeyCardRatioUpdatedForSaleCategory(uint256,uint64)": EventFragment;
     "MemberKeyCardUpdated(address,address)": EventFragment;
+    "MerkleRootUpdatedSaleCategory(uint256,bytes32)": EventFragment;
     "OwnershipTransferStarted(address,address)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Paused(address)": EventFragment;
     "PayeeAdded(address,uint256)": EventFragment;
     "PaymentReceived(address,uint256)": EventFragment;
     "PaymentReleased(address,uint256)": EventFragment;
+    "PerLimitUpdatedOfSaleCategory(uint256,uint64,uint64)": EventFragment;
+    "PriceUpdatedForSaleCategory(uint256,uint256)": EventFragment;
+    "SupplyUpdatedForSaleCategory(uint256,uint64)": EventFragment;
+    "TimeUpdatedForSaleCategory(uint256,uint96,uint96)": EventFragment;
     "Unpaused(address)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "AddedSaleCategory"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AvatarUpdated"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "DiscountDisabledOnSaleCategory"
+  ): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "DiscountEnabledOnSaleCategory"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ERC20PaymentReleased"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "KeyCardRatioUpdatedForSaleCategory"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MemberKeyCardUpdated"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "MerkleRootUpdatedSaleCategory"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferStarted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PayeeAdded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PaymentReceived"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PaymentReleased"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "PerLimitUpdatedOfSaleCategory"
+  ): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "PriceUpdatedForSaleCategory"
+  ): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "SupplyUpdatedForSaleCategory"
+  ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TimeUpdatedForSaleCategory"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
 }
+
+export interface AddedSaleCategoryEventObject {
+  _saleCategoryId: BigNumber;
+  _phase: number;
+}
+export type AddedSaleCategoryEvent = TypedEvent<
+  [BigNumber, number],
+  AddedSaleCategoryEventObject
+>;
+
+export type AddedSaleCategoryEventFilter =
+  TypedEventFilter<AddedSaleCategoryEvent>;
 
 export interface AvatarUpdatedEventObject {
   _oldAvatar: string;
@@ -279,6 +484,28 @@ export type AvatarUpdatedEvent = TypedEvent<
 >;
 
 export type AvatarUpdatedEventFilter = TypedEventFilter<AvatarUpdatedEvent>;
+
+export interface DiscountDisabledOnSaleCategoryEventObject {
+  _saleCategoryId: BigNumber;
+}
+export type DiscountDisabledOnSaleCategoryEvent = TypedEvent<
+  [BigNumber],
+  DiscountDisabledOnSaleCategoryEventObject
+>;
+
+export type DiscountDisabledOnSaleCategoryEventFilter =
+  TypedEventFilter<DiscountDisabledOnSaleCategoryEvent>;
+
+export interface DiscountEnabledOnSaleCategoryEventObject {
+  _saleCategoryId: BigNumber;
+}
+export type DiscountEnabledOnSaleCategoryEvent = TypedEvent<
+  [BigNumber],
+  DiscountEnabledOnSaleCategoryEventObject
+>;
+
+export type DiscountEnabledOnSaleCategoryEventFilter =
+  TypedEventFilter<DiscountEnabledOnSaleCategoryEvent>;
 
 export interface ERC20PaymentReleasedEventObject {
   token: string;
@@ -300,6 +527,18 @@ export type InitializedEvent = TypedEvent<[number], InitializedEventObject>;
 
 export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
+export interface KeyCardRatioUpdatedForSaleCategoryEventObject {
+  _saleCategoryId: BigNumber;
+  _newKeyCardRatio: BigNumber;
+}
+export type KeyCardRatioUpdatedForSaleCategoryEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  KeyCardRatioUpdatedForSaleCategoryEventObject
+>;
+
+export type KeyCardRatioUpdatedForSaleCategoryEventFilter =
+  TypedEventFilter<KeyCardRatioUpdatedForSaleCategoryEvent>;
+
 export interface MemberKeyCardUpdatedEventObject {
   _oldKeyCard: string;
   _newKeyCard: string;
@@ -311,6 +550,18 @@ export type MemberKeyCardUpdatedEvent = TypedEvent<
 
 export type MemberKeyCardUpdatedEventFilter =
   TypedEventFilter<MemberKeyCardUpdatedEvent>;
+
+export interface MerkleRootUpdatedSaleCategoryEventObject {
+  _saleCategoryId: BigNumber;
+  _newMerkleRoot: string;
+}
+export type MerkleRootUpdatedSaleCategoryEvent = TypedEvent<
+  [BigNumber, string],
+  MerkleRootUpdatedSaleCategoryEventObject
+>;
+
+export type MerkleRootUpdatedSaleCategoryEventFilter =
+  TypedEventFilter<MerkleRootUpdatedSaleCategoryEvent>;
 
 export interface OwnershipTransferStartedEventObject {
   previousOwner: string;
@@ -376,6 +627,56 @@ export type PaymentReleasedEvent = TypedEvent<
 
 export type PaymentReleasedEventFilter = TypedEventFilter<PaymentReleasedEvent>;
 
+export interface PerLimitUpdatedOfSaleCategoryEventObject {
+  _saleCategoryId: BigNumber;
+  _newPerTransactionLimit: BigNumber;
+  _newPerWalletLimit: BigNumber;
+}
+export type PerLimitUpdatedOfSaleCategoryEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber],
+  PerLimitUpdatedOfSaleCategoryEventObject
+>;
+
+export type PerLimitUpdatedOfSaleCategoryEventFilter =
+  TypedEventFilter<PerLimitUpdatedOfSaleCategoryEvent>;
+
+export interface PriceUpdatedForSaleCategoryEventObject {
+  _saleCategoryId: BigNumber;
+  _newPrice: BigNumber;
+}
+export type PriceUpdatedForSaleCategoryEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  PriceUpdatedForSaleCategoryEventObject
+>;
+
+export type PriceUpdatedForSaleCategoryEventFilter =
+  TypedEventFilter<PriceUpdatedForSaleCategoryEvent>;
+
+export interface SupplyUpdatedForSaleCategoryEventObject {
+  _saleCategoryId: BigNumber;
+  _newSupplyForTheSale: BigNumber;
+}
+export type SupplyUpdatedForSaleCategoryEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  SupplyUpdatedForSaleCategoryEventObject
+>;
+
+export type SupplyUpdatedForSaleCategoryEventFilter =
+  TypedEventFilter<SupplyUpdatedForSaleCategoryEvent>;
+
+export interface TimeUpdatedForSaleCategoryEventObject {
+  _saleCategoryId: BigNumber;
+  _newStartTime: BigNumber;
+  _newEndTime: BigNumber;
+}
+export type TimeUpdatedForSaleCategoryEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber],
+  TimeUpdatedForSaleCategoryEventObject
+>;
+
+export type TimeUpdatedForSaleCategoryEventFilter =
+  TypedEventFilter<TimeUpdatedForSaleCategoryEvent>;
+
 export interface UnpausedEventObject {
   account: string;
 }
@@ -418,9 +719,70 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    addSale(
+      _startTime: PromiseOrValue<BigNumberish>,
+      _endTime: PromiseOrValue<BigNumberish>,
+      _price: PromiseOrValue<BigNumberish>,
+      _merkleRoot: PromiseOrValue<BytesLike>,
+      _perWalletLimit: PromiseOrValue<BigNumberish>,
+      _perTransactionLimit: PromiseOrValue<BigNumberish>,
+      _supply: PromiseOrValue<BigNumberish>,
+      _keyCardPerAvatar: PromiseOrValue<BigNumberish>,
+      _phase: PromiseOrValue<BigNumberish>,
+      _isDiscountEnabled: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    editKeyCardRatioOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newKeyCardRatio: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    editMerkleRootOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newMerkleRoot: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    editPerLimitOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newPerWalletLimit: PromiseOrValue<BigNumberish>,
+      _newPerTransactionLimit: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    editPriceOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newPrice: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    editSaleTimeOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newStartTime: PromiseOrValue<BigNumberish>,
+      _newEndTime: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    editSupplyOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newTokensSupply: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     getAvatar(overrides?: CallOverrides): Promise<[string]>;
 
     getKeyCard(overrides?: CallOverrides): Promise<[string]>;
+
+    getSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[IController.SaleCategoryStructOutput]>;
+
+    getSaleCategoryCounter(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { counter: BigNumber }>;
 
     initialize(
       _newAvatar: PromiseOrValue<string>,
@@ -497,6 +859,12 @@ export interface Controller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    toggleDiscountOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _isDiscounted: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     "totalReleased(address)"(
       token: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -524,9 +892,68 @@ export interface Controller extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  addSale(
+    _startTime: PromiseOrValue<BigNumberish>,
+    _endTime: PromiseOrValue<BigNumberish>,
+    _price: PromiseOrValue<BigNumberish>,
+    _merkleRoot: PromiseOrValue<BytesLike>,
+    _perWalletLimit: PromiseOrValue<BigNumberish>,
+    _perTransactionLimit: PromiseOrValue<BigNumberish>,
+    _supply: PromiseOrValue<BigNumberish>,
+    _keyCardPerAvatar: PromiseOrValue<BigNumberish>,
+    _phase: PromiseOrValue<BigNumberish>,
+    _isDiscountEnabled: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  editKeyCardRatioOfSaleCategory(
+    _saleCategoryId: PromiseOrValue<BigNumberish>,
+    _newKeyCardRatio: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  editMerkleRootOfSaleCategory(
+    _saleCategoryId: PromiseOrValue<BigNumberish>,
+    _newMerkleRoot: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  editPerLimitOfSaleCategory(
+    _saleCategoryId: PromiseOrValue<BigNumberish>,
+    _newPerWalletLimit: PromiseOrValue<BigNumberish>,
+    _newPerTransactionLimit: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  editPriceOfSaleCategory(
+    _saleCategoryId: PromiseOrValue<BigNumberish>,
+    _newPrice: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  editSaleTimeOfSaleCategory(
+    _saleCategoryId: PromiseOrValue<BigNumberish>,
+    _newStartTime: PromiseOrValue<BigNumberish>,
+    _newEndTime: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  editSupplyOfSaleCategory(
+    _saleCategoryId: PromiseOrValue<BigNumberish>,
+    _newTokensSupply: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   getAvatar(overrides?: CallOverrides): Promise<string>;
 
   getKeyCard(overrides?: CallOverrides): Promise<string>;
+
+  getSaleCategory(
+    _saleCategoryId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<IController.SaleCategoryStructOutput>;
+
+  getSaleCategoryCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
   initialize(
     _newAvatar: PromiseOrValue<string>,
@@ -603,6 +1030,12 @@ export interface Controller extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  toggleDiscountOfSaleCategory(
+    _saleCategoryId: PromiseOrValue<BigNumberish>,
+    _isDiscounted: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   "totalReleased(address)"(
     token: PromiseOrValue<string>,
     overrides?: CallOverrides
@@ -628,9 +1061,68 @@ export interface Controller extends BaseContract {
 
     acceptOwnership(overrides?: CallOverrides): Promise<void>;
 
+    addSale(
+      _startTime: PromiseOrValue<BigNumberish>,
+      _endTime: PromiseOrValue<BigNumberish>,
+      _price: PromiseOrValue<BigNumberish>,
+      _merkleRoot: PromiseOrValue<BytesLike>,
+      _perWalletLimit: PromiseOrValue<BigNumberish>,
+      _perTransactionLimit: PromiseOrValue<BigNumberish>,
+      _supply: PromiseOrValue<BigNumberish>,
+      _keyCardPerAvatar: PromiseOrValue<BigNumberish>,
+      _phase: PromiseOrValue<BigNumberish>,
+      _isDiscountEnabled: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    editKeyCardRatioOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newKeyCardRatio: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    editMerkleRootOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newMerkleRoot: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    editPerLimitOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newPerWalletLimit: PromiseOrValue<BigNumberish>,
+      _newPerTransactionLimit: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    editPriceOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newPrice: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    editSaleTimeOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newStartTime: PromiseOrValue<BigNumberish>,
+      _newEndTime: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    editSupplyOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newTokensSupply: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     getAvatar(overrides?: CallOverrides): Promise<string>;
 
     getKeyCard(overrides?: CallOverrides): Promise<string>;
+
+    getSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<IController.SaleCategoryStructOutput>;
+
+    getSaleCategoryCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
       _newAvatar: PromiseOrValue<string>,
@@ -703,6 +1195,12 @@ export interface Controller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    toggleDiscountOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _isDiscounted: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     "totalReleased(address)"(
       token: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -721,6 +1219,15 @@ export interface Controller extends BaseContract {
   };
 
   filters: {
+    "AddedSaleCategory(uint256,uint8)"(
+      _saleCategoryId?: null,
+      _phase?: null
+    ): AddedSaleCategoryEventFilter;
+    AddedSaleCategory(
+      _saleCategoryId?: null,
+      _phase?: null
+    ): AddedSaleCategoryEventFilter;
+
     "AvatarUpdated(address,address)"(
       _oldAvatar?: null,
       _newAvatar?: null
@@ -729,6 +1236,20 @@ export interface Controller extends BaseContract {
       _oldAvatar?: null,
       _newAvatar?: null
     ): AvatarUpdatedEventFilter;
+
+    "DiscountDisabledOnSaleCategory(uint256)"(
+      _saleCategoryId?: null
+    ): DiscountDisabledOnSaleCategoryEventFilter;
+    DiscountDisabledOnSaleCategory(
+      _saleCategoryId?: null
+    ): DiscountDisabledOnSaleCategoryEventFilter;
+
+    "DiscountEnabledOnSaleCategory(uint256)"(
+      _saleCategoryId?: null
+    ): DiscountEnabledOnSaleCategoryEventFilter;
+    DiscountEnabledOnSaleCategory(
+      _saleCategoryId?: null
+    ): DiscountEnabledOnSaleCategoryEventFilter;
 
     "ERC20PaymentReleased(address,address,uint256)"(
       token?: PromiseOrValue<string> | null,
@@ -744,6 +1265,15 @@ export interface Controller extends BaseContract {
     "Initialized(uint8)"(version?: null): InitializedEventFilter;
     Initialized(version?: null): InitializedEventFilter;
 
+    "KeyCardRatioUpdatedForSaleCategory(uint256,uint64)"(
+      _saleCategoryId?: null,
+      _newKeyCardRatio?: null
+    ): KeyCardRatioUpdatedForSaleCategoryEventFilter;
+    KeyCardRatioUpdatedForSaleCategory(
+      _saleCategoryId?: null,
+      _newKeyCardRatio?: null
+    ): KeyCardRatioUpdatedForSaleCategoryEventFilter;
+
     "MemberKeyCardUpdated(address,address)"(
       _oldKeyCard?: null,
       _newKeyCard?: null
@@ -752,6 +1282,15 @@ export interface Controller extends BaseContract {
       _oldKeyCard?: null,
       _newKeyCard?: null
     ): MemberKeyCardUpdatedEventFilter;
+
+    "MerkleRootUpdatedSaleCategory(uint256,bytes32)"(
+      _saleCategoryId?: null,
+      _newMerkleRoot?: null
+    ): MerkleRootUpdatedSaleCategoryEventFilter;
+    MerkleRootUpdatedSaleCategory(
+      _saleCategoryId?: null,
+      _newMerkleRoot?: null
+    ): MerkleRootUpdatedSaleCategoryEventFilter;
 
     "OwnershipTransferStarted(address,address)"(
       previousOwner?: PromiseOrValue<string> | null,
@@ -792,6 +1331,46 @@ export interface Controller extends BaseContract {
     ): PaymentReleasedEventFilter;
     PaymentReleased(to?: null, amount?: null): PaymentReleasedEventFilter;
 
+    "PerLimitUpdatedOfSaleCategory(uint256,uint64,uint64)"(
+      _saleCategoryId?: null,
+      _newPerTransactionLimit?: null,
+      _newPerWalletLimit?: null
+    ): PerLimitUpdatedOfSaleCategoryEventFilter;
+    PerLimitUpdatedOfSaleCategory(
+      _saleCategoryId?: null,
+      _newPerTransactionLimit?: null,
+      _newPerWalletLimit?: null
+    ): PerLimitUpdatedOfSaleCategoryEventFilter;
+
+    "PriceUpdatedForSaleCategory(uint256,uint256)"(
+      _saleCategoryId?: null,
+      _newPrice?: null
+    ): PriceUpdatedForSaleCategoryEventFilter;
+    PriceUpdatedForSaleCategory(
+      _saleCategoryId?: null,
+      _newPrice?: null
+    ): PriceUpdatedForSaleCategoryEventFilter;
+
+    "SupplyUpdatedForSaleCategory(uint256,uint64)"(
+      _saleCategoryId?: null,
+      _newSupplyForTheSale?: null
+    ): SupplyUpdatedForSaleCategoryEventFilter;
+    SupplyUpdatedForSaleCategory(
+      _saleCategoryId?: null,
+      _newSupplyForTheSale?: null
+    ): SupplyUpdatedForSaleCategoryEventFilter;
+
+    "TimeUpdatedForSaleCategory(uint256,uint96,uint96)"(
+      _saleCategoryId?: null,
+      _newStartTime?: null,
+      _newEndTime?: null
+    ): TimeUpdatedForSaleCategoryEventFilter;
+    TimeUpdatedForSaleCategory(
+      _saleCategoryId?: null,
+      _newStartTime?: null,
+      _newEndTime?: null
+    ): TimeUpdatedForSaleCategoryEventFilter;
+
     "Unpaused(address)"(account?: null): UnpausedEventFilter;
     Unpaused(account?: null): UnpausedEventFilter;
   };
@@ -805,9 +1384,68 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    addSale(
+      _startTime: PromiseOrValue<BigNumberish>,
+      _endTime: PromiseOrValue<BigNumberish>,
+      _price: PromiseOrValue<BigNumberish>,
+      _merkleRoot: PromiseOrValue<BytesLike>,
+      _perWalletLimit: PromiseOrValue<BigNumberish>,
+      _perTransactionLimit: PromiseOrValue<BigNumberish>,
+      _supply: PromiseOrValue<BigNumberish>,
+      _keyCardPerAvatar: PromiseOrValue<BigNumberish>,
+      _phase: PromiseOrValue<BigNumberish>,
+      _isDiscountEnabled: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    editKeyCardRatioOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newKeyCardRatio: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    editMerkleRootOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newMerkleRoot: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    editPerLimitOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newPerWalletLimit: PromiseOrValue<BigNumberish>,
+      _newPerTransactionLimit: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    editPriceOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newPrice: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    editSaleTimeOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newStartTime: PromiseOrValue<BigNumberish>,
+      _newEndTime: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    editSupplyOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newTokensSupply: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     getAvatar(overrides?: CallOverrides): Promise<BigNumber>;
 
     getKeyCard(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getSaleCategoryCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
       _newAvatar: PromiseOrValue<string>,
@@ -884,6 +1522,12 @@ export interface Controller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    toggleDiscountOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _isDiscounted: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     "totalReleased(address)"(
       token: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -912,9 +1556,70 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    addSale(
+      _startTime: PromiseOrValue<BigNumberish>,
+      _endTime: PromiseOrValue<BigNumberish>,
+      _price: PromiseOrValue<BigNumberish>,
+      _merkleRoot: PromiseOrValue<BytesLike>,
+      _perWalletLimit: PromiseOrValue<BigNumberish>,
+      _perTransactionLimit: PromiseOrValue<BigNumberish>,
+      _supply: PromiseOrValue<BigNumberish>,
+      _keyCardPerAvatar: PromiseOrValue<BigNumberish>,
+      _phase: PromiseOrValue<BigNumberish>,
+      _isDiscountEnabled: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    editKeyCardRatioOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newKeyCardRatio: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    editMerkleRootOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newMerkleRoot: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    editPerLimitOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newPerWalletLimit: PromiseOrValue<BigNumberish>,
+      _newPerTransactionLimit: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    editPriceOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newPrice: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    editSaleTimeOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newStartTime: PromiseOrValue<BigNumberish>,
+      _newEndTime: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    editSupplyOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _newTokensSupply: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     getAvatar(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getKeyCard(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getSaleCategoryCounter(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     initialize(
       _newAvatar: PromiseOrValue<string>,
@@ -989,6 +1694,12 @@ export interface Controller extends BaseContract {
     shares(
       account: PromiseOrValue<string>,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    toggleDiscountOfSaleCategory(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _isDiscounted: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     "totalReleased(address)"(
