@@ -20,6 +20,7 @@ contract Controller is
     function initialize(
         address _newAvatar,
         address _newKeyCard,
+        address _newDiscountSigner,
         address[] memory _payees,
         uint256[] memory _shares
     ) external initializer {
@@ -29,6 +30,7 @@ contract Controller is
         __PaymentSplitter_init(_payees, _shares);
         _setAvatar(_newAvatar);
         _setKeyCard(_newKeyCard);
+        _setDiscountSigner(_newDiscountSigner);
     }
 
     function setAvatar(address _newAvatar) external virtual override onlyOwner {
@@ -187,6 +189,13 @@ contract Controller is
         }
     }
 
+    /// @notice set new discount signer
+    /// @dev set new discount signer
+    /// @param _newDiscountSigner new discount signer
+    function setDiscountSigner(address _newDiscountSigner) external onlyOwner {
+        _setDiscountSigner(_newDiscountSigner);
+    }
+
     /// @notice get sale category
     /// @dev get sale category
     /// @param _saleCategoryId sale category id
@@ -215,6 +224,21 @@ contract Controller is
         return _getKeyCard();
     }
 
+    function checkDiscountCodeValidity(
+        uint256 _discountIndex,
+        uint256 _discountedPrice,
+        address _receiverAddress,
+        bytes memory _signature
+    ) external view virtual override returns (bool) {
+        return
+            _checkValidDiscountCode(
+                _discountIndex,
+                _discountedPrice,
+                _receiverAddress,
+                _signature
+            );
+    }
+
     /// @notice pause public functions
     /// @dev pause public functions
     function pause() external onlyOwner {
@@ -238,5 +262,12 @@ contract Controller is
         returns (uint256 counter)
     {
         return _getSaleCategoryCounter();
+    }
+
+    /// @notice get discount signer address
+    /// @dev get discount signer address
+    /// @return discountSigner the address of signer who signs discount codes
+    function getDiscountSigner() external view returns (address) {
+        return _getDiscountSigner();
     }
 }

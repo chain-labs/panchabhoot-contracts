@@ -4,6 +4,7 @@ pragma solidity 0.8.17;
 
 import {ControllerStorage} from "./ControllerStorage.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
+import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 abstract contract ControllerInternal is ControllerStorage {
     using Counters for Counters.Counter;
@@ -19,6 +20,8 @@ abstract contract ControllerInternal is ControllerStorage {
     );
     error StartTimeInPast(uint96 _invalidStartTime);
     error InexistentSaleCategory(uint256 _invalidSaleCategoryId);
+    error DiscountCodeAlreadyUsed(uint256 _invalidDiscountIndex);
+    error InvalidDiscountCode();
 
     /// @notice set avatar instance address
     /// @dev setter for avatar address
@@ -282,6 +285,19 @@ abstract contract ControllerInternal is ControllerStorage {
         emit DiscountDisabledOnSaleCategory(_saleCategoryId);
     }
 
+    /// @notice set new discount signer
+    /// @dev set new discount signer
+    /// @param _newDiscountSigner new discount signer
+    function _setDiscountSigner(address _newDiscountSigner) internal {
+        _discountSigner = _newDiscountSigner;
+        emit DiscountSignerUpdated(_newDiscountSigner);
+    }
+
+    function _setDiscountCodeApplied(uint256 _discountIndex) internal {
+        _appliedDiscountIndex[_discountIndex] = true;
+        emit DiscountCodeApplied(_discountIndex);
+    }
+
     /// @notice get avatar NFT contract instance
     /// @dev getter for avatar NFT instance
     /// @return avatar NFT instance
@@ -318,14 +334,66 @@ abstract contract ControllerInternal is ControllerStorage {
         return _saleCounter.current();
     }
 
+    /// @notice get discount signer address
+    /// @dev get discount signer address
+    /// @return discountSigner the address of signer who signs discount codes
+    function _getDiscountSigner()
+        internal
+        view
+        returns (address discountSigner)
+    {
+        return _discountSigner;
+    }
+
+    function _checkValidDiscountCode(
+        uint256 _discountIndex,
+        uint256 _discountedPrice,
+        address _receiverAddress,
+        bytes memory _signature
+    ) internal view returns (bool _isDiscountValid) {
+        _requireDiscountCodeIndexValid(_discountIndex);
+
+        // generate discount code hash
+        // discountIndex + discountedPrice + receiver address + "Panchabhoot Discount Code"
+        bytes32 _discountHash = keccak256(
+            abi.encodePacked(
+                _discountIndex,
+                _discountedPrice,
+                _receiverAddress,
+                "Panchabhoot Discount Code"
+            )
+        );
+
+        // Signature is produced by signing a keccak256 hash with the following format:
+        // "\x19Ethereum Signed Message\n" + len(msg) + msg
+        bytes32 ethSignedMessageHash = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", _discountHash)
+        );
+
+        // check if discount code is applied or not
+        _isDiscountValid = SignatureChecker.isValidSignatureNow(
+            _discountSigner,
+            ethSignedMessageHash,
+            _signature
+        );
+
+        // check if signature is valid or not
+        if (!_isDiscountValid) {
+            revert InvalidDiscountCode();
+        }
+    }
+
+    // check internal functions
     function _requireValidTimePeriod(uint96 _newStartTime, uint96 _newEndTime)
         private
         view
     {
         // checks
+        // end time cannot be behind start time
         if (_newEndTime <= _newStartTime) {
             revert EndTimeBehindStartTime(_newStartTime, _newEndTime);
         }
+        // start time cannot be in past
         if (_newStartTime < uint96(block.timestamp)) {
             revert StartTimeInPast(_newStartTime);
         }
@@ -335,6 +403,9 @@ abstract contract ControllerInternal is ControllerStorage {
         uint64 _perWalletLimit,
         uint64 _perTransactionLimit
     ) private pure {
+        // check if transaction limit is less than wallet limit
+        // if transaction limit is greater than wallet limit that means,
+        //    a user can never mint tokens greater than wallet limit
         if (_perTransactionLimit > _perWalletLimit) {
             revert PerTransactionLimitGreaterThanPerWalletLimit(
                 _perTransactionLimit,
@@ -347,8 +418,19 @@ abstract contract ControllerInternal is ControllerStorage {
         private
         view
     {
+        // check if sale category exists or not
         if (_saleCounter.current() < _saleCategoryId) {
             revert InexistentSaleCategory(_saleCategoryId);
+        }
+    }
+
+    function _requireDiscountCodeIndexValid(uint256 _discountIndex)
+        private
+        view
+    {
+        // check if discount code is already applied or not
+        if (_appliedDiscountIndex[_discountIndex]) {
+            revert DiscountCodeAlreadyUsed(_discountIndex);
         }
     }
 }

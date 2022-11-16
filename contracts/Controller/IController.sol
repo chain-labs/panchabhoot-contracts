@@ -85,6 +85,13 @@ interface IController {
 
     function getAvatar() external view returns (address);
 
+    function checkDiscountCodeValidity(
+        uint256 _discountIndex,
+        uint256 _discountedPrice,
+        address _receiverAddress,
+        bytes memory _signature
+    ) external view returns(bool);
+
     // function getTokenMintedByAccountInPhase(uint8 _phaseId)
     //     external
     //     view

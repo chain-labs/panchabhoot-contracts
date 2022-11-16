@@ -17,7 +17,13 @@ import { UNIT_TEST, contractsName } from "../Constants";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { hashMessage, parseUnits } from "ethers/lib/utils";
+import {
+  arrayify,
+  hashMessage,
+  parseUnits,
+  solidityKeccak256,
+} from "ethers/lib/utils";
+import { Address } from "hardhat-deploy/dist/types";
 const { AddressZero, HashZero } = ethers.constants;
 
 const toMinutes = (minutes: number) => minutes * 60;
@@ -37,6 +43,8 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
   let controllerFactory: Controller__factory;
   let owner: SignerWithAddress;
   let notOwner: SignerWithAddress;
+  let discountSigner: SignerWithAddress;
+  let receiver: SignerWithAddress;
 
   // todo: avatar and key card should be contract instance and not Signer
   let avatarInstance: SignerWithAddress;
@@ -44,10 +52,15 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
   let keyCardInstance: SignerWithAddress;
   let newKeyCardInstance: SignerWithAddress;
 
+  // constants
+  const DISCOUNT_CODE_MESSAGE = "Panchabhoot Discount Code";
+
   beforeEach("!! deploy controller", async () => {
     [
       owner,
       notOwner,
+      discountSigner,
+      receiver,
       avatarInstance,
       newAvatarInstance,
       keyCardInstance,
@@ -68,6 +81,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
       await controllerInstance.initialize(
         avatarInstance.address,
         keyCardInstance.address,
+        discountSigner.address,
         payees,
         shares
       );
@@ -80,6 +94,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
       await controllerInstance.initialize(
         avatarInstance.address,
         keyCardInstance.address,
+        discountSigner.address,
         payees,
         shares
       );
@@ -89,6 +104,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
         controllerInstance.initialize(
           avatarInstance.address,
           keyCardInstance.address,
+          discountSigner.address,
           payees,
           shares
         )
@@ -105,6 +121,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
       await controllerInstance.initialize(
         avatarInstance.address,
         keyCardInstance.address,
+        discountSigner.address,
         payees,
         shares
       );
@@ -734,6 +751,60 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
               );
             });
           });
+        });
+      });
+      context("discount code signature", () => {
+        let discountCodeIndex: BigNumberish;
+        let receiverAddress: Address;
+        let signature: BytesLike;
+        let discountedPrice: BigNumberish;
+        let saleCategoryId: BigNumberish;
+        beforeEach("!! add initial sale category", async () => {
+          await controllerInstance
+            .connect(owner)
+            .addSale(
+              saleCategoryParams.startTime,
+              saleCategoryParams.endTime,
+              saleCategoryParams.price,
+              saleCategoryParams.merkleRoot,
+              saleCategoryParams.perWalletLimit,
+              saleCategoryParams.perTransactionLimit,
+              saleCategoryParams.supply,
+              saleCategoryParams.keyCardPerAvatar,
+              saleCategoryParams.phase,
+              saleCategoryParams.isDiscountEnabled as boolean
+            );
+        });
+        beforeEach("!! initialize parameters", async () => {
+          discountCodeIndex = 1;
+          saleCategoryId = 1;
+          receiverAddress = receiver.address;
+          const saleCategory: SaleCategory =
+            await controllerInstance.getSaleCategory(saleCategoryId);
+          const currentPrice = saleCategory.price;
+          discountedPrice = ethers.BigNumber.from(currentPrice).div(2);
+          // generate discount hash
+          // discountIndex + discountedPrice + receiver address + "Panchabhoot Discount Code"
+          const discountHash = solidityKeccak256(
+            ["uint256", "uint256", "address", "string"],
+            [
+              discountCodeIndex,
+              discountedPrice,
+              receiverAddress,
+              DISCOUNT_CODE_MESSAGE,
+            ]
+          );
+
+          // generate signature
+          signature = await discountSigner.signMessage(arrayify(discountHash));
+        });
+        it("check if signature is valid", async () => {
+          await controllerInstance.checkDiscountCodeValidity(
+            discountCodeIndex,
+            discountedPrice,
+            receiverAddress,
+            signature
+          );
         });
       });
     });

@@ -92,6 +92,16 @@ abstract contract ControllerStorage is IController {
     /// @param _saleCategoryId id of sale category which is updated
     event DiscountDisabledOnSaleCategory(uint256 _saleCategoryId);
 
+    /// @notice logs when discount signer is updated
+    /// @dev emitted when discount signer is updated
+    /// @param _newDiscountSigner address of new discount signer
+    event DiscountSignerUpdated(address _newDiscountSigner);
+
+    /// @notice logs when discount code index is applied
+    /// @dev emitted when discount code index is applied
+    /// @param _discountCodeIndex discount code index which is applied
+    event DiscountCodeApplied(uint256 _discountCodeIndex);
+
     /// @notice avatar which will be distributed from controller
     /// @dev instance of Avatar NFT contract that will be distributed in this phase
     address internal _avatar;
@@ -100,9 +110,17 @@ abstract contract ControllerStorage is IController {
     /// @dev instance of MemberKeyCard contract that will be distributed in this phase with avatar
     address internal _keyCard;
 
+    /// @notice address that will sign discount codes
+    /// @dev discount codes are signed by this address
+    address internal _discountSigner;
+
     /// @notice lists of sale category details
     /// @dev mapping of sale category id to it's sale category details
     mapping(uint256 => SaleCategory) internal _saleCategories;
+
+    /// @notice discount code indexes which have been applied
+    /// @dev if true, discount is applied
+    mapping(uint256 => bool) internal _appliedDiscountIndex;
 
     /// @notice counter of sales category that have been added
     /// @dev used to keep track of latest index of sale
