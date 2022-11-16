@@ -78,6 +78,7 @@ export interface ControllerInterface extends utils.Interface {
     "VERSION()": FunctionFragment;
     "acceptOwnership()": FunctionFragment;
     "addSale(uint96,uint96,uint256,bytes32,uint64,uint64,uint64,uint64,uint8,bool)": FunctionFragment;
+    "checkDiscountCodeValidity(uint256,uint256,address,bytes)": FunctionFragment;
     "editKeyCardRatioOfSaleCategory(uint256,uint64)": FunctionFragment;
     "editMerkleRootOfSaleCategory(uint256,bytes32)": FunctionFragment;
     "editPerLimitOfSaleCategory(uint256,uint64,uint64)": FunctionFragment;
@@ -85,10 +86,11 @@ export interface ControllerInterface extends utils.Interface {
     "editSaleTimeOfSaleCategory(uint256,uint96,uint96)": FunctionFragment;
     "editSupplyOfSaleCategory(uint256,uint64)": FunctionFragment;
     "getAvatar()": FunctionFragment;
+    "getDiscountSigner()": FunctionFragment;
     "getKeyCard()": FunctionFragment;
     "getSaleCategory(uint256)": FunctionFragment;
     "getSaleCategoryCounter()": FunctionFragment;
-    "initialize(address,address,address[],uint256[])": FunctionFragment;
+    "initialize(address,address,address,address[],uint256[])": FunctionFragment;
     "owner()": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
@@ -102,6 +104,7 @@ export interface ControllerInterface extends utils.Interface {
     "released(address)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "setAvatar(address)": FunctionFragment;
+    "setDiscountSigner(address)": FunctionFragment;
     "setKeyCard(address)": FunctionFragment;
     "shares(address)": FunctionFragment;
     "toggleDiscountOfSaleCategory(uint256,bool)": FunctionFragment;
@@ -118,6 +121,7 @@ export interface ControllerInterface extends utils.Interface {
       | "VERSION"
       | "acceptOwnership"
       | "addSale"
+      | "checkDiscountCodeValidity"
       | "editKeyCardRatioOfSaleCategory"
       | "editMerkleRootOfSaleCategory"
       | "editPerLimitOfSaleCategory"
@@ -125,6 +129,7 @@ export interface ControllerInterface extends utils.Interface {
       | "editSaleTimeOfSaleCategory"
       | "editSupplyOfSaleCategory"
       | "getAvatar"
+      | "getDiscountSigner"
       | "getKeyCard"
       | "getSaleCategory"
       | "getSaleCategoryCounter"
@@ -142,6 +147,7 @@ export interface ControllerInterface extends utils.Interface {
       | "released(address)"
       | "renounceOwnership"
       | "setAvatar"
+      | "setDiscountSigner"
       | "setKeyCard"
       | "shares"
       | "toggleDiscountOfSaleCategory"
@@ -171,6 +177,15 @@ export interface ControllerInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<boolean>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "checkDiscountCodeValidity",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>
     ]
   ): string;
   encodeFunctionData(
@@ -207,6 +222,10 @@ export interface ControllerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "getAvatar", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "getDiscountSigner",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getKeyCard",
     values?: undefined
   ): string;
@@ -221,6 +240,7 @@ export interface ControllerInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "initialize",
     values: [
+      PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>[],
@@ -271,6 +291,10 @@ export interface ControllerInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "setDiscountSigner",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setKeyCard",
     values: [PromiseOrValue<string>]
   ): string;
@@ -308,6 +332,10 @@ export interface ControllerInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "addSale", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "checkDiscountCodeValidity",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "editKeyCardRatioOfSaleCategory",
     data: BytesLike
   ): Result;
@@ -332,6 +360,10 @@ export interface ControllerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getAvatar", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getDiscountSigner",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getKeyCard", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getSaleCategory",
@@ -379,6 +411,10 @@ export interface ControllerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setAvatar", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setDiscountSigner",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setKeyCard", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "shares", data: BytesLike): Result;
   decodeFunctionResult(
@@ -406,8 +442,10 @@ export interface ControllerInterface extends utils.Interface {
   events: {
     "AddedSaleCategory(uint256,uint8)": EventFragment;
     "AvatarUpdated(address,address)": EventFragment;
+    "DiscountCodeApplied(uint256)": EventFragment;
     "DiscountDisabledOnSaleCategory(uint256)": EventFragment;
     "DiscountEnabledOnSaleCategory(uint256)": EventFragment;
+    "DiscountSignerUpdated(address)": EventFragment;
     "ERC20PaymentReleased(address,address,uint256)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "KeyCardRatioUpdatedForSaleCategory(uint256,uint64)": EventFragment;
@@ -428,12 +466,14 @@ export interface ControllerInterface extends utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "AddedSaleCategory"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AvatarUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DiscountCodeApplied"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "DiscountDisabledOnSaleCategory"
   ): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "DiscountEnabledOnSaleCategory"
   ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DiscountSignerUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ERC20PaymentReleased"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(
@@ -485,6 +525,17 @@ export type AvatarUpdatedEvent = TypedEvent<
 
 export type AvatarUpdatedEventFilter = TypedEventFilter<AvatarUpdatedEvent>;
 
+export interface DiscountCodeAppliedEventObject {
+  _discountCodeIndex: BigNumber;
+}
+export type DiscountCodeAppliedEvent = TypedEvent<
+  [BigNumber],
+  DiscountCodeAppliedEventObject
+>;
+
+export type DiscountCodeAppliedEventFilter =
+  TypedEventFilter<DiscountCodeAppliedEvent>;
+
 export interface DiscountDisabledOnSaleCategoryEventObject {
   _saleCategoryId: BigNumber;
 }
@@ -506,6 +557,17 @@ export type DiscountEnabledOnSaleCategoryEvent = TypedEvent<
 
 export type DiscountEnabledOnSaleCategoryEventFilter =
   TypedEventFilter<DiscountEnabledOnSaleCategoryEvent>;
+
+export interface DiscountSignerUpdatedEventObject {
+  _newDiscountSigner: string;
+}
+export type DiscountSignerUpdatedEvent = TypedEvent<
+  [string],
+  DiscountSignerUpdatedEventObject
+>;
+
+export type DiscountSignerUpdatedEventFilter =
+  TypedEventFilter<DiscountSignerUpdatedEvent>;
 
 export interface ERC20PaymentReleasedEventObject {
   token: string;
@@ -733,6 +795,14 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    checkDiscountCodeValidity(
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _receiverAddress: PromiseOrValue<string>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     editKeyCardRatioOfSaleCategory(
       _saleCategoryId: PromiseOrValue<BigNumberish>,
       _newKeyCardRatio: PromiseOrValue<BigNumberish>,
@@ -773,6 +843,8 @@ export interface Controller extends BaseContract {
 
     getAvatar(overrides?: CallOverrides): Promise<[string]>;
 
+    getDiscountSigner(overrides?: CallOverrides): Promise<[string]>;
+
     getKeyCard(overrides?: CallOverrides): Promise<[string]>;
 
     getSaleCategory(
@@ -787,6 +859,7 @@ export interface Controller extends BaseContract {
     initialize(
       _newAvatar: PromiseOrValue<string>,
       _newKeyCard: PromiseOrValue<string>,
+      _newDiscountSigner: PromiseOrValue<string>,
       _payees: PromiseOrValue<string>[],
       _shares: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -849,6 +922,11 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setDiscountSigner(
+      _newDiscountSigner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     setKeyCard(
       _newKeyCard: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -906,6 +984,14 @@ export interface Controller extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  checkDiscountCodeValidity(
+    _discountIndex: PromiseOrValue<BigNumberish>,
+    _discountedPrice: PromiseOrValue<BigNumberish>,
+    _receiverAddress: PromiseOrValue<string>,
+    _signature: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   editKeyCardRatioOfSaleCategory(
     _saleCategoryId: PromiseOrValue<BigNumberish>,
     _newKeyCardRatio: PromiseOrValue<BigNumberish>,
@@ -946,6 +1032,8 @@ export interface Controller extends BaseContract {
 
   getAvatar(overrides?: CallOverrides): Promise<string>;
 
+  getDiscountSigner(overrides?: CallOverrides): Promise<string>;
+
   getKeyCard(overrides?: CallOverrides): Promise<string>;
 
   getSaleCategory(
@@ -958,6 +1046,7 @@ export interface Controller extends BaseContract {
   initialize(
     _newAvatar: PromiseOrValue<string>,
     _newKeyCard: PromiseOrValue<string>,
+    _newDiscountSigner: PromiseOrValue<string>,
     _payees: PromiseOrValue<string>[],
     _shares: PromiseOrValue<BigNumberish>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1020,6 +1109,11 @@ export interface Controller extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setDiscountSigner(
+    _newDiscountSigner: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   setKeyCard(
     _newKeyCard: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1075,6 +1169,14 @@ export interface Controller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    checkDiscountCodeValidity(
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _receiverAddress: PromiseOrValue<string>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     editKeyCardRatioOfSaleCategory(
       _saleCategoryId: PromiseOrValue<BigNumberish>,
       _newKeyCardRatio: PromiseOrValue<BigNumberish>,
@@ -1115,6 +1217,8 @@ export interface Controller extends BaseContract {
 
     getAvatar(overrides?: CallOverrides): Promise<string>;
 
+    getDiscountSigner(overrides?: CallOverrides): Promise<string>;
+
     getKeyCard(overrides?: CallOverrides): Promise<string>;
 
     getSaleCategory(
@@ -1127,6 +1231,7 @@ export interface Controller extends BaseContract {
     initialize(
       _newAvatar: PromiseOrValue<string>,
       _newKeyCard: PromiseOrValue<string>,
+      _newDiscountSigner: PromiseOrValue<string>,
       _payees: PromiseOrValue<string>[],
       _shares: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
@@ -1185,6 +1290,11 @@ export interface Controller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setDiscountSigner(
+      _newDiscountSigner: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setKeyCard(
       _newKeyCard: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -1237,6 +1347,13 @@ export interface Controller extends BaseContract {
       _newAvatar?: null
     ): AvatarUpdatedEventFilter;
 
+    "DiscountCodeApplied(uint256)"(
+      _discountCodeIndex?: null
+    ): DiscountCodeAppliedEventFilter;
+    DiscountCodeApplied(
+      _discountCodeIndex?: null
+    ): DiscountCodeAppliedEventFilter;
+
     "DiscountDisabledOnSaleCategory(uint256)"(
       _saleCategoryId?: null
     ): DiscountDisabledOnSaleCategoryEventFilter;
@@ -1250,6 +1367,13 @@ export interface Controller extends BaseContract {
     DiscountEnabledOnSaleCategory(
       _saleCategoryId?: null
     ): DiscountEnabledOnSaleCategoryEventFilter;
+
+    "DiscountSignerUpdated(address)"(
+      _newDiscountSigner?: null
+    ): DiscountSignerUpdatedEventFilter;
+    DiscountSignerUpdated(
+      _newDiscountSigner?: null
+    ): DiscountSignerUpdatedEventFilter;
 
     "ERC20PaymentReleased(address,address,uint256)"(
       token?: PromiseOrValue<string> | null,
@@ -1398,6 +1522,14 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    checkDiscountCodeValidity(
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _receiverAddress: PromiseOrValue<string>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     editKeyCardRatioOfSaleCategory(
       _saleCategoryId: PromiseOrValue<BigNumberish>,
       _newKeyCardRatio: PromiseOrValue<BigNumberish>,
@@ -1438,6 +1570,8 @@ export interface Controller extends BaseContract {
 
     getAvatar(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getDiscountSigner(overrides?: CallOverrides): Promise<BigNumber>;
+
     getKeyCard(overrides?: CallOverrides): Promise<BigNumber>;
 
     getSaleCategory(
@@ -1450,6 +1584,7 @@ export interface Controller extends BaseContract {
     initialize(
       _newAvatar: PromiseOrValue<string>,
       _newKeyCard: PromiseOrValue<string>,
+      _newDiscountSigner: PromiseOrValue<string>,
       _payees: PromiseOrValue<string>[],
       _shares: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1512,6 +1647,11 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setDiscountSigner(
+      _newDiscountSigner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     setKeyCard(
       _newKeyCard: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1570,6 +1710,14 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    checkDiscountCodeValidity(
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _receiverAddress: PromiseOrValue<string>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     editKeyCardRatioOfSaleCategory(
       _saleCategoryId: PromiseOrValue<BigNumberish>,
       _newKeyCardRatio: PromiseOrValue<BigNumberish>,
@@ -1610,6 +1758,8 @@ export interface Controller extends BaseContract {
 
     getAvatar(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    getDiscountSigner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     getKeyCard(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getSaleCategory(
@@ -1624,6 +1774,7 @@ export interface Controller extends BaseContract {
     initialize(
       _newAvatar: PromiseOrValue<string>,
       _newKeyCard: PromiseOrValue<string>,
+      _newDiscountSigner: PromiseOrValue<string>,
       _payees: PromiseOrValue<string>[],
       _shares: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1683,6 +1834,11 @@ export interface Controller extends BaseContract {
 
     setAvatar(
       _newAvatar: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setDiscountSigner(
+      _newDiscountSigner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

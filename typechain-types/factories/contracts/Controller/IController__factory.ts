@@ -69,6 +69,40 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_discountIndex",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_discountedPrice",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_receiverAddress",
+        type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "_signature",
+        type: "bytes",
+      },
+    ],
+    name: "checkDiscountCodeValidity",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getAvatar",
     outputs: [

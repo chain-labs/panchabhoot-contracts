@@ -75,6 +75,7 @@ export declare namespace IController {
 export interface ControllerInternalInterface extends utils.Interface {
   functions: {
     "addSale(uint96,uint96,uint256,bytes32,uint64,uint64,uint64,uint64,uint8,bool)": FunctionFragment;
+    "checkDiscountCodeValidity(uint256,uint256,address,bytes)": FunctionFragment;
     "getAvatar()": FunctionFragment;
     "getKeyCard()": FunctionFragment;
     "getSaleCategory(uint256)": FunctionFragment;
@@ -88,6 +89,7 @@ export interface ControllerInternalInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "addSale"
+      | "checkDiscountCodeValidity"
       | "getAvatar"
       | "getKeyCard"
       | "getSaleCategory"
@@ -111,6 +113,15 @@ export interface ControllerInternalInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<boolean>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "checkDiscountCodeValidity",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>
     ]
   ): string;
   encodeFunctionData(functionFragment: "getAvatar", values?: undefined): string;
@@ -138,6 +149,10 @@ export interface ControllerInternalInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "addSale", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "checkDiscountCodeValidity",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getAvatar", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getKeyCard", data: BytesLike): Result;
   decodeFunctionResult(
@@ -156,8 +171,10 @@ export interface ControllerInternalInterface extends utils.Interface {
   events: {
     "AddedSaleCategory(uint256,uint8)": EventFragment;
     "AvatarUpdated(address,address)": EventFragment;
+    "DiscountCodeApplied(uint256)": EventFragment;
     "DiscountDisabledOnSaleCategory(uint256)": EventFragment;
     "DiscountEnabledOnSaleCategory(uint256)": EventFragment;
+    "DiscountSignerUpdated(address)": EventFragment;
     "KeyCardRatioUpdatedForSaleCategory(uint256,uint64)": EventFragment;
     "MemberKeyCardUpdated(address,address)": EventFragment;
     "MerkleRootUpdatedSaleCategory(uint256,bytes32)": EventFragment;
@@ -169,12 +186,14 @@ export interface ControllerInternalInterface extends utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "AddedSaleCategory"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AvatarUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DiscountCodeApplied"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "DiscountDisabledOnSaleCategory"
   ): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "DiscountEnabledOnSaleCategory"
   ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DiscountSignerUpdated"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "KeyCardRatioUpdatedForSaleCategory"
   ): EventFragment;
@@ -217,6 +236,17 @@ export type AvatarUpdatedEvent = TypedEvent<
 
 export type AvatarUpdatedEventFilter = TypedEventFilter<AvatarUpdatedEvent>;
 
+export interface DiscountCodeAppliedEventObject {
+  _discountCodeIndex: BigNumber;
+}
+export type DiscountCodeAppliedEvent = TypedEvent<
+  [BigNumber],
+  DiscountCodeAppliedEventObject
+>;
+
+export type DiscountCodeAppliedEventFilter =
+  TypedEventFilter<DiscountCodeAppliedEvent>;
+
 export interface DiscountDisabledOnSaleCategoryEventObject {
   _saleCategoryId: BigNumber;
 }
@@ -238,6 +268,17 @@ export type DiscountEnabledOnSaleCategoryEvent = TypedEvent<
 
 export type DiscountEnabledOnSaleCategoryEventFilter =
   TypedEventFilter<DiscountEnabledOnSaleCategoryEvent>;
+
+export interface DiscountSignerUpdatedEventObject {
+  _newDiscountSigner: string;
+}
+export type DiscountSignerUpdatedEvent = TypedEvent<
+  [string],
+  DiscountSignerUpdatedEventObject
+>;
+
+export type DiscountSignerUpdatedEventFilter =
+  TypedEventFilter<DiscountSignerUpdatedEvent>;
 
 export interface KeyCardRatioUpdatedForSaleCategoryEventObject {
   _saleCategoryId: BigNumber;
@@ -366,6 +407,14 @@ export interface ControllerInternal extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    checkDiscountCodeValidity(
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _receiverAddress: PromiseOrValue<string>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     getAvatar(overrides?: CallOverrides): Promise<[string]>;
 
     getKeyCard(overrides?: CallOverrides): Promise<[string]>;
@@ -410,6 +459,14 @@ export interface ControllerInternal extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  checkDiscountCodeValidity(
+    _discountIndex: PromiseOrValue<BigNumberish>,
+    _discountedPrice: PromiseOrValue<BigNumberish>,
+    _receiverAddress: PromiseOrValue<string>,
+    _signature: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   getAvatar(overrides?: CallOverrides): Promise<string>;
 
   getKeyCard(overrides?: CallOverrides): Promise<string>;
@@ -453,6 +510,14 @@ export interface ControllerInternal extends BaseContract {
       _isDiscountEnabled: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    checkDiscountCodeValidity(
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _receiverAddress: PromiseOrValue<string>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     getAvatar(overrides?: CallOverrides): Promise<string>;
 
@@ -499,6 +564,13 @@ export interface ControllerInternal extends BaseContract {
       _newAvatar?: null
     ): AvatarUpdatedEventFilter;
 
+    "DiscountCodeApplied(uint256)"(
+      _discountCodeIndex?: null
+    ): DiscountCodeAppliedEventFilter;
+    DiscountCodeApplied(
+      _discountCodeIndex?: null
+    ): DiscountCodeAppliedEventFilter;
+
     "DiscountDisabledOnSaleCategory(uint256)"(
       _saleCategoryId?: null
     ): DiscountDisabledOnSaleCategoryEventFilter;
@@ -512,6 +584,13 @@ export interface ControllerInternal extends BaseContract {
     DiscountEnabledOnSaleCategory(
       _saleCategoryId?: null
     ): DiscountEnabledOnSaleCategoryEventFilter;
+
+    "DiscountSignerUpdated(address)"(
+      _newDiscountSigner?: null
+    ): DiscountSignerUpdatedEventFilter;
+    DiscountSignerUpdated(
+      _newDiscountSigner?: null
+    ): DiscountSignerUpdatedEventFilter;
 
     "KeyCardRatioUpdatedForSaleCategory(uint256,uint64)"(
       _saleCategoryId?: null,
@@ -596,6 +675,14 @@ export interface ControllerInternal extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    checkDiscountCodeValidity(
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _receiverAddress: PromiseOrValue<string>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getAvatar(overrides?: CallOverrides): Promise<BigNumber>;
 
     getKeyCard(overrides?: CallOverrides): Promise<BigNumber>;
@@ -639,6 +726,14 @@ export interface ControllerInternal extends BaseContract {
       _phase: PromiseOrValue<BigNumberish>,
       _isDiscountEnabled: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    checkDiscountCodeValidity(
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _receiverAddress: PromiseOrValue<string>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getAvatar(overrides?: CallOverrides): Promise<PopulatedTransaction>;

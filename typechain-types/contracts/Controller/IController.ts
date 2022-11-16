@@ -71,6 +71,7 @@ export declare namespace IController {
 export interface IControllerInterface extends utils.Interface {
   functions: {
     "addSale(uint96,uint96,uint256,bytes32,uint64,uint64,uint64,uint64,uint8,bool)": FunctionFragment;
+    "checkDiscountCodeValidity(uint256,uint256,address,bytes)": FunctionFragment;
     "getAvatar()": FunctionFragment;
     "getKeyCard()": FunctionFragment;
     "getSaleCategory(uint256)": FunctionFragment;
@@ -84,6 +85,7 @@ export interface IControllerInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "addSale"
+      | "checkDiscountCodeValidity"
       | "getAvatar"
       | "getKeyCard"
       | "getSaleCategory"
@@ -107,6 +109,15 @@ export interface IControllerInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<boolean>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "checkDiscountCodeValidity",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>
     ]
   ): string;
   encodeFunctionData(functionFragment: "getAvatar", values?: undefined): string;
@@ -134,6 +145,10 @@ export interface IControllerInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "addSale", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "checkDiscountCodeValidity",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getAvatar", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getKeyCard", data: BytesLike): Result;
   decodeFunctionResult(
@@ -193,6 +208,14 @@ export interface IController extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    checkDiscountCodeValidity(
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _receiverAddress: PromiseOrValue<string>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     getAvatar(overrides?: CallOverrides): Promise<[string]>;
 
     getKeyCard(overrides?: CallOverrides): Promise<[string]>;
@@ -236,6 +259,14 @@ export interface IController extends BaseContract {
     _isDiscountEnabled: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  checkDiscountCodeValidity(
+    _discountIndex: PromiseOrValue<BigNumberish>,
+    _discountedPrice: PromiseOrValue<BigNumberish>,
+    _receiverAddress: PromiseOrValue<string>,
+    _signature: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
   getAvatar(overrides?: CallOverrides): Promise<string>;
 
@@ -281,6 +312,14 @@ export interface IController extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    checkDiscountCodeValidity(
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _receiverAddress: PromiseOrValue<string>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     getAvatar(overrides?: CallOverrides): Promise<string>;
 
     getKeyCard(overrides?: CallOverrides): Promise<string>;
@@ -322,6 +361,14 @@ export interface IController extends BaseContract {
       _phase: PromiseOrValue<BigNumberish>,
       _isDiscountEnabled: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    checkDiscountCodeValidity(
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _receiverAddress: PromiseOrValue<string>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getAvatar(overrides?: CallOverrides): Promise<BigNumber>;
@@ -367,6 +414,14 @@ export interface IController extends BaseContract {
       _phase: PromiseOrValue<BigNumberish>,
       _isDiscountEnabled: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    checkDiscountCodeValidity(
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _receiverAddress: PromiseOrValue<string>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getAvatar(overrides?: CallOverrides): Promise<PopulatedTransaction>;

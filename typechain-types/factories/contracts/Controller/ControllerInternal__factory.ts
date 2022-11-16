@@ -13,6 +13,17 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "_invalidDiscountIndex",
+        type: "uint256",
+      },
+    ],
+    name: "DiscountCodeAlreadyUsed",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint96",
         name: "_invalidStartTime",
         type: "uint96",
@@ -35,6 +46,11 @@ const _abi = [
       },
     ],
     name: "InexistentSaleCategory",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidDiscountCode",
     type: "error",
   },
   {
@@ -108,6 +124,19 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint256",
+        name: "_discountCodeIndex",
+        type: "uint256",
+      },
+    ],
+    name: "DiscountCodeApplied",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
         name: "_saleCategoryId",
         type: "uint256",
       },
@@ -126,6 +155,19 @@ const _abi = [
       },
     ],
     name: "DiscountEnabledOnSaleCategory",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "_newDiscountSigner",
+        type: "address",
+      },
+    ],
+    name: "DiscountSignerUpdated",
     type: "event",
   },
   {
@@ -329,6 +371,40 @@ const _abi = [
     name: "addSale",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_discountIndex",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_discountedPrice",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_receiverAddress",
+        type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "_signature",
+        type: "bytes",
+      },
+    ],
+    name: "checkDiscountCodeValidity",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
