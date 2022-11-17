@@ -8,11 +8,13 @@ import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract Avatar is ERC721A, ERC2981, Pausable, AccessControl, ERC721Burnable, ReentrancyGuard, AvatarInternal {
+abstract contract Avatar is ERC721A, ERC2981, Pausable, AccessControl, AvatarStorage, AvatarInternal{  
+    using Counters for Counters.Counter;
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+
 
     constructor() ERC721A("Avatar", "ATR") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -33,15 +35,13 @@ contract Avatar is ERC721A, ERC2981, Pausable, AccessControl, ERC721Burnable, Re
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
     }
-
-    // The following functions are overrides required by Solidity.
-
+  
     function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721A, AccessControl)
-        returns (bool)
+    public
+    view
+    override(ERC721A, ERC2981, AccessControl)
+    returns (bool)
     {
         return super.supportsInterface(interfaceId);
-    }
+    }  
 }
