@@ -270,8 +270,8 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
           keyCardPerAvatar: twoKeysPerAvatar,
           startTime: startTimeAfterFiveMinutesFromNow,
           endTime: endTimeAfterTenMinutesFromStartTime,
-          phase: phase,
-          isDiscountEnabled: isDiscountEnabled,
+          phase,
+          isDiscountEnabled,
         };
       });
       context("add new sale category", () => {

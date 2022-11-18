@@ -12,6 +12,7 @@ export const PAUSABLE_PAUSED = "Pausable: paused";
 // error codes of ControllerInternal
 export const CONTROLLER_INVALID_DISCOUNT_CODE = "InvalidDiscountCode";
 export const CONTROLLER_INEXISTENT_SALE_CATEGORY = "InexistentSaleCategory";
-export const CONTROLLER_LIMIT_GREATER = "PerTransactionLimitGreaterThanPerWalletLimit";
+export const CONTROLLER_LIMIT_GREATER =
+  "PerTransactionLimitGreaterThanPerWalletLimit";
 export const CONTROLLER_START_TIME_IN_PAST = "StartTimeInPast";
 export const CONTROLLER_END_TIME_BEHIND = "EndTimeBehindStartTime";
