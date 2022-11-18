@@ -5,6 +5,10 @@ import {
 } from "./../../types/ContractParameters";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 import {
+  CONTROLLER_END_TIME_BEHIND,
+  CONTROLLER_INEXISTENT_SALE_CATEGORY,
+  CONTROLLER_LIMIT_GREATER,
+  CONTROLLER_START_TIME_IN_PAST,
   INITIALIZABLE_ALREADY_INITIALIZED,
   OWNABLE_NOT_OWNER,
   PAUSABLE_NOT_PAUSED,
@@ -44,6 +48,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
   let owner: SignerWithAddress;
   let notOwner: SignerWithAddress;
   let discountSigner: SignerWithAddress;
+  let newDiscountSigner: SignerWithAddress;
   let receiver: SignerWithAddress;
 
   // todo: avatar and key card should be contract instance and not Signer
@@ -60,6 +65,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
       owner,
       notOwner,
       discountSigner,
+      newDiscountSigner,
       receiver,
       avatarInstance,
       newAvatarInstance,
@@ -358,7 +364,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
                 )
             ).to.be.revertedWithCustomError(
               controllerInstance,
-              "EndTimeBehindStartTime"
+              CONTROLLER_END_TIME_BEHIND
             );
           });
           it("new start time cannot be in past", async () => {
@@ -373,7 +379,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
                 )
             ).to.be.revertedWithCustomError(
               controllerInstance,
-              "StartTimeInPast"
+              CONTROLLER_START_TIME_IN_PAST
             );
           });
           it("cannot edit if a sale category doesn't exists", async () => {
@@ -388,7 +394,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
                 )
             ).to.be.revertedWithCustomError(
               controllerInstance,
-              "InexistentSaleCategory"
+              CONTROLLER_INEXISTENT_SALE_CATEGORY
             );
           });
           it("set new valid sale start time", async () => {
@@ -424,7 +430,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
                 .editPriceOfSaleCategory(inexistentSaleCategoryId, newPrice)
             ).to.be.revertedWithCustomError(
               controllerInstance,
-              "InexistentSaleCategory"
+              CONTROLLER_INEXISTENT_SALE_CATEGORY
             );
           });
           it("price can only be changed by owner for existent sale category", async () => {
@@ -465,7 +471,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
                 )
             ).to.be.revertedWithCustomError(
               controllerInstance,
-              "InexistentSaleCategory"
+              CONTROLLER_INEXISTENT_SALE_CATEGORY
             );
           });
           it("new merkle root can only be updated by owner", async () => {
@@ -514,7 +520,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
                 )
             ).to.be.revertedWithCustomError(
               controllerInstance,
-              "PerTransactionLimitGreaterThanPerWalletLimit"
+              CONTROLLER_LIMIT_GREATER
             );
           });
           it("limit cannot be edited for inexistent sale category", async () => {
@@ -529,7 +535,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
                 )
             ).to.be.revertedWithCustomError(
               controllerInstance,
-              "InexistentSaleCategory"
+              CONTROLLER_INEXISTENT_SALE_CATEGORY
             );
           });
           it("owner can edit valid limit of existent sale category", async () => {
@@ -580,7 +586,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
                 .editSupplyOfSaleCategory(inexistentSaleCategoryId, newSupply)
             ).to.be.revertedWithCustomError(
               controllerInstance,
-              "InexistentSaleCategory"
+              CONTROLLER_INEXISTENT_SALE_CATEGORY
             );
           });
           it("supply can only be edited by owner", async () => {
@@ -621,7 +627,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
                 )
             ).to.be.revertedWithCustomError(
               controllerInstance,
-              "InexistentSaleCategory"
+              CONTROLLER_INEXISTENT_SALE_CATEGORY
             );
           });
           it("key card ratio can be edited by owner", async () => {
@@ -678,7 +684,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
                   )
               ).to.be.revertedWithCustomError(
                 controllerInstance,
-                "InexistentSaleCategory"
+                CONTROLLER_INEXISTENT_SALE_CATEGORY
               );
             });
             it("discount can be enabled by owner for existent sale category", async () => {
@@ -732,7 +738,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
                   )
               ).to.be.revertedWithCustomError(
                 controllerInstance,
-                "InexistentSaleCategory"
+                CONTROLLER_INEXISTENT_SALE_CATEGORY
               );
             });
             it("discount can be disabled by owner for existent sale category", async () => {
