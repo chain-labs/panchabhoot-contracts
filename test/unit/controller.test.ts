@@ -7,6 +7,7 @@ import { time } from "@nomicfoundation/hardhat-network-helpers";
 import {
   CONTROLLER_END_TIME_BEHIND,
   CONTROLLER_INEXISTENT_SALE_CATEGORY,
+  CONTROLLER_INVALID_DISCOUNT_CODE,
   CONTROLLER_LIMIT_GREATER,
   CONTROLLER_START_TIME_IN_PAST,
   INITIALIZABLE_ALREADY_INITIALIZED,
@@ -811,6 +812,40 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
             receiverAddress,
             signature
           );
+        });
+        it("invalid discount code will revert", async () => {
+          const invalidDiscountCodeIndex =
+            parseInt(discountCodeIndex.toString()) + 1;
+          await expect(
+            controllerInstance.checkDiscountCodeValidity(
+              invalidDiscountCodeIndex,
+              discountedPrice,
+              receiverAddress,
+              signature
+            )
+          ).to.be.revertedWithCustomError(
+            controllerInstance,
+            CONTROLLER_INVALID_DISCOUNT_CODE
+          );
+        });
+      });
+      context("set discount signer", () => {
+        it("new discount signer cannot be set by non-owner", async () => {
+          await expect(
+            controllerInstance
+              .connect(notOwner)
+              .setDiscountSigner(newDiscountSigner.address)
+          ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+        });
+        it("new discount signer only be set by owner", async () => {
+          const oldSignerAddress = await controllerInstance.getDiscountSigner();
+          await controllerInstance
+            .connect(owner)
+            .setDiscountSigner(newDiscountSigner.address);
+          const newDiscountAddress =
+            await controllerInstance.getDiscountSigner();
+          expect(oldSignerAddress).to.not.equal(newDiscountSigner);
+          expect(newDiscountSigner.address).to.equal(newDiscountAddress);
         });
       });
     });
