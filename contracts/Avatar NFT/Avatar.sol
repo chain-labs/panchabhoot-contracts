@@ -3,20 +3,19 @@ pragma solidity 0.8.17;
 
 import {AvatarInternal} from "./AvatarInternal.sol";
 import {AvatarStorage} from "./AvatarStorage.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "erc721a/contracts/ERC721A.sol";
-import "@openzeppelin/contracts/token/common/ERC2981.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import {ERC721AUpgradeable} from 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
+import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {ERC2981Upgradeable} from "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
+import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-abstract contract Avatar is ERC721A, ERC2981, Pausable, AccessControl, AvatarStorage, AvatarInternal{  
-    using Counters for Counters.Counter;
+abstract contract Avatar is ERC721AUpgradeable, OwnableUpgradeable, ERC2981Upgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable, AccessControlUpgradeable, AvatarStorage, AvatarInternal{  
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
-
-    constructor() ERC721A("Avatar", "ATR") {
+    function initialize() initializerERC721A public {
+        __ERC721A_init("Avatar", "ATR");
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
@@ -30,18 +29,16 @@ abstract contract Avatar is ERC721A, ERC2981, Pausable, AccessControl, AvatarSto
         _unpause();
     }
 
-    function safeMint(address to) public onlyRole(MINTER_ROLE) {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
-        _safeMint(to, tokenId);
+    function safeMint(address _to, uint256 _quantity) public onlyRole(MINTER_ROLE) {
+        _safeMint(_to, _quantity);
     }
   
     function supportsInterface(bytes4 interfaceId)
     public
     view
-    override(ERC721A, ERC2981, AccessControl)
+    override(ERC721AUpgradeable, ERC2981Upgradeable, AccessControlUpgradeable)
     returns (bool)
     {
         return super.supportsInterface(interfaceId);
-    }  
+    }
 }
