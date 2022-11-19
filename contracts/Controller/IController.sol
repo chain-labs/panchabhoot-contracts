@@ -42,7 +42,7 @@ interface IController {
         bytes32[] memory _proofs
     ) external payable;
 
-    function setAvatarNFT(address) external;
+    function setAvatar(address) external;
 
     function setKeyCard(address) external;
 
@@ -79,7 +79,7 @@ interface IController {
 
     function getMemberKeyCard() external view returns (address);
 
-    function getAvatarNFT() external view returns (address);
+    function getAvatar() external view returns (address);
 
     function getTokenMintedByAccountInPhase(uint8 _phaseId)
         external
