@@ -94,14 +94,6 @@ contract Controller is
         uint96 _newStartTime,
         uint96 _newEndTime
     ) external onlyOwner {
-        // checks
-        if (_newEndTime <= _newStartTime) {
-            revert EndTimeBehindStartTime(_newStartTime, _newEndTime);
-        }
-        if (_newStartTime < uint96(block.timestamp)) {
-            revert StartTimeInPast(_newStartTime);
-        }
-
         // set sale start time of sale category
         _setSaleTimeOfSaleCategory(_saleCategoryId, _newStartTime, _newEndTime);
     }
