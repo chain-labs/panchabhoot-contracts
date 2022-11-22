@@ -24,6 +24,8 @@ export type { IERC20Upgradeable } from "./@openzeppelin/contracts-upgradeable/to
 export { IERC20Upgradeable__factory } from "./factories/@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable__factory";
 export type { ContextUpgradeable } from "./@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable";
 export { ContextUpgradeable__factory } from "./factories/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable__factory";
+export type { IERC1271 } from "./@openzeppelin/contracts/interfaces/IERC1271";
+export { IERC1271__factory } from "./factories/@openzeppelin/contracts/interfaces/IERC1271__factory";
 export type { Controller } from "./contracts/Controller/Controller";
 export { Controller__factory } from "./factories/contracts/Controller/Controller__factory";
 export type { ControllerInternal } from "./contracts/Controller/ControllerInternal";

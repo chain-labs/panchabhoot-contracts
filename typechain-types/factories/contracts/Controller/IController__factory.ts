@@ -11,17 +11,95 @@ import type {
 
 const _abi = [
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "uint96",
+        name: "_startTime",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "_endTime",
+        type: "uint96",
+      },
+      {
+        internalType: "uint256",
+        name: "_price",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes32",
+        name: "_merkleRoot",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint64",
+        name: "_perWalletLimit",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "_perTransactionLimit",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "_supply",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "_keyCardPerAvatar",
+        type: "uint64",
+      },
+      {
+        internalType: "enum IController.PHASE_ID",
+        name: "_phase",
+        type: "uint8",
+      },
+      {
+        internalType: "bool",
+        name: "_isDiscountEnabled",
+        type: "bool",
+      },
+    ],
     name: "addSale",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [],
-    name: "editSale",
-    outputs: [],
-    stateMutability: "nonpayable",
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_discountIndex",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_discountedPrice",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_receiverAddress",
+        type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "_signature",
+        type: "bytes",
+      },
+    ],
+    name: "checkDiscountCodeValidity",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -39,64 +117,12 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "getDiscountSigner",
+    name: "getKeyCard",
     outputs: [
       {
         internalType: "address",
         name: "",
         type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getIntervalToReserve",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getMemberKeyCard",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getNAME",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "pure",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getSaleCategoryCounter",
-    outputs: [
-      {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
       },
     ],
     stateMutability: "view",
@@ -105,30 +131,15 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint64",
-        name: "_saleId",
-        type: "uint64",
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
       },
     ],
-    name: "getSales",
+    name: "getSaleCategory",
     outputs: [
       {
         components: [
-          {
-            internalType: "uint64",
-            name: "saleId",
-            type: "uint64",
-          },
-          {
-            internalType: "uint96",
-            name: "startTime",
-            type: "uint96",
-          },
-          {
-            internalType: "uint96",
-            name: "endTime",
-            type: "uint96",
-          },
           {
             internalType: "uint256",
             name: "price",
@@ -151,18 +162,28 @@ const _abi = [
           },
           {
             internalType: "uint64",
-            name: "numberOfTokensInThisSale",
+            name: "supply",
             type: "uint64",
           },
           {
             internalType: "uint64",
-            name: "totalTokensSoldInThisSale",
+            name: "tokensMinted",
             type: "uint64",
           },
           {
-            internalType: "uint120",
+            internalType: "uint64",
             name: "keyCardPerAvatar",
-            type: "uint120",
+            type: "uint64",
+          },
+          {
+            internalType: "uint96",
+            name: "startTime",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "endTime",
+            type: "uint96",
           },
           {
             internalType: "enum IController.PHASE_ID",
@@ -189,14 +210,8 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint8",
-        name: "_phaseId",
-        type: "uint8",
-      },
-    ],
-    name: "getTokenMintedByAccountInPhase",
+    inputs: [],
+    name: "getSaleCategoryCounter",
     outputs: [
       {
         internalType: "uint256",
@@ -205,111 +220,6 @@ const _abi = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getTokensToReserve",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getVERSION",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "pure",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_receiver",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "_quantity",
-        type: "uint256",
-      },
-    ],
-    name: "mintAvatar",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_receiver",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "_quantity",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_discountedPrice",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_validUntil",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_discountCodeHash",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes",
-        name: "_discountSignature",
-        type: "bytes",
-      },
-    ],
-    name: "mintAvatarAtDiscount",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_receiver",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "_quantity",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "_proofs",
-        type: "bytes32[]",
-      },
-    ],
-    name: "mintAvatarWithAllowlist",
-    outputs: [],
-    stateMutability: "payable",
     type: "function",
   },
   {
@@ -336,50 +246,11 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "_newDiscountSigner",
-        type: "address",
-      },
-    ],
-    name: "setDiscountSigner",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_newIntervalToReserve",
-        type: "uint256",
-      },
-    ],
-    name: "setIntervalToReserve",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
         name: "",
         type: "address",
       },
     ],
     name: "setKeyCard",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_newTokensToReserve",
-        type: "uint256",
-      },
-    ],
-    name: "setTokensToReserve",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

@@ -11,6 +11,95 @@ import type {
 
 const _abi = [
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_invalidDiscountIndex",
+        type: "uint256",
+      },
+    ],
+    name: "DiscountCodeAlreadyUsed",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint96",
+        name: "_invalidStartTime",
+        type: "uint96",
+      },
+      {
+        internalType: "uint256",
+        name: "_invalidEndTime",
+        type: "uint256",
+      },
+    ],
+    name: "EndTimeBehindStartTime",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_invalidSaleCategoryId",
+        type: "uint256",
+      },
+    ],
+    name: "InexistentSaleCategory",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidDiscountCode",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
+        name: "_invalidPerTransactionLimit",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "_invalidPerWalletLimit",
+        type: "uint64",
+      },
+    ],
+    name: "PerTransactionLimitGreaterThanPerWalletLimit",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint96",
+        name: "_invalidStartTime",
+        type: "uint96",
+      },
+    ],
+    name: "StartTimeInPast",
+    type: "error",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "_phase",
+        type: "uint8",
+      },
+    ],
+    name: "AddedSaleCategory",
+    type: "event",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -34,6 +123,77 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "uint256",
+        name: "_discountCodeIndex",
+        type: "uint256",
+      },
+    ],
+    name: "DiscountCodeApplied",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
+    ],
+    name: "DiscountDisabledOnSaleCategory",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
+    ],
+    name: "DiscountEnabledOnSaleCategory",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "_newDiscountSigner",
+        type: "address",
+      },
+    ],
+    name: "DiscountSignerUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "_newKeyCardRatio",
+        type: "uint64",
+      },
+    ],
+    name: "KeyCardRatioUpdatedForSaleCategory",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "address",
         name: "_oldKeyCard",
         type: "address",
@@ -47,6 +207,365 @@ const _abi = [
     ],
     name: "MemberKeyCardUpdated",
     type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "_newMerkleRoot",
+        type: "bytes32",
+      },
+    ],
+    name: "MerkleRootUpdatedSaleCategory",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "_newPerTransactionLimit",
+        type: "uint64",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "_newPerWalletLimit",
+        type: "uint64",
+      },
+    ],
+    name: "PerLimitUpdatedOfSaleCategory",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_newPrice",
+        type: "uint256",
+      },
+    ],
+    name: "PriceUpdatedForSaleCategory",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "_newSupplyForTheSale",
+        type: "uint64",
+      },
+    ],
+    name: "SupplyUpdatedForSaleCategory",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint96",
+        name: "_newStartTime",
+        type: "uint96",
+      },
+      {
+        indexed: false,
+        internalType: "uint96",
+        name: "_newEndTime",
+        type: "uint96",
+      },
+    ],
+    name: "TimeUpdatedForSaleCategory",
+    type: "event",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint96",
+        name: "_startTime",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "_endTime",
+        type: "uint96",
+      },
+      {
+        internalType: "uint256",
+        name: "_price",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes32",
+        name: "_merkleRoot",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint64",
+        name: "_perWalletLimit",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "_perTransactionLimit",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "_supply",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "_keyCardPerAvatar",
+        type: "uint64",
+      },
+      {
+        internalType: "enum IController.PHASE_ID",
+        name: "_phase",
+        type: "uint8",
+      },
+      {
+        internalType: "bool",
+        name: "_isDiscountEnabled",
+        type: "bool",
+      },
+    ],
+    name: "addSale",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_discountIndex",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_discountedPrice",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_receiverAddress",
+        type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "_signature",
+        type: "bytes",
+      },
+    ],
+    name: "checkDiscountCodeValidity",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getAvatar",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getKeyCard",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
+    ],
+    name: "getSaleCategory",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "price",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes32",
+            name: "merkleRoot",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint64",
+            name: "perWalletLimit",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "perTransactionLimit",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "supply",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "tokensMinted",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "keyCardPerAvatar",
+            type: "uint64",
+          },
+          {
+            internalType: "uint96",
+            name: "startTime",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "endTime",
+            type: "uint96",
+          },
+          {
+            internalType: "enum IController.PHASE_ID",
+            name: "phase",
+            type: "uint8",
+          },
+          {
+            internalType: "bool",
+            name: "paused",
+            type: "bool",
+          },
+          {
+            internalType: "bool",
+            name: "isDiscountEnabled",
+            type: "bool",
+          },
+        ],
+        internalType: "struct IController.SaleCategory",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getSaleCategoryCounter",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "pause",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "setAvatar",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "setKeyCard",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
 ];
 

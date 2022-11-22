@@ -10,37 +10,36 @@ interface IController {
     }
 
     struct SaleCategory {
-        uint64 saleId;
-        uint96 startTime;
-        uint96 endTime;
         uint256 price;
         bytes32 merkleRoot;
         uint64 perWalletLimit;
         uint64 perTransactionLimit;
-        uint64 numberOfTokensInThisSale;
-        uint64 totalTokensSoldInThisSale;
-        uint120 keyCardPerAvatar;
+        uint64 supply;
+        uint64 tokensMinted;
+        uint64 keyCardPerAvatar;
+        uint96 startTime;
+        uint96 endTime;
         PHASE_ID phase;
         bool paused;
         bool isDiscountEnabled;
     }
 
-    function mintAvatar(address _receiver, uint256 _quantity) external payable;
+    // function mintAvatar(address _receiver, uint256 _quantity) external payable;
 
-    function mintAvatarAtDiscount(
-        address _receiver,
-        uint256 _quantity,
-        uint256 _discountedPrice,
-        uint256 _validUntil,
-        uint256 _discountCodeHash,
-        bytes memory _discountSignature
-    ) external payable;
+    // function mintAvatarAtDiscount(
+    //     address _receiver,
+    //     uint256 _quantity,
+    //     uint256 _discountedPrice,
+    //     uint256 _validUntil,
+    //     uint256 _discountCodeHash,
+    //     bytes memory _discountSignature
+    // ) external payable;
 
-    function mintAvatarWithAllowlist(
-        address _receiver,
-        uint256 _quantity,
-        bytes32[] memory _proofs
-    ) external payable;
+    // function mintAvatarWithAllowlist(
+    //     address _receiver,
+    //     uint256 _quantity,
+    //     bytes32[] memory _proofs
+    // ) external payable;
 
     function setAvatar(address) external;
 
@@ -50,39 +49,51 @@ interface IController {
 
     function unpause() external;
 
-    function addSale() external;
+    function addSale(
+        uint96 _startTime,
+        uint96 _endTime,
+        uint256 _price,
+        bytes32 _merkleRoot,
+        uint64 _perWalletLimit,
+        uint64 _perTransactionLimit,
+        uint64 _supply,
+        uint64 _keyCardPerAvatar,
+        PHASE_ID _phase,
+        bool _isDiscountEnabled
+    ) external;
 
-    function editSale() external;
+    // function setDiscountSigner(address _newDiscountSigner) external;
 
-    function setDiscountSigner(address _newDiscountSigner) external;
+    // function setTokensToReserve(uint256 _newTokensToReserve) external;
 
-    function setTokensToReserve(uint256 _newTokensToReserve) external;
+    // function setIntervalToReserve(uint256 _newIntervalToReserve) external;
 
-    function setIntervalToReserve(uint256 _newIntervalToReserve) external;
+    function getSaleCategoryCounter() external view returns (uint256);
 
-    function getSaleCategoryCounter() external view returns (uint64);
+    // function getIntervalToReserve() external view returns (uint256);
 
-    function getIntervalToReserve() external view returns (uint256);
+    // function getTokensToReserve() external view returns (uint256);
 
-    function getTokensToReserve() external view returns (uint256);
+    // function getDiscountSigner() external view returns (address);
 
-    function getDiscountSigner() external view returns (address);
-
-    function getNAME() external pure returns (string memory);
-
-    function getVERSION() external pure returns (string memory);
-
-    function getSales(uint64 _saleId)
+    function getSaleCategory(uint256 _saleCategoryId)
         external
         view
         returns (SaleCategory memory);
 
-    function getMemberKeyCard() external view returns (address);
+    function getKeyCard() external view returns (address);
 
     function getAvatar() external view returns (address);
 
-    function getTokenMintedByAccountInPhase(uint8 _phaseId)
-        external
-        view
-        returns (uint256);
+    function checkDiscountCodeValidity(
+        uint256 _discountIndex,
+        uint256 _discountedPrice,
+        address _receiverAddress,
+        bytes memory _signature
+    ) external view returns(bool);
+
+    // function getTokenMintedByAccountInPhase(uint8 _phaseId)
+    //     external
+    //     view
+    //     returns (uint256);
 }
