@@ -7,6 +7,10 @@ import {Ownable2StepUpgradeable} from "@openzeppelin/contracts-upgradeable/acces
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import {PaymentSplitterUpgradeable} from "@openzeppelin/contracts-upgradeable/finance/PaymentSplitterUpgradeable.sol";
 
+/// @title Controller
+/// @author Mihirsinh Parmar <mihirsinh@chainlabs.in>
+/// @notice This contract handles logic of the various NFT sales.
+/// @dev Controller owns the NFT contract from where it mints NFTs
 contract Controller is
     PausableUpgradeable,
     Ownable2StepUpgradeable,
@@ -14,16 +18,25 @@ contract Controller is
     PaymentSplitterUpgradeable,
     ControllerInternal
 {
-    string public constant NAME = "Controller";
+    error SetTokensToReserveForAllPhases();
+
+    string public constant NAME = "Panchabhoot Controller";
     string public constant VERSION = "0.1.0";
+    uint8 public constant MAX_PHASES = 3;
 
     function initialize(
         address _newAvatar,
         address _newKeyCard,
         address _newDiscountSigner,
         address[] memory _payees,
-        uint256[] memory _shares
+        uint256[] memory _shares,
+        uint96[] memory _tokensToReserveInPhase
     ) external initializer {
+        // check if _tokensToReserveInPhaseLength is 3
+        if (_tokensToReserveInPhase.length != MAX_PHASES) {
+            revert SetTokensToReserveForAllPhases();
+        }
+
         __Pausable_init();
         __Ownable2Step_init();
         __ReentrancyGuard_init();
@@ -31,6 +44,9 @@ contract Controller is
         _setAvatar(_newAvatar);
         _setKeyCard(_newKeyCard);
         _setDiscountSigner(_newDiscountSigner);
+        for (uint256 i; i < _tokensToReserveInPhase.length; i++) {
+            _setTokenToReserveOfPhase(PHASE_ID(i), _tokensToReserveInPhase[i]);
+        }
     }
 
     function setAvatar(address _newAvatar) external virtual override onlyOwner {
@@ -261,5 +277,46 @@ contract Controller is
     /// @return discountSigner the address of signer who signs discount codes
     function getDiscountSigner() external view returns (address) {
         return _getDiscountSigner();
+    }
+
+    function setNewPhase(PHASE_ID _newPhase) external onlyOwner {
+        _setNewPhase(_newPhase);
+    }
+
+    function getCurrentPhase() external view returns (PHASE_ID) {
+        return _getCurrentPhase();
+    }
+
+    function getTokensToReserveInPhase(PHASE_ID _phaseId)
+        external
+        view
+        returns (uint96)
+    {
+        return _getTokensToReserveInPhase(_phaseId);
+    }
+
+    function checkIfTokenReservedForPhase(PHASE_ID _phaseId)
+        external
+        view
+        returns (bool)
+    {
+        return _checkIfTokenReservedForPhase(_phaseId);
+    }
+
+    function setTokensToReserveInPhase(
+        PHASE_ID[] memory _phaseId,
+        uint96[] memory _numberOfTokens
+    ) external onlyOwner {
+        // check if both arrays have same length
+        _requireSameArrayLength(_phaseId, _numberOfTokens);
+
+        // set tokens to reserve
+        for (uint256 i; i < _phaseId.length; i++) {
+            _setTokenToReserveOfPhase(_phaseId[i], _numberOfTokens[i]);
+        }
+    }
+
+    function reserveTokens(PHASE_ID _phaseId) external onlyOwner {
+        _reserveTokens(_phaseId);
     }
 }

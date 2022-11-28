@@ -16,3 +16,7 @@ export const CONTROLLER_LIMIT_GREATER =
   "PerTransactionLimitGreaterThanPerWalletLimit";
 export const CONTROLLER_START_TIME_IN_PAST = "StartTimeInPast";
 export const CONTROLLER_END_TIME_BEHIND = "EndTimeBehindStartTime";
+export const PHASE_IS_ALREADY_ACTIVE = "PhaseIsAlreadyActive";
+export const ARRAYS_LENGTH_DONT_MATCH = "ArraysLengthDontMatch";
+export const PHASE_INACTIVE = "PhaseInactive";
+export const TOKENS_ALREADY_RESERVED = "TokensAlreadyReservedForPhase";
