@@ -187,6 +187,19 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "enum IController.PHASE_ID",
+        name: "newPhaseId",
+        type: "uint8",
+      },
+    ],
+    name: "PhaseChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "uint256",
         name: "_saleCategoryId",
         type: "uint256",
@@ -243,6 +256,50 @@ const _abi = [
       },
     ],
     name: "TimeUpdatedForSaleCategory",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "enum IController.PHASE_ID",
+        name: "phaseId",
+        type: "uint8",
+      },
+      {
+        indexed: false,
+        internalType: "uint96",
+        name: "tokensToReserve",
+        type: "uint96",
+      },
+    ],
+    name: "TokenToReserveUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "enum IController.PHASE_ID",
+        name: "phaseId",
+        type: "uint8",
+      },
+      {
+        indexed: false,
+        internalType: "uint96",
+        name: "numberOfTokensReserved",
+        type: "uint96",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "receiver",
+        type: "address",
+      },
+    ],
+    name: "TokensReserved",
     type: "event",
   },
   {

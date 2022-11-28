@@ -11,6 +11,11 @@ import type {
 
 const _abi = [
   {
+    inputs: [],
+    name: "ArraysLengthDontMatch",
+    type: "error",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -72,12 +77,45 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "enum IController.PHASE_ID",
+        name: "_inactivePhase",
+        type: "uint8",
+      },
+    ],
+    name: "PhaseInactive",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IController.PHASE_ID",
+        name: "_currentPhaseId",
+        type: "uint8",
+      },
+    ],
+    name: "PhaseIsAlreadyActive",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint96",
         name: "_invalidStartTime",
         type: "uint96",
       },
     ],
     name: "StartTimeInPast",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IController.PHASE_ID",
+        name: "_phaseId",
+        type: "uint8",
+      },
+    ],
+    name: "TokensAlreadyReservedForPhase",
     type: "error",
   },
   {
@@ -257,6 +295,19 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "enum IController.PHASE_ID",
+        name: "newPhaseId",
+        type: "uint8",
+      },
+    ],
+    name: "PhaseChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "uint256",
         name: "_saleCategoryId",
         type: "uint256",
@@ -313,6 +364,50 @@ const _abi = [
       },
     ],
     name: "TimeUpdatedForSaleCategory",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "enum IController.PHASE_ID",
+        name: "phaseId",
+        type: "uint8",
+      },
+      {
+        indexed: false,
+        internalType: "uint96",
+        name: "tokensToReserve",
+        type: "uint96",
+      },
+    ],
+    name: "TokenToReserveUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "enum IController.PHASE_ID",
+        name: "phaseId",
+        type: "uint8",
+      },
+      {
+        indexed: false,
+        internalType: "uint96",
+        name: "numberOfTokensReserved",
+        type: "uint96",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "receiver",
+        type: "address",
+      },
+    ],
+    name: "TokensReserved",
     type: "event",
   },
   {
