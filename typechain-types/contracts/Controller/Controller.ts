@@ -74,11 +74,13 @@ export declare namespace IController {
 
 export interface ControllerInterface extends utils.Interface {
   functions: {
+    "MAX_PHASES()": FunctionFragment;
     "NAME()": FunctionFragment;
     "VERSION()": FunctionFragment;
     "acceptOwnership()": FunctionFragment;
     "addSale(uint96,uint96,uint256,bytes32,uint64,uint64,uint64,uint64,uint8,bool)": FunctionFragment;
     "checkDiscountCodeValidity(uint256,uint256,address,bytes)": FunctionFragment;
+    "checkIfTokenReservedForPhase(uint8)": FunctionFragment;
     "editKeyCardRatioOfSaleCategory(uint256,uint64)": FunctionFragment;
     "editMerkleRootOfSaleCategory(uint256,bytes32)": FunctionFragment;
     "editPerLimitOfSaleCategory(uint256,uint64,uint64)": FunctionFragment;
@@ -86,11 +88,13 @@ export interface ControllerInterface extends utils.Interface {
     "editSaleTimeOfSaleCategory(uint256,uint96,uint96)": FunctionFragment;
     "editSupplyOfSaleCategory(uint256,uint64)": FunctionFragment;
     "getAvatar()": FunctionFragment;
+    "getCurrentPhase()": FunctionFragment;
     "getDiscountSigner()": FunctionFragment;
     "getKeyCard()": FunctionFragment;
     "getSaleCategory(uint256)": FunctionFragment;
     "getSaleCategoryCounter()": FunctionFragment;
-    "initialize(address,address,address,address[],uint256[])": FunctionFragment;
+    "getTokensToReserveInPhase(uint8)": FunctionFragment;
+    "initialize(address,address,address,address[],uint256[],uint96[])": FunctionFragment;
     "owner()": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
@@ -103,9 +107,12 @@ export interface ControllerInterface extends utils.Interface {
     "released(address,address)": FunctionFragment;
     "released(address)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "reserveTokens(uint8)": FunctionFragment;
     "setAvatar(address)": FunctionFragment;
     "setDiscountSigner(address)": FunctionFragment;
     "setKeyCard(address)": FunctionFragment;
+    "setNewPhase(uint8)": FunctionFragment;
+    "setTokensToReserveInPhase(uint8[],uint96[])": FunctionFragment;
     "shares(address)": FunctionFragment;
     "toggleDiscountOfSaleCategory(uint256,bool)": FunctionFragment;
     "totalReleased(address)": FunctionFragment;
@@ -117,11 +124,13 @@ export interface ControllerInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "MAX_PHASES"
       | "NAME"
       | "VERSION"
       | "acceptOwnership"
       | "addSale"
       | "checkDiscountCodeValidity"
+      | "checkIfTokenReservedForPhase"
       | "editKeyCardRatioOfSaleCategory"
       | "editMerkleRootOfSaleCategory"
       | "editPerLimitOfSaleCategory"
@@ -129,10 +138,12 @@ export interface ControllerInterface extends utils.Interface {
       | "editSaleTimeOfSaleCategory"
       | "editSupplyOfSaleCategory"
       | "getAvatar"
+      | "getCurrentPhase"
       | "getDiscountSigner"
       | "getKeyCard"
       | "getSaleCategory"
       | "getSaleCategoryCounter"
+      | "getTokensToReserveInPhase"
       | "initialize"
       | "owner"
       | "pause"
@@ -146,9 +157,12 @@ export interface ControllerInterface extends utils.Interface {
       | "released(address,address)"
       | "released(address)"
       | "renounceOwnership"
+      | "reserveTokens"
       | "setAvatar"
       | "setDiscountSigner"
       | "setKeyCard"
+      | "setNewPhase"
+      | "setTokensToReserveInPhase"
       | "shares"
       | "toggleDiscountOfSaleCategory"
       | "totalReleased(address)"
@@ -158,6 +172,10 @@ export interface ControllerInterface extends utils.Interface {
       | "unpause"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "MAX_PHASES",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "NAME", values?: undefined): string;
   encodeFunctionData(functionFragment: "VERSION", values?: undefined): string;
   encodeFunctionData(
@@ -187,6 +205,10 @@ export interface ControllerInterface extends utils.Interface {
       PromiseOrValue<string>,
       PromiseOrValue<BytesLike>
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "checkIfTokenReservedForPhase",
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "editKeyCardRatioOfSaleCategory",
@@ -222,6 +244,10 @@ export interface ControllerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "getAvatar", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "getCurrentPhase",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getDiscountSigner",
     values?: undefined
   ): string;
@@ -238,12 +264,17 @@ export interface ControllerInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "getTokensToReserveInPhase",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "initialize",
     values: [
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>[],
+      PromiseOrValue<BigNumberish>[],
       PromiseOrValue<BigNumberish>[]
     ]
   ): string;
@@ -287,6 +318,10 @@ export interface ControllerInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "reserveTokens",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setAvatar",
     values: [PromiseOrValue<string>]
   ): string;
@@ -297,6 +332,14 @@ export interface ControllerInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "setKeyCard",
     values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setNewPhase",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setTokensToReserveInPhase",
+    values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]]
   ): string;
   encodeFunctionData(
     functionFragment: "shares",
@@ -324,6 +367,7 @@ export interface ControllerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
 
+  decodeFunctionResult(functionFragment: "MAX_PHASES", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "NAME", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
   decodeFunctionResult(
@@ -333,6 +377,10 @@ export interface ControllerInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "addSale", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "checkDiscountCodeValidity",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "checkIfTokenReservedForPhase",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -361,6 +409,10 @@ export interface ControllerInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "getAvatar", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "getCurrentPhase",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getDiscountSigner",
     data: BytesLike
   ): Result;
@@ -371,6 +423,10 @@ export interface ControllerInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getSaleCategoryCounter",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getTokensToReserveInPhase",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
@@ -410,12 +466,24 @@ export interface ControllerInterface extends utils.Interface {
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "reserveTokens",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setAvatar", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setDiscountSigner",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setKeyCard", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setNewPhase",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setTokensToReserveInPhase",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "shares", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "toggleDiscountOfSaleCategory",
@@ -458,9 +526,12 @@ export interface ControllerInterface extends utils.Interface {
     "PaymentReceived(address,uint256)": EventFragment;
     "PaymentReleased(address,uint256)": EventFragment;
     "PerLimitUpdatedOfSaleCategory(uint256,uint64,uint64)": EventFragment;
+    "PhaseChanged(uint8)": EventFragment;
     "PriceUpdatedForSaleCategory(uint256,uint256)": EventFragment;
     "SupplyUpdatedForSaleCategory(uint256,uint64)": EventFragment;
     "TimeUpdatedForSaleCategory(uint256,uint96,uint96)": EventFragment;
+    "TokenToReserveUpdated(uint8,uint96)": EventFragment;
+    "TokensReserved(uint8,uint96,address)": EventFragment;
     "Unpaused(address)": EventFragment;
   };
 
@@ -492,6 +563,7 @@ export interface ControllerInterface extends utils.Interface {
   getEvent(
     nameOrSignatureOrTopic: "PerLimitUpdatedOfSaleCategory"
   ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PhaseChanged"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "PriceUpdatedForSaleCategory"
   ): EventFragment;
@@ -499,6 +571,8 @@ export interface ControllerInterface extends utils.Interface {
     nameOrSignatureOrTopic: "SupplyUpdatedForSaleCategory"
   ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TimeUpdatedForSaleCategory"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenToReserveUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokensReserved"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
 }
 
@@ -702,6 +776,13 @@ export type PerLimitUpdatedOfSaleCategoryEvent = TypedEvent<
 export type PerLimitUpdatedOfSaleCategoryEventFilter =
   TypedEventFilter<PerLimitUpdatedOfSaleCategoryEvent>;
 
+export interface PhaseChangedEventObject {
+  newPhaseId: number;
+}
+export type PhaseChangedEvent = TypedEvent<[number], PhaseChangedEventObject>;
+
+export type PhaseChangedEventFilter = TypedEventFilter<PhaseChangedEvent>;
+
 export interface PriceUpdatedForSaleCategoryEventObject {
   _saleCategoryId: BigNumber;
   _newPrice: BigNumber;
@@ -739,6 +820,30 @@ export type TimeUpdatedForSaleCategoryEvent = TypedEvent<
 export type TimeUpdatedForSaleCategoryEventFilter =
   TypedEventFilter<TimeUpdatedForSaleCategoryEvent>;
 
+export interface TokenToReserveUpdatedEventObject {
+  phaseId: number;
+  tokensToReserve: BigNumber;
+}
+export type TokenToReserveUpdatedEvent = TypedEvent<
+  [number, BigNumber],
+  TokenToReserveUpdatedEventObject
+>;
+
+export type TokenToReserveUpdatedEventFilter =
+  TypedEventFilter<TokenToReserveUpdatedEvent>;
+
+export interface TokensReservedEventObject {
+  phaseId: number;
+  numberOfTokensReserved: BigNumber;
+  receiver: string;
+}
+export type TokensReservedEvent = TypedEvent<
+  [number, BigNumber, string],
+  TokensReservedEventObject
+>;
+
+export type TokensReservedEventFilter = TypedEventFilter<TokensReservedEvent>;
+
 export interface UnpausedEventObject {
   account: string;
 }
@@ -773,6 +878,8 @@ export interface Controller extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    MAX_PHASES(overrides?: CallOverrides): Promise<[number]>;
+
     NAME(overrides?: CallOverrides): Promise<[string]>;
 
     VERSION(overrides?: CallOverrides): Promise<[string]>;
@@ -800,6 +907,11 @@ export interface Controller extends BaseContract {
       _discountedPrice: PromiseOrValue<BigNumberish>,
       _receiverAddress: PromiseOrValue<string>,
       _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    checkIfTokenReservedForPhase(
+      _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
@@ -843,6 +955,8 @@ export interface Controller extends BaseContract {
 
     getAvatar(overrides?: CallOverrides): Promise<[string]>;
 
+    getCurrentPhase(overrides?: CallOverrides): Promise<[number]>;
+
     getDiscountSigner(overrides?: CallOverrides): Promise<[string]>;
 
     getKeyCard(overrides?: CallOverrides): Promise<[string]>;
@@ -856,12 +970,18 @@ export interface Controller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { counter: BigNumber }>;
 
+    getTokensToReserveInPhase(
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     initialize(
       _newAvatar: PromiseOrValue<string>,
       _newKeyCard: PromiseOrValue<string>,
       _newDiscountSigner: PromiseOrValue<string>,
       _payees: PromiseOrValue<string>[],
       _shares: PromiseOrValue<BigNumberish>[],
+      _tokensToReserveInPhase: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -917,6 +1037,11 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    reserveTokens(
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     setAvatar(
       _newAvatar: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -929,6 +1054,17 @@ export interface Controller extends BaseContract {
 
     setKeyCard(
       _newKeyCard: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setNewPhase(
+      _newPhase: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setTokensToReserveInPhase(
+      _phaseId: PromiseOrValue<BigNumberish>[],
+      _numberOfTokens: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -962,6 +1098,8 @@ export interface Controller extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  MAX_PHASES(overrides?: CallOverrides): Promise<number>;
+
   NAME(overrides?: CallOverrides): Promise<string>;
 
   VERSION(overrides?: CallOverrides): Promise<string>;
@@ -989,6 +1127,11 @@ export interface Controller extends BaseContract {
     _discountedPrice: PromiseOrValue<BigNumberish>,
     _receiverAddress: PromiseOrValue<string>,
     _signature: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  checkIfTokenReservedForPhase(
+    _phaseId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<boolean>;
 
@@ -1032,6 +1175,8 @@ export interface Controller extends BaseContract {
 
   getAvatar(overrides?: CallOverrides): Promise<string>;
 
+  getCurrentPhase(overrides?: CallOverrides): Promise<number>;
+
   getDiscountSigner(overrides?: CallOverrides): Promise<string>;
 
   getKeyCard(overrides?: CallOverrides): Promise<string>;
@@ -1043,12 +1188,18 @@ export interface Controller extends BaseContract {
 
   getSaleCategoryCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
+  getTokensToReserveInPhase(
+    _phaseId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   initialize(
     _newAvatar: PromiseOrValue<string>,
     _newKeyCard: PromiseOrValue<string>,
     _newDiscountSigner: PromiseOrValue<string>,
     _payees: PromiseOrValue<string>[],
     _shares: PromiseOrValue<BigNumberish>[],
+    _tokensToReserveInPhase: PromiseOrValue<BigNumberish>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1104,6 +1255,11 @@ export interface Controller extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  reserveTokens(
+    _phaseId: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   setAvatar(
     _newAvatar: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1116,6 +1272,17 @@ export interface Controller extends BaseContract {
 
   setKeyCard(
     _newKeyCard: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setNewPhase(
+    _newPhase: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setTokensToReserveInPhase(
+    _phaseId: PromiseOrValue<BigNumberish>[],
+    _numberOfTokens: PromiseOrValue<BigNumberish>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1149,6 +1316,8 @@ export interface Controller extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    MAX_PHASES(overrides?: CallOverrides): Promise<number>;
+
     NAME(overrides?: CallOverrides): Promise<string>;
 
     VERSION(overrides?: CallOverrides): Promise<string>;
@@ -1174,6 +1343,11 @@ export interface Controller extends BaseContract {
       _discountedPrice: PromiseOrValue<BigNumberish>,
       _receiverAddress: PromiseOrValue<string>,
       _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    checkIfTokenReservedForPhase(
+      _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
@@ -1217,6 +1391,8 @@ export interface Controller extends BaseContract {
 
     getAvatar(overrides?: CallOverrides): Promise<string>;
 
+    getCurrentPhase(overrides?: CallOverrides): Promise<number>;
+
     getDiscountSigner(overrides?: CallOverrides): Promise<string>;
 
     getKeyCard(overrides?: CallOverrides): Promise<string>;
@@ -1228,12 +1404,18 @@ export interface Controller extends BaseContract {
 
     getSaleCategoryCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getTokensToReserveInPhase(
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     initialize(
       _newAvatar: PromiseOrValue<string>,
       _newKeyCard: PromiseOrValue<string>,
       _newDiscountSigner: PromiseOrValue<string>,
       _payees: PromiseOrValue<string>[],
       _shares: PromiseOrValue<BigNumberish>[],
+      _tokensToReserveInPhase: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1285,6 +1467,11 @@ export interface Controller extends BaseContract {
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
+    reserveTokens(
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setAvatar(
       _newAvatar: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -1297,6 +1484,17 @@ export interface Controller extends BaseContract {
 
     setKeyCard(
       _newKeyCard: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setNewPhase(
+      _newPhase: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setTokensToReserveInPhase(
+      _phaseId: PromiseOrValue<BigNumberish>[],
+      _numberOfTokens: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1466,6 +1664,9 @@ export interface Controller extends BaseContract {
       _newPerWalletLimit?: null
     ): PerLimitUpdatedOfSaleCategoryEventFilter;
 
+    "PhaseChanged(uint8)"(newPhaseId?: null): PhaseChangedEventFilter;
+    PhaseChanged(newPhaseId?: null): PhaseChangedEventFilter;
+
     "PriceUpdatedForSaleCategory(uint256,uint256)"(
       _saleCategoryId?: null,
       _newPrice?: null
@@ -1495,11 +1696,33 @@ export interface Controller extends BaseContract {
       _newEndTime?: null
     ): TimeUpdatedForSaleCategoryEventFilter;
 
+    "TokenToReserveUpdated(uint8,uint96)"(
+      phaseId?: null,
+      tokensToReserve?: null
+    ): TokenToReserveUpdatedEventFilter;
+    TokenToReserveUpdated(
+      phaseId?: null,
+      tokensToReserve?: null
+    ): TokenToReserveUpdatedEventFilter;
+
+    "TokensReserved(uint8,uint96,address)"(
+      phaseId?: null,
+      numberOfTokensReserved?: null,
+      receiver?: null
+    ): TokensReservedEventFilter;
+    TokensReserved(
+      phaseId?: null,
+      numberOfTokensReserved?: null,
+      receiver?: null
+    ): TokensReservedEventFilter;
+
     "Unpaused(address)"(account?: null): UnpausedEventFilter;
     Unpaused(account?: null): UnpausedEventFilter;
   };
 
   estimateGas: {
+    MAX_PHASES(overrides?: CallOverrides): Promise<BigNumber>;
+
     NAME(overrides?: CallOverrides): Promise<BigNumber>;
 
     VERSION(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1527,6 +1750,11 @@ export interface Controller extends BaseContract {
       _discountedPrice: PromiseOrValue<BigNumberish>,
       _receiverAddress: PromiseOrValue<string>,
       _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    checkIfTokenReservedForPhase(
+      _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1570,6 +1798,8 @@ export interface Controller extends BaseContract {
 
     getAvatar(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getCurrentPhase(overrides?: CallOverrides): Promise<BigNumber>;
+
     getDiscountSigner(overrides?: CallOverrides): Promise<BigNumber>;
 
     getKeyCard(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1581,12 +1811,18 @@ export interface Controller extends BaseContract {
 
     getSaleCategoryCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getTokensToReserveInPhase(
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     initialize(
       _newAvatar: PromiseOrValue<string>,
       _newKeyCard: PromiseOrValue<string>,
       _newDiscountSigner: PromiseOrValue<string>,
       _payees: PromiseOrValue<string>[],
       _shares: PromiseOrValue<BigNumberish>[],
+      _tokensToReserveInPhase: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1642,6 +1878,11 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    reserveTokens(
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     setAvatar(
       _newAvatar: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1654,6 +1895,17 @@ export interface Controller extends BaseContract {
 
     setKeyCard(
       _newKeyCard: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setNewPhase(
+      _newPhase: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setTokensToReserveInPhase(
+      _phaseId: PromiseOrValue<BigNumberish>[],
+      _numberOfTokens: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1688,6 +1940,8 @@ export interface Controller extends BaseContract {
   };
 
   populateTransaction: {
+    MAX_PHASES(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     NAME(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     VERSION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1715,6 +1969,11 @@ export interface Controller extends BaseContract {
       _discountedPrice: PromiseOrValue<BigNumberish>,
       _receiverAddress: PromiseOrValue<string>,
       _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    checkIfTokenReservedForPhase(
+      _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1758,6 +2017,8 @@ export interface Controller extends BaseContract {
 
     getAvatar(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    getCurrentPhase(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     getDiscountSigner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getKeyCard(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1771,12 +2032,18 @@ export interface Controller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getTokensToReserveInPhase(
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     initialize(
       _newAvatar: PromiseOrValue<string>,
       _newKeyCard: PromiseOrValue<string>,
       _newDiscountSigner: PromiseOrValue<string>,
       _payees: PromiseOrValue<string>[],
       _shares: PromiseOrValue<BigNumberish>[],
+      _tokensToReserveInPhase: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1832,6 +2099,11 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    reserveTokens(
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     setAvatar(
       _newAvatar: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1844,6 +2116,17 @@ export interface Controller extends BaseContract {
 
     setKeyCard(
       _newKeyCard: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setNewPhase(
+      _newPhase: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setTokensToReserveInPhase(
+      _phaseId: PromiseOrValue<BigNumberish>[],
+      _numberOfTokens: PromiseOrValue<BigNumberish>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

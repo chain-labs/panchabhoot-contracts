@@ -5,6 +5,7 @@ import {
 } from "./../../types/ContractParameters";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 import {
+  ARRAYS_LENGTH_DONT_MATCH,
   CONTROLLER_END_TIME_BEHIND,
   CONTROLLER_INEXISTENT_SALE_CATEGORY,
   CONTROLLER_INVALID_DISCOUNT_CODE,
@@ -14,11 +15,19 @@ import {
   OWNABLE_NOT_OWNER,
   PAUSABLE_NOT_PAUSED,
   PAUSABLE_PAUSED,
+  PHASE_INACTIVE,
+  PHASE_IS_ALREADY_ACTIVE,
+  TOKENS_ALREADY_RESERVED,
 } from "./../ERROR_STRINGS";
 // eslint-disable-next-line
 import { Controller__factory } from "./../../typechain-types/factories/contracts/Controller/Controller__factory";
 import { Controller } from "./../../typechain-types/contracts/Controller/Controller";
-import { UNIT_TEST, contractsName } from "../Constants";
+import {
+  UNIT_TEST,
+  contractsName,
+  TOKENS_TO_RESERVE,
+  MAX_PHASES,
+} from "../Constants";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
@@ -90,7 +99,8 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
         keyCardInstance.address,
         discountSigner.address,
         payees,
-        shares
+        shares,
+        TOKENS_TO_RESERVE
       );
     });
     it("cannot initialise the controller again", async () => {
@@ -103,7 +113,8 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
         keyCardInstance.address,
         discountSigner.address,
         payees,
-        shares
+        shares,
+        TOKENS_TO_RESERVE
       );
 
       // try to initialise again
@@ -113,9 +124,30 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
           keyCardInstance.address,
           discountSigner.address,
           payees,
-          shares
+          shares,
+          TOKENS_TO_RESERVE
         )
       ).to.be.revertedWith(INITIALIZABLE_ALREADY_INITIALIZED);
+    });
+    it("cannot be initialised if not reserving tokens for all phases", async () => {
+      // initialise for the first time
+      const payees = [owner.address];
+      // todo: remove magic value in shares array
+      const shares = [1];
+
+      await expect(
+        controllerInstance.initialize(
+          avatarInstance.address,
+          keyCardInstance.address,
+          discountSigner.address,
+          payees,
+          shares,
+          TOKENS_TO_RESERVE.slice(0, -2)
+        )
+      ).to.be.revertedWithCustomError(
+        controllerInstance,
+        "SetTokensToReserveForAllPhases"
+      );
     });
   });
   context("Controller is initialised", () => {
@@ -130,7 +162,8 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
         keyCardInstance.address,
         discountSigner.address,
         payees,
-        shares
+        shares,
+        TOKENS_TO_RESERVE
       );
     });
     context("checking if controller is initialised", () => {
@@ -142,6 +175,12 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
           keyCardInstance.address
         );
         expect(await controllerInstance.owner()).to.be.equal(owner.address);
+
+        for (let i = 0; i < MAX_PHASES; i++) {
+          expect(
+            await controllerInstance.getTokensToReserveInPhase(i)
+          ).to.equal(TOKENS_TO_RESERVE[i]);
+        }
       });
     });
     context("set avatar", () => {
@@ -846,6 +885,182 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
             await controllerInstance.getDiscountSigner();
           expect(oldSignerAddress).to.not.equal(newDiscountSigner);
           expect(newDiscountSigner.address).to.equal(newDiscountAddress);
+        });
+      });
+      context("Change Phases", () => {
+        it("current phase is at 0 from the beginning", async () => {
+          const currentPhase = await controllerInstance.getCurrentPhase();
+          expect(currentPhase).to.equal(0);
+        });
+        it("cannot set phase which is already active", async () => {
+          const currentPhase = await controllerInstance.getCurrentPhase();
+          await expect(
+            controllerInstance.setNewPhase(currentPhase)
+          ).to.be.revertedWithCustomError(
+            controllerInstance,
+            PHASE_IS_ALREADY_ACTIVE
+          );
+        });
+        it("phase can only be changed by owner", async () => {
+          const currentPhase = await controllerInstance.getCurrentPhase();
+          const newPhase = currentPhase + 1;
+          await expect(
+            controllerInstance.connect(notOwner).setNewPhase(newPhase)
+          ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+        });
+        it("phase can be updated by only owner", async () => {
+          const currentPhase = await controllerInstance.getCurrentPhase();
+          const newPhase = currentPhase + 1;
+          await controllerInstance.connect(owner).setNewPhase(newPhase);
+          expect(await controllerInstance.getCurrentPhase()).to.equal(newPhase);
+        });
+        it("new phase need to exists", async () => {
+          const newPhase = MAX_PHASES; // as the starting index is 0, max_phase index is greater than 1.
+          // it reverts because of overflow in enum
+          await expect(
+            controllerInstance.connect(owner).setNewPhase(newPhase)
+          ).to.be.revertedWithoutReason();
+        });
+        it("new phase can be behind current phase", async () => {
+          // increase current phase to greater than 0
+          const newPhase = MAX_PHASES - 1; // the last phase
+          await controllerInstance.connect(owner).setNewPhase(newPhase);
+          expect(await controllerInstance.getCurrentPhase()).to.equal(newPhase);
+
+          // set new phase to be behind current phase
+          const newPhaseBehindCurrentPhase = MAX_PHASES - 2; // the last second phase
+          await controllerInstance
+            .connect(owner)
+            .setNewPhase(newPhaseBehindCurrentPhase);
+          expect(await controllerInstance.getCurrentPhase()).to.equal(
+            newPhaseBehindCurrentPhase
+          );
+        });
+      });
+      context("set tokens to reserve for phase", () => {
+        it("tokens to reserve cannot be set by non owner", async () => {
+          const phaseId: Array<number> = [];
+          for (let i = 0; i < MAX_PHASES; i++) {
+            phaseId.push(i);
+          }
+          await expect(
+            controllerInstance
+              .connect(notOwner)
+              .setTokensToReserveInPhase(phaseId, TOKENS_TO_RESERVE)
+          ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+        });
+        it("tokens to reserve parameter array should same length", async () => {
+          const phaseId: Array<number> = [];
+          for (let i = 0; i < MAX_PHASES - 1; i++) {
+            phaseId.push(i);
+          }
+          await expect(
+            controllerInstance
+              .connect(owner)
+              .setTokensToReserveInPhase(phaseId, TOKENS_TO_RESERVE)
+          ).to.be.revertedWithCustomError(
+            controllerInstance,
+            ARRAYS_LENGTH_DONT_MATCH
+          );
+        });
+        it("tokens to reserve cannot be set for non-existent phase", async () => {
+          const phaseId: Array<number> = [];
+          for (let i = 0; i < MAX_PHASES + 1; i++) {
+            phaseId.push(i);
+          }
+          await expect(
+            controllerInstance
+              .connect(owner)
+              .setTokensToReserveInPhase(phaseId, [...TOKENS_TO_RESERVE, 100])
+          ).to.be.revertedWithoutReason(); // reverts because of overflow
+        });
+        it("tokens to reserve can be set successfully by owner", async () => {
+          const phaseId: Array<number> = [];
+          for (let i = 0; i < MAX_PHASES; i++) {
+            phaseId.push(i);
+          }
+          await controllerInstance
+            .connect(owner)
+            .setTokensToReserveInPhase(phaseId, TOKENS_TO_RESERVE);
+        });
+      });
+      context("reserve tokens", async () => {
+        it("cannot be reserved by non-owner", async () => {
+          const currentPhaseId = await controllerInstance.getCurrentPhase();
+          await expect(
+            controllerInstance.connect(notOwner).reserveTokens(currentPhaseId)
+          ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+        });
+        it("cannot reserve for non-existent phase", async () => {
+          const phaseId = MAX_PHASES;
+          // PHASE_ID doesn't contain inexistent phase in the domain
+          await expect(
+            controllerInstance.connect(owner).reserveTokens(phaseId)
+          ).to.be.revertedWithoutReason();
+        });
+        it("cannot reserve if the phase is not active", async () => {
+          const currentPhaseId = await controllerInstance.getCurrentPhase();
+          let phaseId;
+          // check if current phase id is last or not
+          if (currentPhaseId === MAX_PHASES - 1) {
+            // if last, decrease the phase ID by 1
+            phaseId = currentPhaseId - 1;
+          } else {
+            // if not last, increase the phase ID by 1
+            phaseId = currentPhaseId + 1;
+          }
+          // though it reverts with PhaseInactive, the inexistent phase can never become active
+          await expect(
+            controllerInstance.connect(owner).reserveTokens(phaseId)
+          ).to.be.revertedWithCustomError(controllerInstance, PHASE_INACTIVE);
+        });
+        it("can be reserved by owner", async () => {
+          const currentPhaseId = await controllerInstance.getCurrentPhase();
+
+          // eslint-disable-next-line
+          expect(
+            await controllerInstance.checkIfTokenReservedForPhase(
+              currentPhaseId
+            )
+          ).to.be.false;
+          await controllerInstance.connect(owner).reserveTokens(currentPhaseId);
+
+          // eslint-disable-next-line
+          expect(
+            await controllerInstance.checkIfTokenReservedForPhase(
+              currentPhaseId
+            )
+          ).to.be.true;
+        });
+        it("cannot reserve for phase whose reserve tokens are already minted", async () => {
+          // reserve tokens first
+          const currentPhaseId = await controllerInstance.getCurrentPhase();
+          await controllerInstance.connect(owner).reserveTokens(currentPhaseId);
+
+          // try to reserve again
+          await expect(
+            controllerInstance.connect(owner).reserveTokens(currentPhaseId)
+          ).to.be.revertedWithCustomError(
+            controllerInstance,
+            TOKENS_ALREADY_RESERVED
+          );
+        });
+        it("cannot update tokens to reserve for phase whose reserve tokens are already minted", async () => {
+          // reserve tokens first
+          const currentPhaseId = await controllerInstance.getCurrentPhase();
+          await controllerInstance.connect(owner).reserveTokens(currentPhaseId);
+
+          await expect(
+            controllerInstance
+              .connect(owner)
+              .setTokensToReserveInPhase(
+                [currentPhaseId],
+                [TOKENS_TO_RESERVE[0]]
+              )
+          ).to.be.revertedWithCustomError(
+            controllerInstance,
+            TOKENS_ALREADY_RESERVED
+          );
         });
       });
     });

@@ -179,9 +179,12 @@ export interface ControllerStorageInterface extends utils.Interface {
     "MemberKeyCardUpdated(address,address)": EventFragment;
     "MerkleRootUpdatedSaleCategory(uint256,bytes32)": EventFragment;
     "PerLimitUpdatedOfSaleCategory(uint256,uint64,uint64)": EventFragment;
+    "PhaseChanged(uint8)": EventFragment;
     "PriceUpdatedForSaleCategory(uint256,uint256)": EventFragment;
     "SupplyUpdatedForSaleCategory(uint256,uint64)": EventFragment;
     "TimeUpdatedForSaleCategory(uint256,uint96,uint96)": EventFragment;
+    "TokenToReserveUpdated(uint8,uint96)": EventFragment;
+    "TokensReserved(uint8,uint96,address)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AddedSaleCategory"): EventFragment;
@@ -204,6 +207,7 @@ export interface ControllerStorageInterface extends utils.Interface {
   getEvent(
     nameOrSignatureOrTopic: "PerLimitUpdatedOfSaleCategory"
   ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PhaseChanged"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "PriceUpdatedForSaleCategory"
   ): EventFragment;
@@ -211,6 +215,8 @@ export interface ControllerStorageInterface extends utils.Interface {
     nameOrSignatureOrTopic: "SupplyUpdatedForSaleCategory"
   ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TimeUpdatedForSaleCategory"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenToReserveUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokensReserved"): EventFragment;
 }
 
 export interface AddedSaleCategoryEventObject {
@@ -329,6 +335,13 @@ export type PerLimitUpdatedOfSaleCategoryEvent = TypedEvent<
 export type PerLimitUpdatedOfSaleCategoryEventFilter =
   TypedEventFilter<PerLimitUpdatedOfSaleCategoryEvent>;
 
+export interface PhaseChangedEventObject {
+  newPhaseId: number;
+}
+export type PhaseChangedEvent = TypedEvent<[number], PhaseChangedEventObject>;
+
+export type PhaseChangedEventFilter = TypedEventFilter<PhaseChangedEvent>;
+
 export interface PriceUpdatedForSaleCategoryEventObject {
   _saleCategoryId: BigNumber;
   _newPrice: BigNumber;
@@ -365,6 +378,30 @@ export type TimeUpdatedForSaleCategoryEvent = TypedEvent<
 
 export type TimeUpdatedForSaleCategoryEventFilter =
   TypedEventFilter<TimeUpdatedForSaleCategoryEvent>;
+
+export interface TokenToReserveUpdatedEventObject {
+  phaseId: number;
+  tokensToReserve: BigNumber;
+}
+export type TokenToReserveUpdatedEvent = TypedEvent<
+  [number, BigNumber],
+  TokenToReserveUpdatedEventObject
+>;
+
+export type TokenToReserveUpdatedEventFilter =
+  TypedEventFilter<TokenToReserveUpdatedEvent>;
+
+export interface TokensReservedEventObject {
+  phaseId: number;
+  numberOfTokensReserved: BigNumber;
+  receiver: string;
+}
+export type TokensReservedEvent = TypedEvent<
+  [number, BigNumber, string],
+  TokensReservedEventObject
+>;
+
+export type TokensReservedEventFilter = TypedEventFilter<TokensReservedEvent>;
 
 export interface ControllerStorage extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -630,6 +667,9 @@ export interface ControllerStorage extends BaseContract {
       _newPerWalletLimit?: null
     ): PerLimitUpdatedOfSaleCategoryEventFilter;
 
+    "PhaseChanged(uint8)"(newPhaseId?: null): PhaseChangedEventFilter;
+    PhaseChanged(newPhaseId?: null): PhaseChangedEventFilter;
+
     "PriceUpdatedForSaleCategory(uint256,uint256)"(
       _saleCategoryId?: null,
       _newPrice?: null
@@ -658,6 +698,26 @@ export interface ControllerStorage extends BaseContract {
       _newStartTime?: null,
       _newEndTime?: null
     ): TimeUpdatedForSaleCategoryEventFilter;
+
+    "TokenToReserveUpdated(uint8,uint96)"(
+      phaseId?: null,
+      tokensToReserve?: null
+    ): TokenToReserveUpdatedEventFilter;
+    TokenToReserveUpdated(
+      phaseId?: null,
+      tokensToReserve?: null
+    ): TokenToReserveUpdatedEventFilter;
+
+    "TokensReserved(uint8,uint96,address)"(
+      phaseId?: null,
+      numberOfTokensReserved?: null,
+      receiver?: null
+    ): TokensReservedEventFilter;
+    TokensReserved(
+      phaseId?: null,
+      numberOfTokensReserved?: null,
+      receiver?: null
+    ): TokensReservedEventFilter;
   };
 
   estimateGas: {

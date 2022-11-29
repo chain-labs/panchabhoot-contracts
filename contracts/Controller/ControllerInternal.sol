@@ -22,6 +22,10 @@ abstract contract ControllerInternal is ControllerStorage {
     error InexistentSaleCategory(uint256 _invalidSaleCategoryId);
     error DiscountCodeAlreadyUsed(uint256 _invalidDiscountIndex);
     error InvalidDiscountCode();
+    error TokensAlreadyReservedForPhase(PHASE_ID _phaseId);
+    error PhaseIsAlreadyActive(PHASE_ID _currentPhaseId);
+    error ArraysLengthDontMatch();
+    error PhaseInactive(PHASE_ID _inactivePhase);
 
     /// @notice set avatar instance address
     /// @dev setter for avatar address
@@ -345,6 +349,67 @@ abstract contract ControllerInternal is ControllerStorage {
         return _discountSigner;
     }
 
+    function _setNewPhase(PHASE_ID _newPhase) internal {
+        // check if really phase is changing
+        _requireChangeInPhase(_newPhase);
+
+        // set new phase
+        _currentPhase = _newPhase;
+
+        // emit phase changed
+        emit PhaseChanged(_newPhase);
+    }
+
+    function _getCurrentPhase() internal view returns (PHASE_ID) {
+        return _currentPhase;
+    }
+
+    function _getTokensToReserveInPhase(PHASE_ID _phaseId)
+        internal
+        view
+        returns (uint96)
+    {
+        return _tokensToReserve[_phaseId];
+    }
+
+    function _setTokenToReserveOfPhase(
+        PHASE_ID _phaseId,
+        uint96 _numberOfTokens
+    ) internal {
+        // cannot update tokens to reserve for phase that is already reserved
+        _requireTokensNotAlreadyReservedForPhase(_phaseId);
+        _tokensToReserve[_phaseId] = _numberOfTokens;
+        emit TokenToReserveUpdated(_phaseId, _numberOfTokens);
+    }
+
+    function _setTokensReservedForPhase(PHASE_ID _phaseId) internal {
+        _reservedForPhase[_phaseId] = true;
+    }
+
+    function _checkIfTokenReservedForPhase(PHASE_ID _phaseId)
+        internal
+        view
+        returns (bool)
+    {
+        return _reservedForPhase[_phaseId];
+    }
+
+    function _reserveTokens(PHASE_ID _phaseId) internal {
+        // checks
+        _requirePhaseToBeActive(_phaseId);
+        _requireTokensNotAlreadyReservedForPhase(_phaseId);
+
+        // set tokens reserved
+        uint96 numberOfTokens = _getTokensToReserveInPhase(_phaseId);
+        address receiver = address(0);
+        _setTokensReservedForPhase(_phaseId);
+
+        // reserve tokens
+        // todo: 1) Mint tokens from avatar to vault addres
+
+        emit TokensReserved(_phaseId, numberOfTokens, receiver);
+    }
+
     function _checkValidDiscountCode(
         uint256 _discountIndex,
         uint256 _discountedPrice,
@@ -431,6 +496,37 @@ abstract contract ControllerInternal is ControllerStorage {
         // check if discount code is already applied or not
         if (_appliedDiscountIndex[_discountIndex]) {
             revert DiscountCodeAlreadyUsed(_discountIndex);
+        }
+    }
+
+    function _requireTokensNotAlreadyReservedForPhase(PHASE_ID _phaseId)
+        private
+        view
+    {
+        if (_reservedForPhase[_phaseId]) {
+            revert TokensAlreadyReservedForPhase(_phaseId);
+        }
+    }
+
+    function _requireChangeInPhase(PHASE_ID _newPhaseId) private view {
+        if (_currentPhase == _newPhaseId) {
+            revert PhaseIsAlreadyActive(_newPhaseId);
+        }
+    }
+
+    function _requireSameArrayLength(
+        PHASE_ID[] memory _phaseId,
+        uint96[] memory _numberOfTokens
+    ) internal pure {
+        // check if both arrays have same length\
+        if (_phaseId.length != _numberOfTokens.length) {
+            revert ArraysLengthDontMatch();
+        }
+    }
+
+    function _requirePhaseToBeActive(PHASE_ID _phaseId) private view {
+        if (_currentPhase != _phaseId) {
+            revert PhaseInactive(_phaseId);
         }
     }
 }

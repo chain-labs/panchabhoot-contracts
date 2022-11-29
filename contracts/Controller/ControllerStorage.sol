@@ -102,6 +102,18 @@ abstract contract ControllerStorage is IController {
     /// @param _discountCodeIndex discount code index which is applied
     event DiscountCodeApplied(uint256 _discountCodeIndex);
 
+    event PhaseChanged(PHASE_ID newPhaseId);
+
+    event TokenToReserveUpdated(PHASE_ID phaseId, uint96 tokensToReserve);
+
+    event TokensReserved(
+        PHASE_ID phaseId,
+        uint96 numberOfTokensReserved,
+        address receiver
+    );
+
+    PHASE_ID internal _currentPhase;
+
     /// @notice avatar which will be distributed from controller
     /// @dev instance of Avatar NFT contract that will be distributed in this phase
     address internal _avatar;
@@ -121,6 +133,9 @@ abstract contract ControllerStorage is IController {
     /// @notice discount code indexes which have been applied
     /// @dev if true, discount is applied
     mapping(uint256 => bool) internal _appliedDiscountIndex;
+
+    mapping(PHASE_ID => uint96) internal _tokensToReserve;
+    mapping(PHASE_ID => bool) internal _reservedForPhase;
 
     /// @notice counter of sales category that have been added
     /// @dev used to keep track of latest index of sale

@@ -4,4 +4,7 @@ export const contractsName: ContractNames = {
   CONTROLLER: "Controller",
 };
 
+export const TOKENS_TO_RESERVE = [333, 333, 666]; // Phase 1 - 333, Phase 2 - 333, Phase 3 - 666 // no more than three phases
+export const MAX_PHASES = TOKENS_TO_RESERVE.length;
+
 export const UNIT_TEST = "Unit Test: ";
