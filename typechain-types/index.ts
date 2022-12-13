@@ -64,6 +64,8 @@ export type { ControllerStorage } from "./contracts/Controller/ControllerStorage
 export { ControllerStorage__factory } from "./factories/contracts/Controller/ControllerStorage__factory";
 export type { IController } from "./contracts/Controller/IController";
 export { IController__factory } from "./factories/contracts/Controller/IController__factory";
+export type { KeyCard } from "./contracts/KeyCard/KeyCard";
+export { KeyCard__factory } from "./factories/contracts/KeyCard/KeyCard__factory";
 export type { ERC721A__IERC721ReceiverUpgradeable } from "./erc721a-upgradeable/contracts/ERC721AUpgradeable.sol/ERC721A__IERC721ReceiverUpgradeable";
 export { ERC721A__IERC721ReceiverUpgradeable__factory } from "./factories/erc721a-upgradeable/contracts/ERC721AUpgradeable.sol/ERC721A__IERC721ReceiverUpgradeable__factory";
 export type { ERC721AUpgradeable } from "./erc721a-upgradeable/contracts/ERC721AUpgradeable.sol/ERC721AUpgradeable";

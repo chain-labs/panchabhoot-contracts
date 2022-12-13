@@ -5,3 +5,5 @@ import type * as avatar from "./Avatar";
 export type { avatar };
 import type * as controller from "./Controller";
 export type { controller };
+import type * as keyCard from "./KeyCard";
+export type { keyCard };

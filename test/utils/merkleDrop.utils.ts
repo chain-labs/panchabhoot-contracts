@@ -27,18 +27,13 @@ export class MerkleTreeManagement {
       }
       this.connected = true;
       // setup IPFS client
-      try {
-        this.ipfsJwt = ipfsJwt;
-      } catch (e) {
-        console.error(e);
-        throw Error("Errow while setting up Web3.Storage Client");
-      }
+      this.ipfsJwt = ipfsJwt;
     } else {
       this.connected = false;
+      this.ipfsJwt = "";
     }
     this.addresses = addresses;
     this.cid = cid;
-    this.ipfsJwt = "";
   }
 
   async setup() {

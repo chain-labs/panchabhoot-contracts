@@ -1,24 +1,24 @@
+import { KeyCard } from "./../../typechain-types/contracts/KeyCard/KeyCard";
 import { INITIALIZABLE_ALREADY_INITIALIZED } from "./../ERROR_STRINGS";
-import { Avatar__factory } from "./../../typechain-types/factories/contracts/Avatar/Avatar__factory";
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 import { contractsName, UNIT_TEST } from "../Constants";
-import { Avatar } from "../../typechain-types";
+import { KeyCard__factory } from "../../typechain-types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-const setupAvatar = async (signer: SignerWithAddress) => {
-  const avatarFactory = (await ethers.getContractFactory(
-    contractsName.AVATAR,
+const setupKeyCard = async (signer: SignerWithAddress) => {
+  const keyCardFactory = (await ethers.getContractFactory(
+    contractsName.KEY_CARD,
     signer
-  )) as Avatar__factory;
-  const avatarInstance = (await avatarFactory.deploy()) as Avatar;
-  return { avatarInstance, avatarFactory };
+  )) as KeyCard__factory;
+  const keyCardInstance = (await keyCardFactory.deploy()) as KeyCard;
+  return { keyCardInstance, keyCardFactory };
 };
 
-describe(`${UNIT_TEST}${contractsName.AVATAR}`, () => {
-  let avatarInstance: Avatar;
-  let avatarFactory: Avatar__factory;
+describe(`${UNIT_TEST}:${contractsName.KEY_CARD}`, () => {
+  let keyCardInstance: KeyCard;
+  let keyCardFactory: KeyCard__factory;
   let owner: SignerWithAddress;
   let admin: SignerWithAddress;
   let minter: SignerWithAddress;
@@ -27,96 +27,80 @@ describe(`${UNIT_TEST}${contractsName.AVATAR}`, () => {
   let newMinter: SignerWithAddress;
   const hundredMaximumTokens = 100;
   const mintTenTokens = 10;
-  const name = "Test Avatar Token";
-  const symbol = "TAT";
+  const name = "Test Key Card";
+  const symbol = "TKC";
   beforeEach("!! setup initial parameters", async () => {
     [owner, admin, minter, notMinter, newMinter, receiver] =
       await ethers.getSigners();
-    ({ avatarInstance, avatarFactory } = await setupAvatar(owner));
+    ({ keyCardInstance, keyCardFactory } = await setupKeyCard(owner));
   });
-  context("initialise avatar", () => {
+  context("initialise key card", () => {
     it("initialises with correct parameters", async () => {
-      await avatarInstance.initialize(
+      await keyCardInstance.initialize(
         name,
         symbol,
-        hundredMaximumTokens,
         admin.address,
         minter.address
       );
       expect(
-        await avatarInstance.hasRole(
-          await avatarInstance.MINTER_ROLE(),
+        await keyCardInstance.hasRole(
+          await keyCardInstance.MINTER_ROLE(),
           minter.address
         )
       ).to.be.true;
       expect(
-        await avatarInstance.hasRole(
-          await avatarInstance.DEFAULT_ADMIN_ROLE(),
+        await keyCardInstance.hasRole(
+          await keyCardInstance.DEFAULT_ADMIN_ROLE(),
           admin.address
         )
       ).to.be.true;
     });
     it("cannot be initialised after it is initialised", async () => {
-      await avatarInstance.initialize(
+      await keyCardInstance.initialize(
         name,
         symbol,
-        hundredMaximumTokens,
         admin.address,
         minter.address
       );
       await expect(
-        avatarInstance.initialize(
-          name,
-          symbol,
-          hundredMaximumTokens,
-          admin.address,
-          minter.address
-        )
+        keyCardInstance.initialize(name, symbol, admin.address, minter.address)
       ).to.be.revertedWith(INITIALIZABLE_ALREADY_INITIALIZED);
     });
   });
-  context("avatar is initialised", () => {
+  context("already initialised", () => {
     beforeEach("!! initialise", async () => {
-      await avatarInstance.initialize(
+      await keyCardInstance.initialize(
         name,
         symbol,
-        hundredMaximumTokens,
         admin.address,
         minter.address
       );
     });
+
     context("changing access control roles", () => {
       it("change minter address", async () => {
-        await avatarInstance
+        await keyCardInstance
           .connect(admin)
-          .revokeRole(await avatarInstance.MINTER_ROLE(), minter.address);
-        await avatarInstance
+          .revokeRole(await keyCardInstance.MINTER_ROLE(), minter.address);
+        await keyCardInstance
           .connect(admin)
-          .revokeRole(await avatarInstance.MINTER_ROLE(), newMinter.address);
-      });
-    });
-    context("set maximum number of tokens", () => {
-      it("set maximum tokens", async () => {
-        await avatarInstance.setMaximumTokens(hundredMaximumTokens);
-        expect(await avatarInstance.getMaximumTokens()).to.equal(
-          hundredMaximumTokens
-        );
+          .revokeRole(await keyCardInstance.MINTER_ROLE(), newMinter.address);
       });
     });
     context("mint tokens", () => {
       it("cannot mint tokens if not invoked by minter", async () => {
         await expect(
-          avatarInstance
+          keyCardInstance
             .connect(notMinter)
             .mint(receiver.address, mintTenTokens)
         ).to.be.reverted;
       });
       it("mint tokens with minter", async () => {
-        expect(await avatarInstance.balanceOf(receiver.address)).to.equal(0);
-        await avatarInstance
+        expect(await keyCardInstance.balanceOf(receiver.address)).to.equal(0);
+        await keyCardInstance
           .connect(minter)
           .mint(receiver.address, mintTenTokens);
-        expect(await avatarInstance.balanceOf(receiver.address)).to.equal(
+        expect(await keyCardInstance.balanceOf(receiver.address)).to.equal(
           mintTenTokens
         );
       });

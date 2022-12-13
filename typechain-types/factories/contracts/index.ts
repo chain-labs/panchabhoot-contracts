@@ -3,3 +3,4 @@
 /* eslint-disable */
 export * as avatar from "./Avatar";
 export * as controller from "./Controller";
+export * as keyCard from "./KeyCard";
