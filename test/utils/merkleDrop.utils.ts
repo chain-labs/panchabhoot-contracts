@@ -9,28 +9,36 @@ export class MerkleTreeManagement {
   merkleRoot: BytesLike | undefined;
   addresses: Array<Address>;
   cid: string;
+  connected: boolean;
   private ipfsJwt: string;
 
   constructor(
     addresses: Array<Address> = [],
     cid: string = "",
-    ipfsJwt: string
+    ipfsJwt: string,
+    notCI: boolean
   ) {
     // check if IPFS client api is not null
-    if (ipfsJwt === "") {
-      throw Error(
-        "ipfsJwt is undefined. Cannot initialise without ipfsJwt Key"
-      );
-    }
-    // setup IPFS client
-    try {
-      this.ipfsJwt = ipfsJwt;
-    } catch (e) {
-      console.error(e);
-      throw Error("Errow while setting up Web3.Storage Client");
+    if (notCI) {
+      if (ipfsJwt === "") {
+        throw Error(
+          "ipfsJwt is undefined. Cannot initialise without ipfsJwt Key"
+        );
+      }
+      this.connected = true;
+      // setup IPFS client
+      try {
+        this.ipfsJwt = ipfsJwt;
+      } catch (e) {
+        console.error(e);
+        throw Error("Errow while setting up Web3.Storage Client");
+      }
+    } else {
+      this.connected = false;
     }
     this.addresses = addresses;
     this.cid = cid;
+    this.ipfsJwt = "";
   }
 
   async setup() {
@@ -66,15 +74,17 @@ export class MerkleTreeManagement {
   #setupWithAddresses = async (addresses: Array<Address>) => {
     const leafs = addresses.map((entry) => keccak256(entry));
     const tree = new MerkleTree(leafs, keccak256, { sortPairs: true });
-    console.log("Uploading JSON with addresses to IPFS");
     let cid;
-    try {
-      cid = await this.#pinData(addresses);
-    } catch (e) {
-      console.error(e);
-      throw Error("Upload failed.");
+    if (this.connected) {
+      console.log("Uploading JSON with addresses to IPFS");
+      try {
+        cid = await this.#pinData(addresses);
+      } catch (e) {
+        console.error(e);
+        throw Error("Upload failed.");
+      }
+      console.log(`Upload success! Addresses stored at ipfs://${cid}`);
     }
-    console.log(`Upload success! Addresses stored at ipfs://${cid}`);
     console.log(`use MerkleTreeManagement.cid to access the IPFS CID`);
     // store state
     this.merkleTree = tree;
@@ -110,6 +120,9 @@ export class MerkleTreeManagement {
   };
 
   #setupWithCID = async (cid: string) => {
+    if (!this.connected) {
+      throw Error("Not Connected IPFS");
+    }
     // get array of addresses
     let addresses: Array<Address>;
     try {
@@ -128,11 +141,17 @@ export class MerkleTreeManagement {
   };
 
   async getData(cid: string): Promise<Array<Address>> {
+    if (!this.connected) {
+      throw Error("Not Connected IPFS");
+    }
     const res = await axios.get(`https://gateway.pinata.cloud/ipfs/${cid}`);
     return res.data;
   }
 
   async #pinData(addresses: Array<Address>) {
+    if (!this.connected) {
+      throw Error("Not Connected IPFS");
+    }
     var data = JSON.stringify({
       pinataContent: addresses,
     });

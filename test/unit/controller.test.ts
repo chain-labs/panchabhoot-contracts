@@ -47,6 +47,7 @@ const { AddressZero, HashZero } = ethers.constants;
 
 const IPFS_API = process.env.PINATA_JWT_KEY;
 const isProduction = process.env.PRODUCTION === "true";
+const notCI = process.env.NOT_CI === "true";
 
 const toMinutes = (minutes: number) => minutes * 60;
 
@@ -1549,13 +1550,13 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
           invalidDiscountManager = new DiscountManager(isProduction, receiver);
           // create array of addresses to be added to allowlist
           const allowList = [notOwner.address, receiver.address];
-          if (IPFS_API === undefined) {
+          if (notCI && IPFS_API === undefined) {
             throw Error(
               "IPFS_API key is undefined, please add it to ENV variable under WEB3_STORAGE_API_TOKEN env name."
             );
           }
           // create merkle root
-          merkleTree = new MerkleTreeManagement(allowList, "", IPFS_API);
+          merkleTree = new MerkleTreeManagement(allowList, "", IPFS_API, notCI);
           await merkleTree.setup();
 
           // create a allowlisted sale category with discount
