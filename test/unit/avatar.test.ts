@@ -1,3 +1,4 @@
+import { INITIALIZABLE_ALREADY_INITIALIZED } from "./../ERROR_STRINGS";
 import { Avatar__factory } from "./../../typechain-types/factories/contracts/Avatar/Avatar__factory";
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
@@ -19,17 +20,106 @@ describe.only(`${UNIT_TEST}${contractsName.AVATAR}`, () => {
   let avatarInstance: Avatar;
   let avatarFactory: Avatar__factory;
   let owner: SignerWithAddress;
+  let admin: SignerWithAddress;
+  let minter: SignerWithAddress;
+  let notMinter: SignerWithAddress;
+  let receiver: SignerWithAddress;
+  let newMinter: SignerWithAddress;
   const hundredMaximumTokens = 100;
+  const mintTenTokens = 10;
+  const name = "Test Avatar Token";
+  const symbol = "TAT";
   beforeEach("!! setup initial parameters", async () => {
-    [owner] = await ethers.getSigners();
+    [owner, admin, minter, notMinter, newMinter, receiver] =
+      await ethers.getSigners();
     ({ avatarInstance, avatarFactory } = await setupAvatar(owner));
   });
-  context("set maximum number of tokens", () => {
-    it("set maximum tokens", async () => {
-      await avatarInstance.setMaximumTokens(hundredMaximumTokens);
-      expect(await avatarInstance.getMaximumTokens()).to.equal(
-        hundredMaximumTokens
+  context("initialise avatar", () => {
+    it("initialises with correct parameters", async () => {
+      await avatarInstance.initialize(
+        name,
+        symbol,
+        hundredMaximumTokens,
+        admin.address,
+        minter.address
       );
+      expect(
+        await avatarInstance.hasRole(
+          await avatarInstance.MINTER_ROLE(),
+          minter.address
+        )
+      ).to.be.true;
+      expect(
+        await avatarInstance.hasRole(
+          await avatarInstance.DEFAULT_ADMIN_ROLE(),
+          admin.address
+        )
+      ).to.be.true;
+    });
+    it("cannot be initialised after it is initialised", async () => {
+      await avatarInstance.initialize(
+        name,
+        symbol,
+        hundredMaximumTokens,
+        admin.address,
+        minter.address
+      );
+      await expect(
+        avatarInstance.initialize(
+          name,
+          symbol,
+          hundredMaximumTokens,
+          admin.address,
+          minter.address
+        )
+      ).to.be.revertedWith(INITIALIZABLE_ALREADY_INITIALIZED);
+    });
+  });
+  context("avatar is initialised", () => {
+    beforeEach("!! initialise", async () => {
+      await avatarInstance.initialize(
+        name,
+        symbol,
+        hundredMaximumTokens,
+        admin.address,
+        minter.address
+      );
+    });
+    context("changing access control roles", () => {
+      it("change minter address", async () => {
+        await avatarInstance
+          .connect(admin)
+          .revokeRole(await avatarInstance.MINTER_ROLE(), minter.address);
+        await avatarInstance
+          .connect(admin)
+          .revokeRole(await avatarInstance.MINTER_ROLE(), newMinter.address);
+      });
+    });
+    context("set maximum number of tokens", () => {
+      it("set maximum tokens", async () => {
+        await avatarInstance.setMaximumTokens(hundredMaximumTokens);
+        expect(await avatarInstance.getMaximumTokens()).to.equal(
+          hundredMaximumTokens
+        );
+      });
+    });
+    context("mint tokens", () => {
+      it("cannot mint tokens if not invoked by minter", async () => {
+        await expect(
+          avatarInstance
+            .connect(notMinter)
+            .mint(receiver.address, mintTenTokens)
+        ).to.be.reverted;
+      });
+      it("mint tokens with minter", async () => {
+        expect(await avatarInstance.balanceOf(receiver.address)).to.equal(0);
+        await avatarInstance
+          .connect(minter)
+          .mint(receiver.address, mintTenTokens);
+        expect(await avatarInstance.balanceOf(receiver.address)).to.equal(
+          mintTenTokens
+        );
+      });
     });
   });
 });
