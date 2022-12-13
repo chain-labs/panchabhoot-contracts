@@ -9,6 +9,7 @@ import type {
   CallOverrides,
   ContractTransaction,
   Overrides,
+  PayableOverrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -74,6 +75,7 @@ export declare namespace IController {
 
 export interface ControllerInterface extends utils.Interface {
   functions: {
+    "EMPTY_BYTES()": FunctionFragment;
     "MAX_PHASES()": FunctionFragment;
     "NAME()": FunctionFragment;
     "VERSION()": FunctionFragment;
@@ -95,6 +97,10 @@ export interface ControllerInterface extends utils.Interface {
     "getSaleCategoryCounter()": FunctionFragment;
     "getTokensToReserveInPhase(uint8)": FunctionFragment;
     "initialize(address,address,address,address[],uint256[],uint96[])": FunctionFragment;
+    "mintAllowlisted(address,uint96,bytes32[],uint256)": FunctionFragment;
+    "mintDiscounted(address,uint96,uint256,uint256,uint256,bytes)": FunctionFragment;
+    "mintDiscountedAllowlist(address,uint96,bytes32[],uint256,uint256,uint256,bytes)": FunctionFragment;
+    "mintPublic(address,uint96,uint256)": FunctionFragment;
     "owner()": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
@@ -115,6 +121,8 @@ export interface ControllerInterface extends utils.Interface {
     "setTokensToReserveInPhase(uint8[],uint96[])": FunctionFragment;
     "shares(address)": FunctionFragment;
     "toggleDiscountOfSaleCategory(uint256,bool)": FunctionFragment;
+    "togglePauseSale(uint256,bool)": FunctionFragment;
+    "tokensMintedByOwnerInSale(uint256,address)": FunctionFragment;
     "totalReleased(address)": FunctionFragment;
     "totalReleased()": FunctionFragment;
     "totalShares()": FunctionFragment;
@@ -124,6 +132,7 @@ export interface ControllerInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "EMPTY_BYTES"
       | "MAX_PHASES"
       | "NAME"
       | "VERSION"
@@ -145,6 +154,10 @@ export interface ControllerInterface extends utils.Interface {
       | "getSaleCategoryCounter"
       | "getTokensToReserveInPhase"
       | "initialize"
+      | "mintAllowlisted"
+      | "mintDiscounted"
+      | "mintDiscountedAllowlist"
+      | "mintPublic"
       | "owner"
       | "pause"
       | "paused"
@@ -165,6 +178,8 @@ export interface ControllerInterface extends utils.Interface {
       | "setTokensToReserveInPhase"
       | "shares"
       | "toggleDiscountOfSaleCategory"
+      | "togglePauseSale"
+      | "tokensMintedByOwnerInSale"
       | "totalReleased(address)"
       | "totalReleased()"
       | "totalShares"
@@ -172,6 +187,10 @@ export interface ControllerInterface extends utils.Interface {
       | "unpause"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "EMPTY_BYTES",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "MAX_PHASES",
     values?: undefined
@@ -278,6 +297,46 @@ export interface ControllerInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>[]
     ]
   ): string;
+  encodeFunctionData(
+    functionFragment: "mintAllowlisted",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>[],
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mintDiscounted",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mintDiscountedAllowlist",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>[],
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mintPublic",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
@@ -350,6 +409,14 @@ export interface ControllerInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<boolean>]
   ): string;
   encodeFunctionData(
+    functionFragment: "togglePauseSale",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<boolean>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokensMintedByOwnerInSale",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "totalReleased(address)",
     values: [PromiseOrValue<string>]
   ): string;
@@ -367,6 +434,10 @@ export interface ControllerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
 
+  decodeFunctionResult(
+    functionFragment: "EMPTY_BYTES",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "MAX_PHASES", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "NAME", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
@@ -430,6 +501,19 @@ export interface ControllerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "mintAllowlisted",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "mintDiscounted",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "mintDiscountedAllowlist",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "mintPublic", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
@@ -490,6 +574,14 @@ export interface ControllerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "togglePauseSale",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokensMintedByOwnerInSale",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "totalReleased(address)",
     data: BytesLike
   ): Result;
@@ -522,6 +614,7 @@ export interface ControllerInterface extends utils.Interface {
     "OwnershipTransferStarted(address,address)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Paused(address)": EventFragment;
+    "PausedSale(uint256)": EventFragment;
     "PayeeAdded(address,uint256)": EventFragment;
     "PaymentReceived(address,uint256)": EventFragment;
     "PaymentReleased(address,uint256)": EventFragment;
@@ -533,6 +626,7 @@ export interface ControllerInterface extends utils.Interface {
     "TokenToReserveUpdated(uint8,uint96)": EventFragment;
     "TokensReserved(uint8,uint96,address)": EventFragment;
     "Unpaused(address)": EventFragment;
+    "UnpausedSale(uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AddedSaleCategory"): EventFragment;
@@ -557,6 +651,7 @@ export interface ControllerInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferStarted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PausedSale"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PayeeAdded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PaymentReceived"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PaymentReleased"): EventFragment;
@@ -574,6 +669,7 @@ export interface ControllerInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "TokenToReserveUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TokensReserved"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UnpausedSale"): EventFragment;
 }
 
 export interface AddedSaleCategoryEventObject {
@@ -730,6 +826,13 @@ export type PausedEvent = TypedEvent<[string], PausedEventObject>;
 
 export type PausedEventFilter = TypedEventFilter<PausedEvent>;
 
+export interface PausedSaleEventObject {
+  _saleCategoryId: BigNumber;
+}
+export type PausedSaleEvent = TypedEvent<[BigNumber], PausedSaleEventObject>;
+
+export type PausedSaleEventFilter = TypedEventFilter<PausedSaleEvent>;
+
 export interface PayeeAddedEventObject {
   account: string;
   shares: BigNumber;
@@ -851,6 +954,16 @@ export type UnpausedEvent = TypedEvent<[string], UnpausedEventObject>;
 
 export type UnpausedEventFilter = TypedEventFilter<UnpausedEvent>;
 
+export interface UnpausedSaleEventObject {
+  _saleCategoryId: BigNumber;
+}
+export type UnpausedSaleEvent = TypedEvent<
+  [BigNumber],
+  UnpausedSaleEventObject
+>;
+
+export type UnpausedSaleEventFilter = TypedEventFilter<UnpausedSaleEvent>;
+
 export interface Controller extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
@@ -878,6 +991,8 @@ export interface Controller extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    EMPTY_BYTES(overrides?: CallOverrides): Promise<[string]>;
+
     MAX_PHASES(overrides?: CallOverrides): Promise<[number]>;
 
     NAME(overrides?: CallOverrides): Promise<[string]>;
@@ -985,6 +1100,42 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    mintAllowlisted(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _proofs: PromiseOrValue<BytesLike>[],
+      _saleId: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    mintDiscounted(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _saleId: PromiseOrValue<BigNumberish>,
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    mintDiscountedAllowlist(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _proofs: PromiseOrValue<BytesLike>[],
+      _saleId: PromiseOrValue<BigNumberish>,
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    mintPublic(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _saleId: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     pause(
@@ -1079,6 +1230,18 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    togglePauseSale(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _isPaused: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    tokensMintedByOwnerInSale(
+      _saleId: PromiseOrValue<BigNumberish>,
+      _receiver: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     "totalReleased(address)"(
       token: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -1097,6 +1260,8 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  EMPTY_BYTES(overrides?: CallOverrides): Promise<string>;
 
   MAX_PHASES(overrides?: CallOverrides): Promise<number>;
 
@@ -1203,6 +1368,42 @@ export interface Controller extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  mintAllowlisted(
+    _receiver: PromiseOrValue<string>,
+    _numberOfTokens: PromiseOrValue<BigNumberish>,
+    _proofs: PromiseOrValue<BytesLike>[],
+    _saleId: PromiseOrValue<BigNumberish>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  mintDiscounted(
+    _receiver: PromiseOrValue<string>,
+    _numberOfTokens: PromiseOrValue<BigNumberish>,
+    _saleId: PromiseOrValue<BigNumberish>,
+    _discountIndex: PromiseOrValue<BigNumberish>,
+    _discountedPrice: PromiseOrValue<BigNumberish>,
+    _signature: PromiseOrValue<BytesLike>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  mintDiscountedAllowlist(
+    _receiver: PromiseOrValue<string>,
+    _numberOfTokens: PromiseOrValue<BigNumberish>,
+    _proofs: PromiseOrValue<BytesLike>[],
+    _saleId: PromiseOrValue<BigNumberish>,
+    _discountIndex: PromiseOrValue<BigNumberish>,
+    _discountedPrice: PromiseOrValue<BigNumberish>,
+    _signature: PromiseOrValue<BytesLike>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  mintPublic(
+    _receiver: PromiseOrValue<string>,
+    _numberOfTokens: PromiseOrValue<BigNumberish>,
+    _saleId: PromiseOrValue<BigNumberish>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
   pause(
@@ -1297,6 +1498,18 @@ export interface Controller extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  togglePauseSale(
+    _saleCategoryId: PromiseOrValue<BigNumberish>,
+    _isPaused: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  tokensMintedByOwnerInSale(
+    _saleId: PromiseOrValue<BigNumberish>,
+    _receiver: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   "totalReleased(address)"(
     token: PromiseOrValue<string>,
     overrides?: CallOverrides
@@ -1316,6 +1529,8 @@ export interface Controller extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    EMPTY_BYTES(overrides?: CallOverrides): Promise<string>;
+
     MAX_PHASES(overrides?: CallOverrides): Promise<number>;
 
     NAME(overrides?: CallOverrides): Promise<string>;
@@ -1419,6 +1634,42 @@ export interface Controller extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    mintAllowlisted(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _proofs: PromiseOrValue<BytesLike>[],
+      _saleId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    mintDiscounted(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _saleId: PromiseOrValue<BigNumberish>,
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    mintDiscountedAllowlist(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _proofs: PromiseOrValue<BytesLike>[],
+      _saleId: PromiseOrValue<BigNumberish>,
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    mintPublic(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _saleId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     owner(overrides?: CallOverrides): Promise<string>;
 
     pause(overrides?: CallOverrides): Promise<void>;
@@ -1508,6 +1759,18 @@ export interface Controller extends BaseContract {
       _isDiscounted: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    togglePauseSale(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _isPaused: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    tokensMintedByOwnerInSale(
+      _saleId: PromiseOrValue<BigNumberish>,
+      _receiver: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     "totalReleased(address)"(
       token: PromiseOrValue<string>,
@@ -1635,6 +1898,9 @@ export interface Controller extends BaseContract {
     "Paused(address)"(account?: null): PausedEventFilter;
     Paused(account?: null): PausedEventFilter;
 
+    "PausedSale(uint256)"(_saleCategoryId?: null): PausedSaleEventFilter;
+    PausedSale(_saleCategoryId?: null): PausedSaleEventFilter;
+
     "PayeeAdded(address,uint256)"(
       account?: null,
       shares?: null
@@ -1718,9 +1984,14 @@ export interface Controller extends BaseContract {
 
     "Unpaused(address)"(account?: null): UnpausedEventFilter;
     Unpaused(account?: null): UnpausedEventFilter;
+
+    "UnpausedSale(uint256)"(_saleCategoryId?: null): UnpausedSaleEventFilter;
+    UnpausedSale(_saleCategoryId?: null): UnpausedSaleEventFilter;
   };
 
   estimateGas: {
+    EMPTY_BYTES(overrides?: CallOverrides): Promise<BigNumber>;
+
     MAX_PHASES(overrides?: CallOverrides): Promise<BigNumber>;
 
     NAME(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1826,6 +2097,42 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    mintAllowlisted(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _proofs: PromiseOrValue<BytesLike>[],
+      _saleId: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    mintDiscounted(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _saleId: PromiseOrValue<BigNumberish>,
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    mintDiscountedAllowlist(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _proofs: PromiseOrValue<BytesLike>[],
+      _saleId: PromiseOrValue<BigNumberish>,
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    mintPublic(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _saleId: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     pause(
@@ -1920,6 +2227,18 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    togglePauseSale(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _isPaused: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    tokensMintedByOwnerInSale(
+      _saleId: PromiseOrValue<BigNumberish>,
+      _receiver: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     "totalReleased(address)"(
       token: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -1940,6 +2259,8 @@ export interface Controller extends BaseContract {
   };
 
   populateTransaction: {
+    EMPTY_BYTES(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     MAX_PHASES(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     NAME(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -2047,6 +2368,42 @@ export interface Controller extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    mintAllowlisted(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _proofs: PromiseOrValue<BytesLike>[],
+      _saleId: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    mintDiscounted(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _saleId: PromiseOrValue<BigNumberish>,
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    mintDiscountedAllowlist(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _proofs: PromiseOrValue<BytesLike>[],
+      _saleId: PromiseOrValue<BigNumberish>,
+      _discountIndex: PromiseOrValue<BigNumberish>,
+      _discountedPrice: PromiseOrValue<BigNumberish>,
+      _signature: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    mintPublic(
+      _receiver: PromiseOrValue<string>,
+      _numberOfTokens: PromiseOrValue<BigNumberish>,
+      _saleId: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     pause(
@@ -2139,6 +2496,18 @@ export interface Controller extends BaseContract {
       _saleCategoryId: PromiseOrValue<BigNumberish>,
       _isDiscounted: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    togglePauseSale(
+      _saleCategoryId: PromiseOrValue<BigNumberish>,
+      _isPaused: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    tokensMintedByOwnerInSale(
+      _saleId: PromiseOrValue<BigNumberish>,
+      _receiver: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "totalReleased(address)"(
