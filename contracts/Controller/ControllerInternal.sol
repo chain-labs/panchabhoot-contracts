@@ -6,6 +6,8 @@ import {ControllerStorage} from "./ControllerStorage.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import {IKeyCard} from "../KeyCard/IKeyCard.sol";
+import {IAvatar} from "../Avatar/IAvatar.sol";
 
 abstract contract ControllerInternal is ControllerStorage {
     using Counters for Counters.Counter;
@@ -413,9 +415,13 @@ abstract contract ControllerInternal is ControllerStorage {
             }
         }
 
+        uint256 _keyCardToBeMinted = _sale.keyCardPerAvatar * _numberOfTokens;
+
         // mint tokens from avatar
+        IAvatar(_avatar).mint(_receiver, _numberOfTokens);
 
         // mint tokens from key card
+        IKeyCard(_keyCard).mint(_receiver, _keyCardToBeMinted);
     }
 
     /// @notice set new discount signer
