@@ -1,8 +1,7 @@
 import { INITIALIZABLE_ALREADY_INITIALIZED } from "./../ERROR_STRINGS";
-import { Avatar__factory } from "./../../typechain-types/factories/contracts/Avatar/Avatar__factory";
+import { Avatar__factory } from "./../../typechain-types/factories/contracts/Avatar/Avatar__factory"; // eslint-disable-line
 import { expect } from "chai";
-import { ethers, upgrades } from "hardhat";
-import { time } from "@nomicfoundation/hardhat-network-helpers";
+import { ethers } from "hardhat";
 import { contractsName, UNIT_TEST } from "../Constants";
 import { Avatar } from "../../typechain-types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -11,14 +10,13 @@ const setupAvatar = async (signer: SignerWithAddress) => {
   const avatarFactory = (await ethers.getContractFactory(
     contractsName.AVATAR,
     signer
-  )) as Avatar__factory;
+  )) as Avatar__factory; // eslint-disable-line
   const avatarInstance = (await avatarFactory.deploy()) as Avatar;
   return { avatarInstance, avatarFactory };
 };
 
 describe(`${UNIT_TEST}${contractsName.AVATAR}`, () => {
   let avatarInstance: Avatar;
-  let avatarFactory: Avatar__factory;
   let owner: SignerWithAddress;
   let admin: SignerWithAddress;
   let minter: SignerWithAddress;
@@ -32,7 +30,7 @@ describe(`${UNIT_TEST}${contractsName.AVATAR}`, () => {
   beforeEach("!! setup initial parameters", async () => {
     [owner, admin, minter, notMinter, newMinter, receiver] =
       await ethers.getSigners();
-    ({ avatarInstance, avatarFactory } = await setupAvatar(owner));
+    ({ avatarInstance } = await setupAvatar(owner));
   });
   context("initialise avatar", () => {
     it("initialises with correct parameters", async () => {
@@ -43,12 +41,14 @@ describe(`${UNIT_TEST}${contractsName.AVATAR}`, () => {
         admin.address,
         minter.address
       );
+      // eslint-disable-next-line
       expect(
         await avatarInstance.hasRole(
           await avatarInstance.MINTER_ROLE(),
           minter.address
         )
       ).to.be.true;
+      // eslint-disable-next-line
       expect(
         await avatarInstance.hasRole(
           await avatarInstance.DEFAULT_ADMIN_ROLE(),

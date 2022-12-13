@@ -1,38 +1,35 @@
 import { KeyCard } from "./../../typechain-types/contracts/KeyCard/KeyCard";
 import { INITIALIZABLE_ALREADY_INITIALIZED } from "./../ERROR_STRINGS";
 import { expect } from "chai";
-import { ethers, upgrades } from "hardhat";
-import { time } from "@nomicfoundation/hardhat-network-helpers";
+import { ethers } from "hardhat";
 import { contractsName, UNIT_TEST } from "../Constants";
-import { KeyCard__factory } from "../../typechain-types";
+import { KeyCard__factory } from "../../typechain-types";// eslint-disable-line
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 const setupKeyCard = async (signer: SignerWithAddress) => {
   const keyCardFactory = (await ethers.getContractFactory(
     contractsName.KEY_CARD,
     signer
-  )) as KeyCard__factory;
+  )) as KeyCard__factory;// eslint-disable-line
   const keyCardInstance = (await keyCardFactory.deploy()) as KeyCard;
   return { keyCardInstance, keyCardFactory };
 };
 
 describe(`${UNIT_TEST}:${contractsName.KEY_CARD}`, () => {
   let keyCardInstance: KeyCard;
-  let keyCardFactory: KeyCard__factory;
   let owner: SignerWithAddress;
   let admin: SignerWithAddress;
   let minter: SignerWithAddress;
   let notMinter: SignerWithAddress;
   let receiver: SignerWithAddress;
   let newMinter: SignerWithAddress;
-  const hundredMaximumTokens = 100;
   const mintTenTokens = 10;
   const name = "Test Key Card";
   const symbol = "TKC";
   beforeEach("!! setup initial parameters", async () => {
     [owner, admin, minter, notMinter, newMinter, receiver] =
       await ethers.getSigners();
-    ({ keyCardInstance, keyCardFactory } = await setupKeyCard(owner));
+    ({ keyCardInstance } = await setupKeyCard(owner));
   });
   context("initialise key card", () => {
     it("initialises with correct parameters", async () => {
@@ -42,12 +39,14 @@ describe(`${UNIT_TEST}:${contractsName.KEY_CARD}`, () => {
         admin.address,
         minter.address
       );
+      // eslint-disable-next-line
       expect(
         await keyCardInstance.hasRole(
           await keyCardInstance.MINTER_ROLE(),
           minter.address
         )
       ).to.be.true;
+      // eslint-disable-next-line
       expect(
         await keyCardInstance.hasRole(
           await keyCardInstance.DEFAULT_ADMIN_ROLE(),

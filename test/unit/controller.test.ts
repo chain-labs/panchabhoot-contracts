@@ -1,7 +1,7 @@
 import { KeyCard } from "./../../typechain-types/contracts/KeyCard/KeyCard";
-import { KeyCard__factory } from "./../../typechain-types/factories/contracts/KeyCard/KeyCard__factory";
+import { KeyCard__factory } from "./../../typechain-types/factories/contracts/KeyCard/KeyCard__factory"; // eslint-disable-line
 import { Avatar } from "./../../typechain-types/contracts/Avatar/Avatar";
-import { Avatar__factory } from "./../../typechain-types/factories/contracts/Avatar/Avatar__factory";
+import { Avatar__factory } from "./../../typechain-types/factories/contracts/Avatar/Avatar__factory"; // eslint-disable-line
 import { BytesLike, BigNumberish, BigNumber } from "ethers";
 import {
   SaleCategory,
@@ -86,7 +86,7 @@ const deployKeyCard = async (signer: SignerWithAddress) => {
   const keyCardFactory = (await ethers.getContractFactory(
     contractsName.KEY_CARD,
     signer
-  )) as KeyCard__factory;
+  )) as KeyCard__factory; // eslint-disable-line
   const keyCardInstance = (await keyCardFactory.deploy()) as KeyCard;
   return { keyCardInstance, keyCardFactory };
 };
@@ -95,7 +95,7 @@ const deployAvatar = async (signer: SignerWithAddress) => {
   const avatarFactory = (await ethers.getContractFactory(
     contractsName.AVATAR,
     signer
-  )) as Avatar__factory;
+  )) as Avatar__factory; // eslint-disable-line
   const avatarInstance = (await avatarFactory.deploy()) as Avatar;
   return { avatarInstance, avatarFactory };
 };
@@ -111,15 +111,14 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
   let receiver: SignerWithAddress;
   let admin: SignerWithAddress;
   let keyCardInstance: KeyCard;
-  let keyCardFactory: KeyCard__factory;
+  let keyCardFactory: KeyCard__factory; // eslint-disable-line
   let avatarInstance: Avatar;
-  let avatarFactory: Avatar__factory;
+  let avatarFactory: Avatar__factory; // eslint-disable-line
 
   // todo: avatar and key card should be contract instance and not Signer
   let newAvatarInstance: Avatar;
   let newKeyCardInstance: KeyCard;
   const hundredMaximumTokens = 100;
-  const mintTenTokens = 10;
   const avatarName = "Test Avatar Token";
   const avatarSymbol = "TAT";
   const keyCardName = "Test Key Card";
