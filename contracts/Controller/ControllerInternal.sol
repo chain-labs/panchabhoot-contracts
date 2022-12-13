@@ -5,6 +5,7 @@ pragma solidity 0.8.17;
 import {ControllerStorage} from "./ControllerStorage.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 abstract contract ControllerInternal is ControllerStorage {
     using Counters for Counters.Counter;
@@ -26,6 +27,15 @@ abstract contract ControllerInternal is ControllerStorage {
     error PhaseIsAlreadyActive(PHASE_ID _currentPhaseId);
     error ArraysLengthDontMatch();
     error PhaseInactive(PHASE_ID _inactivePhase);
+    error SalePaused();
+    error ExceedsTokensPerTransactionLimit();
+    error ExceedsTokensPerWalletLimit();
+    error ExceedsSaleSupply();
+    error SaleNotActive();
+    error SaleNotDiscounted();
+    error SaleNotAllowlisted();
+    error AccountNotInAllowlist();
+    error TransferExactAmount();
 
     /// @notice set avatar instance address
     /// @dev setter for avatar address
@@ -289,6 +299,125 @@ abstract contract ControllerInternal is ControllerStorage {
         emit DiscountDisabledOnSaleCategory(_saleCategoryId);
     }
 
+    function _incrementTokensMintedInSale(
+        SaleCategory memory _saleCategory,
+        uint256 _saleCategoryId,
+        uint96 _numberOfTokensMinted
+    ) internal {
+        _saleCategory.tokensMinted += uint64(_numberOfTokensMinted);
+        _saleCategories[_saleCategoryId] = _saleCategory;
+    }
+
+    function _pauseSale(uint256 _saleCategoryId) internal {
+        // checks
+        _requireExistentSaleCategory(_saleCategoryId);
+
+        // get sale category
+        SaleCategory memory _saleCategory = _getSaleCategory(_saleCategoryId);
+
+        // pause sale
+        _saleCategory.paused = true;
+        // set updated sale category
+        _saleCategories[_saleCategoryId] = _saleCategory;
+        emit PausedSale(_saleCategoryId);
+    }
+
+    function _unpauseSale(uint256 _saleCategoryId) internal {
+        // checks
+        _requireExistentSaleCategory(_saleCategoryId);
+
+        // get sale category
+        SaleCategory memory _saleCategory = _getSaleCategory(_saleCategoryId);
+
+        // pause sale
+        _saleCategory.paused = false;
+        // set updated sale category
+        _saleCategories[_saleCategoryId] = _saleCategory;
+        emit UnpausedSale(_saleCategoryId);
+    }
+
+    function _mintAllowlisted(
+        SaleCategory memory _sale,
+        address _receiver,
+        uint96 _numberOfTokens,
+        bytes32[] calldata _proofs,
+        uint256 _saleId,
+        uint256 _discountIndex,
+        uint256 _discountedPrice,
+        bytes memory _signature,
+        bool _isDiscounted
+    ) internal {
+        // check sale is allowlisted
+        _requireSaleToBeAllowlisted(_sale);
+        // check valid allowlist
+        _requireValidAllowlist(_proofs, _receiver, _sale.merkleRoot);
+
+        // mint tokens
+        _mintTokens(
+            _sale,
+            _receiver,
+            _numberOfTokens,
+            _saleId,
+            _discountIndex,
+            _discountedPrice,
+            _signature,
+            _isDiscounted
+        );
+    }
+
+    function _mintTokens(
+        SaleCategory memory _sale,
+        address _receiver,
+        uint96 _numberOfTokens,
+        uint256 _saleId,
+        uint256 _discountIndex,
+        uint256 _discountedPrice,
+        bytes memory _signature,
+        bool _isDiscounted
+    ) internal {
+        // check if the phase is active or not
+        _requirePhaseToBeActive(_sale.phase);
+        // check if sale is paused
+        _requireSaleNotPaused(_sale);
+        // check necessary sale conditions
+        _requireSaleValid(_receiver, _numberOfTokens, _saleId, _sale);
+
+        // update tokens minted by user in a sale
+        _tokensMintedByUser[_saleId][_receiver] += _numberOfTokens;
+
+        // updated total tokens minted in a sale
+        _incrementTokensMintedInSale(_sale, _saleId, _numberOfTokens);
+
+        // check discount is valid
+        if (_isDiscounted) {
+            // check sale to be discounted
+            _requireSaleIsDiscounted(_sale);
+            // validate discount code
+            _checkValidDiscountCode(
+                _discountIndex,
+                _discountedPrice,
+                _receiver,
+                _signature
+            );
+            // apply discount
+            _setDiscountCodeApplied(_discountIndex);
+            // check price
+            if (msg.value != _numberOfTokens * _discountedPrice) {
+                // revert with exact amount not transferred
+                revert TransferExactAmount();
+            }
+        } else {
+            if (msg.value != _numberOfTokens * _sale.price) {
+                // revert with exact amount not transferred
+                revert TransferExactAmount();
+            }
+        }
+
+        // mint tokens from avatar
+
+        // mint tokens from key card
+    }
+
     /// @notice set new discount signer
     /// @dev set new discount signer
     /// @param _newDiscountSigner new discount signer
@@ -425,7 +554,7 @@ abstract contract ControllerInternal is ControllerStorage {
                 _discountIndex,
                 _discountedPrice,
                 _receiverAddress,
-                "Panchabhoot Discount Code"
+                "://Panchabhoot Discount Code"
             )
         );
 
@@ -484,7 +613,7 @@ abstract contract ControllerInternal is ControllerStorage {
         view
     {
         // check if sale category exists or not
-        if (_saleCounter.current() < _saleCategoryId) {
+        if (_saleCounter.current() < _saleCategoryId || _saleCategoryId == 0) {
             revert InexistentSaleCategory(_saleCategoryId);
         }
     }
@@ -527,6 +656,75 @@ abstract contract ControllerInternal is ControllerStorage {
     function _requirePhaseToBeActive(PHASE_ID _phaseId) private view {
         if (_currentPhase != _phaseId) {
             revert PhaseInactive(_phaseId);
+        }
+    }
+
+    function _requireSaleValid(
+        address _receiver,
+        uint256 _numberOfTokens,
+        uint256 _saleId,
+        SaleCategory memory _sale
+    ) private view {
+        uint256 tokensCurrentlyMintedByUser = _tokensMintedByUser[_saleId][
+            _receiver
+        ];
+        if (
+            _sale.startTime >= block.timestamp ||
+            _sale.endTime <= block.timestamp
+        ) {
+            revert SaleNotActive();
+        }
+        if (_numberOfTokens > _sale.perTransactionLimit) {
+            // revert with number of tokens to be minted more than per transaction limit
+            revert ExceedsTokensPerTransactionLimit();
+        }
+        if (
+            tokensCurrentlyMintedByUser + _numberOfTokens > _sale.perWalletLimit
+        ) {
+            // revert with buying limit is exceeded
+            revert ExceedsTokensPerWalletLimit();
+        }
+        // note: as discount can be applied, price is checked separately
+        if (_sale.tokensMinted + _numberOfTokens > _sale.supply) {
+            // revert with suuply exceeded
+            revert ExceedsSaleSupply();
+        }
+    }
+
+    function _requireSaleNotPaused(SaleCategory memory _sale) private pure {
+        if (_sale.paused) {
+            revert SalePaused();
+        }
+    }
+
+    function _requireSaleIsDiscounted(SaleCategory memory _sale) private pure {
+        if (!_sale.isDiscountEnabled) {
+            // revert with discount not enabled for this sale
+            revert SaleNotDiscounted();
+        }
+    }
+
+    function _requireValidAllowlist(
+        bytes32[] calldata _proofs,
+        address _account,
+        bytes32 _merkleRoot
+    ) private pure {
+        // generate leaf
+        bytes32 leaf = keccak256(abi.encodePacked(_account));
+        // verify
+        bool isAllowlisted = MerkleProof.verify(_proofs, _merkleRoot, leaf);
+        if (!isAllowlisted) {
+            revert AccountNotInAllowlist();
+        }
+    }
+
+    function _requireSaleToBeAllowlisted(SaleCategory memory _sale)
+        private
+        pure
+    {
+        if (_sale.merkleRoot == bytes32(0)) {
+            // sale not enabled
+            revert SaleNotAllowlisted();
         }
     }
 }

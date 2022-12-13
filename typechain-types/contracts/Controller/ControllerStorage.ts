@@ -178,6 +178,7 @@ export interface ControllerStorageInterface extends utils.Interface {
     "KeyCardRatioUpdatedForSaleCategory(uint256,uint64)": EventFragment;
     "MemberKeyCardUpdated(address,address)": EventFragment;
     "MerkleRootUpdatedSaleCategory(uint256,bytes32)": EventFragment;
+    "PausedSale(uint256)": EventFragment;
     "PerLimitUpdatedOfSaleCategory(uint256,uint64,uint64)": EventFragment;
     "PhaseChanged(uint8)": EventFragment;
     "PriceUpdatedForSaleCategory(uint256,uint256)": EventFragment;
@@ -185,6 +186,7 @@ export interface ControllerStorageInterface extends utils.Interface {
     "TimeUpdatedForSaleCategory(uint256,uint96,uint96)": EventFragment;
     "TokenToReserveUpdated(uint8,uint96)": EventFragment;
     "TokensReserved(uint8,uint96,address)": EventFragment;
+    "UnpausedSale(uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AddedSaleCategory"): EventFragment;
@@ -204,6 +206,7 @@ export interface ControllerStorageInterface extends utils.Interface {
   getEvent(
     nameOrSignatureOrTopic: "MerkleRootUpdatedSaleCategory"
   ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PausedSale"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "PerLimitUpdatedOfSaleCategory"
   ): EventFragment;
@@ -217,6 +220,7 @@ export interface ControllerStorageInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "TimeUpdatedForSaleCategory"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TokenToReserveUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TokensReserved"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UnpausedSale"): EventFragment;
 }
 
 export interface AddedSaleCategoryEventObject {
@@ -322,6 +326,13 @@ export type MerkleRootUpdatedSaleCategoryEvent = TypedEvent<
 export type MerkleRootUpdatedSaleCategoryEventFilter =
   TypedEventFilter<MerkleRootUpdatedSaleCategoryEvent>;
 
+export interface PausedSaleEventObject {
+  _saleCategoryId: BigNumber;
+}
+export type PausedSaleEvent = TypedEvent<[BigNumber], PausedSaleEventObject>;
+
+export type PausedSaleEventFilter = TypedEventFilter<PausedSaleEvent>;
+
 export interface PerLimitUpdatedOfSaleCategoryEventObject {
   _saleCategoryId: BigNumber;
   _newPerTransactionLimit: BigNumber;
@@ -402,6 +413,16 @@ export type TokensReservedEvent = TypedEvent<
 >;
 
 export type TokensReservedEventFilter = TypedEventFilter<TokensReservedEvent>;
+
+export interface UnpausedSaleEventObject {
+  _saleCategoryId: BigNumber;
+}
+export type UnpausedSaleEvent = TypedEvent<
+  [BigNumber],
+  UnpausedSaleEventObject
+>;
+
+export type UnpausedSaleEventFilter = TypedEventFilter<UnpausedSaleEvent>;
 
 export interface ControllerStorage extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -656,6 +677,9 @@ export interface ControllerStorage extends BaseContract {
       _newMerkleRoot?: null
     ): MerkleRootUpdatedSaleCategoryEventFilter;
 
+    "PausedSale(uint256)"(_saleCategoryId?: null): PausedSaleEventFilter;
+    PausedSale(_saleCategoryId?: null): PausedSaleEventFilter;
+
     "PerLimitUpdatedOfSaleCategory(uint256,uint64,uint64)"(
       _saleCategoryId?: null,
       _newPerTransactionLimit?: null,
@@ -718,6 +742,9 @@ export interface ControllerStorage extends BaseContract {
       numberOfTokensReserved?: null,
       receiver?: null
     ): TokensReservedEventFilter;
+
+    "UnpausedSale(uint256)"(_saleCategoryId?: null): UnpausedSaleEventFilter;
+    UnpausedSale(_saleCategoryId?: null): UnpausedSaleEventFilter;
   };
 
   estimateGas: {

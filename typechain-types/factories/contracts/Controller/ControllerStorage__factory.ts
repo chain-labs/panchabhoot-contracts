@@ -166,6 +166,19 @@ const _abi = [
         name: "_saleCategoryId",
         type: "uint256",
       },
+    ],
+    name: "PausedSale",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
       {
         indexed: false,
         internalType: "uint64",
@@ -300,6 +313,19 @@ const _abi = [
       },
     ],
     name: "TokensReserved",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
+    ],
+    name: "UnpausedSale",
     type: "event",
   },
   {

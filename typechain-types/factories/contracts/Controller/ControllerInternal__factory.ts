@@ -12,6 +12,11 @@ import type {
 const _abi = [
   {
     inputs: [],
+    name: "AccountNotInAllowlist",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "ArraysLengthDontMatch",
     type: "error",
   },
@@ -40,6 +45,21 @@ const _abi = [
       },
     ],
     name: "EndTimeBehindStartTime",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ExceedsSaleSupply",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ExceedsTokensPerTransactionLimit",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ExceedsTokensPerWalletLimit",
     type: "error",
   },
   {
@@ -97,6 +117,26 @@ const _abi = [
     type: "error",
   },
   {
+    inputs: [],
+    name: "SaleNotActive",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "SaleNotAllowlisted",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "SaleNotDiscounted",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "SalePaused",
+    type: "error",
+  },
+  {
     inputs: [
       {
         internalType: "uint96",
@@ -116,6 +156,11 @@ const _abi = [
       },
     ],
     name: "TokensAlreadyReservedForPhase",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "TransferExactAmount",
     type: "error",
   },
   {
@@ -274,6 +319,19 @@ const _abi = [
         name: "_saleCategoryId",
         type: "uint256",
       },
+    ],
+    name: "PausedSale",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
       {
         indexed: false,
         internalType: "uint64",
@@ -408,6 +466,19 @@ const _abi = [
       },
     ],
     name: "TokensReserved",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "_saleCategoryId",
+        type: "uint256",
+      },
+    ],
+    name: "UnpausedSale",
     type: "event",
   },
   {
