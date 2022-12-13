@@ -6,6 +6,7 @@ import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-packager";
 import "hardhat-tracer";
 import "hardhat-deploy";
+import "@openzeppelin/hardhat-upgrades";
 dotenv.config({ path: "./.env" });
 
 const { INFURA_KEY, ETHERSCAN_KEY, PRIVATE_KEY, MNEMONIC, NOT_CI } =
