@@ -4,3 +4,4 @@
 export { Avatar__factory } from "./Avatar__factory";
 export { AvatarInternal__factory } from "./AvatarInternal__factory";
 export { AvatarStorage__factory } from "./AvatarStorage__factory";
+export { IAvatar__factory } from "./IAvatar__factory";

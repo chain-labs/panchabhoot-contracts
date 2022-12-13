@@ -56,6 +56,8 @@ export type { AvatarInternal } from "./contracts/Avatar/AvatarInternal";
 export { AvatarInternal__factory } from "./factories/contracts/Avatar/AvatarInternal__factory";
 export type { AvatarStorage } from "./contracts/Avatar/AvatarStorage";
 export { AvatarStorage__factory } from "./factories/contracts/Avatar/AvatarStorage__factory";
+export type { IAvatar } from "./contracts/Avatar/IAvatar";
+export { IAvatar__factory } from "./factories/contracts/Avatar/IAvatar__factory";
 export type { Controller } from "./contracts/Controller/Controller";
 export { Controller__factory } from "./factories/contracts/Controller/Controller__factory";
 export type { ControllerInternal } from "./contracts/Controller/ControllerInternal";
@@ -64,6 +66,8 @@ export type { ControllerStorage } from "./contracts/Controller/ControllerStorage
 export { ControllerStorage__factory } from "./factories/contracts/Controller/ControllerStorage__factory";
 export type { IController } from "./contracts/Controller/IController";
 export { IController__factory } from "./factories/contracts/Controller/IController__factory";
+export type { IKeyCard } from "./contracts/KeyCard/IKeyCard";
+export { IKeyCard__factory } from "./factories/contracts/KeyCard/IKeyCard__factory";
 export type { KeyCard } from "./contracts/KeyCard/KeyCard";
 export { KeyCard__factory } from "./factories/contracts/KeyCard/KeyCard__factory";
 export type { ERC721A__IERC721ReceiverUpgradeable } from "./erc721a-upgradeable/contracts/ERC721AUpgradeable.sol/ERC721A__IERC721ReceiverUpgradeable";
