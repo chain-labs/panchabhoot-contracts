@@ -3702,6 +3702,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"erc721a-upgradeable@npm:^4.2.3":
+  version: 4.2.3
+  resolution: "erc721a-upgradeable@npm:4.2.3"
+  checksum: 1392111e4ae17cc96613f0cfbe07e003798060e38c955f6f38d747018c81e08498fe483270bb48270bb577da4cad0f3aa79380b253fb39638e89dcb143899d4f
+  languageName: node
+  linkType: hard
+
 "err-code@npm:^2.0.2":
   version: 2.0.3
   resolution: "err-code@npm:2.0.3"
@@ -8213,6 +8220,7 @@ __metadata:
     axios: ^1.2.1
     chai: ^4.2.0
     dotenv: ^16.0.3
+    erc721a-upgradeable: ^4.2.3
     eslint: ^8.27.0
     eslint-config-prettier: ^8.5.0
     eslint-config-standard: ^17.0.0
