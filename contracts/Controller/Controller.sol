@@ -22,6 +22,7 @@ contract Controller is
 
     string public constant NAME = "Panchabhoot Controller";
     string public constant VERSION = "0.1.0";
+    bytes public constant EMPTY_BYTES = bytes("");
     uint8 public constant MAX_PHASES = 3;
 
     function initialize(
@@ -197,6 +198,17 @@ contract Controller is
         }
     }
 
+    function togglePauseSale(uint256 _saleCategoryId, bool _isPaused)
+        external
+        onlyOwner
+    {
+        if (_isPaused) {
+            _pauseSale(_saleCategoryId);
+        } else {
+            _unpauseSale(_saleCategoryId);
+        }
+    }
+
     /// @notice set new discount signer
     /// @dev set new discount signer
     /// @param _newDiscountSigner new discount signer
@@ -318,5 +330,104 @@ contract Controller is
 
     function reserveTokens(PHASE_ID _phaseId) external onlyOwner {
         _reserveTokens(_phaseId);
+    }
+
+    function tokensMintedByOwnerInSale(uint256 _saleId, address _receiver)
+        external
+        view
+        returns (uint256)
+    {
+        // todo: convert it to internal function
+        return _tokensMintedByUser[_saleId][_receiver];
+    }
+
+    function mintDiscountedAllowlist(
+        address _receiver,
+        uint96 _numberOfTokens,
+        bytes32[] calldata _proofs,
+        uint256 _saleId,
+        uint256 _discountIndex,
+        uint256 _discountedPrice,
+        bytes memory _signature
+    ) external payable {
+        // get sale category
+        SaleCategory memory _sale = _getSaleCategory(_saleId);
+        // mint allow listed with discount
+        _mintAllowlisted(
+            _sale,
+            _receiver,
+            _numberOfTokens,
+            _proofs,
+            _saleId,
+            _discountIndex,
+            _discountedPrice,
+            _signature,
+            true
+        );
+    }
+
+    function mintAllowlisted(
+        address _receiver,
+        uint96 _numberOfTokens,
+        bytes32[] calldata _proofs,
+        uint256 _saleId
+    ) external payable {
+        // get sale category
+        SaleCategory memory _sale = _getSaleCategory(_saleId);
+        // mint allow listed without discount
+        _mintAllowlisted(
+            _sale,
+            _receiver,
+            _numberOfTokens,
+            _proofs,
+            _saleId,
+            0,
+            0,
+            EMPTY_BYTES,
+            false
+        );
+    }
+
+    function mintDiscounted(
+        address _receiver,
+        uint96 _numberOfTokens,
+        uint256 _saleId,
+        uint256 _discountIndex,
+        uint256 _discountedPrice,
+        bytes memory _signature
+    ) external payable {
+        // get sale category
+        SaleCategory memory _sale = _getSaleCategory(_saleId);
+        // mint with discount
+        _mintTokens(
+            _sale,
+            _receiver,
+            _numberOfTokens,
+            _saleId,
+            _discountIndex,
+            _discountedPrice,
+            _signature,
+            true
+        );
+    }
+
+    function mintPublic(
+        address _receiver,
+        uint96 _numberOfTokens,
+        uint256 _saleId
+    ) external payable {
+        // get sale category
+        SaleCategory memory _sale = _getSaleCategory(_saleId);
+        // mint with discount
+        _mintTokens(
+            _sale,
+            _receiver,
+            _numberOfTokens,
+            _saleId,
+            0,
+            0,
+            EMPTY_BYTES,
+            false
+        );
     }
 }

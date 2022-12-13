@@ -76,10 +76,9 @@ interface IController {
 
     // function getDiscountSigner() external view returns (address);
 
-    function getSaleCategory(uint256 _saleCategoryId)
-        external
-        view
-        returns (SaleCategory memory);
+    function getSaleCategory(
+        uint256 _saleCategoryId
+    ) external view returns (SaleCategory memory);
 
     function getKeyCard() external view returns (address);
 
@@ -90,7 +89,7 @@ interface IController {
         uint256 _discountedPrice,
         address _receiverAddress,
         bytes memory _signature
-    ) external view returns(bool);
+    ) external view returns (bool);
 
     // function getTokenMintedByAccountInPhase(uint8 _phaseId)
     //     external

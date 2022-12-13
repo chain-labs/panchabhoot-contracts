@@ -82,6 +82,10 @@ abstract contract ControllerStorage is IController {
         uint64 _newKeyCardRatio
     );
 
+    event PausedSale(uint256 _saleCategoryId);
+
+    event UnpausedSale(uint256 _saleCategoryId);
+
     /// @notice logs when discount is enabled for sale category
     /// @dev emitted when discount is enabled for sale category
     /// @param _saleCategoryId id of sale category which is updated
@@ -129,6 +133,8 @@ abstract contract ControllerStorage is IController {
     /// @notice lists of sale category details
     /// @dev mapping of sale category id to it's sale category details
     mapping(uint256 => SaleCategory) internal _saleCategories;
+    mapping(uint256 => mapping(address => uint256))
+        internal _tokensMintedByUser;
 
     /// @notice discount code indexes which have been applied
     /// @dev if true, discount is applied

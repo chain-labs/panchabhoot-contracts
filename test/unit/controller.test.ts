@@ -1,4 +1,4 @@
-import { BytesLike, BigNumberish } from "ethers";
+import { BytesLike, BigNumberish, BigNumber } from "ethers";
 import {
   SaleCategory,
   SaleCategoryParams,
@@ -27,6 +27,7 @@ import {
   contractsName,
   TOKENS_TO_RESERVE,
   MAX_PHASES,
+  DISCOUNT_CODE_MESSAGE,
 } from "../Constants";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
@@ -38,9 +39,34 @@ import {
   solidityKeccak256,
 } from "ethers/lib/utils";
 import { Address } from "hardhat-deploy/dist/types";
+import dotenv from "dotenv";
+import { MerkleTreeManagement } from "../utils/merkleDrop.utils";
+import { DiscountManager } from "../utils/discountCodes.utils";
+dotenv.config({ path: "./.env" });
 const { AddressZero, HashZero } = ethers.constants;
 
+const IPFS_API = process.env.PINATA_JWT_KEY;
+const isProduction = process.env.PRODUCTION === "true";
+
 const toMinutes = (minutes: number) => minutes * 60;
+
+const addSaleCategory = async (
+  params: SaleCategoryParams,
+  controllerInstance: Controller
+) => {
+  await controllerInstance.addSale(
+    params.startTime,
+    params.endTime,
+    params.price,
+    params.merkleRoot,
+    params.perWalletLimit,
+    params.perTransactionLimit,
+    params.supply,
+    params.keyCardPerAvatar,
+    params.phase,
+    params.isDiscountEnabled as boolean
+  );
+};
 
 const deployController = async (signer: SignerWithAddress, ethers: any) => {
   const controllerFactory = (await ethers.getContractFactory(
@@ -68,8 +94,6 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
   let newKeyCardInstance: SignerWithAddress;
 
   // constants
-  const DISCOUNT_CODE_MESSAGE = "Panchabhoot Discount Code";
-
   beforeEach("!! deploy controller", async () => {
     [
       owner,
@@ -685,6 +709,35 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
           });
         });
 
+        context("pause and unpause sale", () => {
+          let saleCategoryId: BigNumberish;
+          const pauseSale = true;
+          const unpauseSale = false;
+          beforeEach("!! initialise parameters", async () => {
+            saleCategoryId = 1;
+          });
+          it("cannot pause if the caller is not owner", async () => {
+            await expect(
+              controllerInstance
+                .connect(notOwner)
+                .togglePauseSale(saleCategoryId, pauseSale)
+            ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+            await expect(
+              controllerInstance
+                .connect(notOwner)
+                .togglePauseSale(saleCategoryId, unpauseSale)
+            ).to.be.revertedWith(OWNABLE_NOT_OWNER);
+          });
+          it("only owner can pause or unpause a sale", async () => {
+            await controllerInstance
+              .connect(owner)
+              .togglePauseSale(saleCategoryId, pauseSale);
+            await controllerInstance
+              .connect(owner)
+              .togglePauseSale(saleCategoryId, unpauseSale);
+          });
+        });
+
         context("toggle discount of sale category", () => {
           let saleCategoryId: BigNumberish;
           const enabledDiscount = true;
@@ -830,7 +883,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
           const currentPrice = saleCategory.price;
           discountedPrice = ethers.BigNumber.from(currentPrice).div(2);
           // generate discount hash
-          // discountIndex + discountedPrice + receiver address + "Panchabhoot Discount Code"
+          // discountIndex + discountedPrice + receiver address + "://Panchabhoot Discount Code"
           const discountHash = solidityKeccak256(
             ["uint256", "uint256", "address", "string"],
             [
@@ -1061,6 +1114,724 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
             controllerInstance,
             TOKENS_ALREADY_RESERVED
           );
+        });
+      });
+      context("mint tokens in public sale", () => {
+        let publicSaleWithDiscountCategory: SaleCategoryParams;
+        let publicSaleWithoutDiscountCategory: SaleCategoryParams;
+        const twoTokensPerWallet = 2;
+        const twoTokensPerTransaction = 2;
+        const fiveTokensPerWallet = 5;
+        const fiftySupply = 50;
+        const twentySupply = 20;
+        const fiveKeyCardPerAvatar = 5;
+        const twoKeyCardPerAvatar = 2;
+        const phaseOne = 0;
+        const phaseTwo = 1;
+        const discountEnabled = true;
+        const discountDisabled = false;
+        let discountManager: DiscountManager;
+        let invalidDiscountManager: DiscountManager;
+        beforeEach("!! add sale category", async () => {
+          discountManager = new DiscountManager(isProduction, discountSigner);
+          invalidDiscountManager = new DiscountManager(isProduction, receiver);
+
+          // create a sale category with discount
+          const startInTenSeconds = (await time.latest()) + 100;
+          const endAfterTenSeconds = startInTenSeconds + 100;
+          const startAfterDiscountSale = endAfterTenSeconds + 100;
+          const endAfterFifteenSeconds = startAfterDiscountSale + 150;
+
+          // create a sale category without discount
+          publicSaleWithoutDiscountCategory = {
+            price: pointOneEthPrice,
+            merkleRoot: HashZero,
+            perWalletLimit: fiveTokensPerWallet,
+            perTransactionLimit: fivePerTransactionLimit,
+            supply: fiftySupply,
+            keyCardPerAvatar: fiveKeyCardPerAvatar,
+            startTime: startInTenSeconds,
+            endTime: endAfterTenSeconds,
+            phase: phaseOne,
+            isDiscountEnabled: discountDisabled,
+          };
+
+          publicSaleWithDiscountCategory = {
+            price: pointOneEthPrice,
+            merkleRoot: HashZero,
+            perWalletLimit: twoTokensPerWallet,
+            perTransactionLimit: twoTokensPerTransaction,
+            supply: twentySupply,
+            keyCardPerAvatar: twoKeyCardPerAvatar,
+            startTime: startAfterDiscountSale,
+            endTime: endAfterFifteenSeconds,
+            phase: phaseOne,
+            isDiscountEnabled: discountEnabled,
+          };
+
+          // create sale category without discount
+          await addSaleCategory(
+            publicSaleWithoutDiscountCategory,
+            controllerInstance
+          );
+          // create sale category with discount
+          await addSaleCategory(
+            publicSaleWithDiscountCategory,
+            controllerInstance
+          );
+        });
+        context("without discount", () => {
+          it("cannot mint if sale doesn't exist", async () => {
+            // sale ID 1 and 2 exists
+            await expect(
+              controllerInstance.mintPublic(receiver.address, 10, 0)
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              CONTROLLER_INEXISTENT_SALE_CATEGORY
+            );
+            await expect(
+              controllerInstance.mintPublic(receiver.address, 10, 3)
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              CONTROLLER_INEXISTENT_SALE_CATEGORY
+            );
+          });
+          it("cannot mint if sale is not active", async () => {
+            const tokensToBuy = 1;
+            const fundsToTransfer = BigNumber.from(
+              publicSaleWithoutDiscountCategory.price.toString()
+            ).mul(tokensToBuy);
+            await expect(
+              controllerInstance.mintPublic(receiver.address, tokensToBuy, 1, {
+                value: fundsToTransfer,
+              })
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "SaleNotActive"
+            );
+          });
+          it("cannot mint when phase isn't active", async () => {
+            // changing from current phase
+            await controllerInstance.setNewPhase(phaseTwo);
+            await expect(
+              controllerInstance.mintPublic(receiver.address, 10, 1)
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "PhaseInactive"
+            );
+          });
+          it("cannot mint if sale is paused", async () => {
+            await controllerInstance.togglePauseSale(1, true);
+            await expect(
+              controllerInstance.mintPublic(receiver.address, 10, 1)
+            ).to.be.revertedWithCustomError(controllerInstance, "SalePaused");
+            // sale can be unpaused
+            await controllerInstance.togglePauseSale(1, false);
+          });
+          it("cannot mint if exact amount is not transferred", async () => {
+            await time.increaseTo(
+              parseInt(publicSaleWithoutDiscountCategory.startTime.toString())
+            );
+            await expect(
+              controllerInstance.mintPublic(
+                receiver.address,
+                parseInt(
+                  publicSaleWithoutDiscountCategory.perTransactionLimit.toString()
+                ) - 1,
+                1
+              )
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "TransferExactAmount"
+            );
+          });
+          it("cannot mint if trying to mint tokens more than allowed per transaction", async () => {
+            await time.increaseTo(
+              parseInt(publicSaleWithoutDiscountCategory.startTime.toString())
+            );
+            await expect(
+              controllerInstance.mintPublic(
+                receiver.address,
+                parseInt(
+                  publicSaleWithoutDiscountCategory.perTransactionLimit.toString()
+                ) + 1,
+                1
+              )
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "ExceedsTokensPerTransactionLimit"
+            );
+          });
+          it("cannot mint if account trying to mint tokens more than allowed per wallet", async () => {
+            await time.increaseTo(
+              parseInt(publicSaleWithoutDiscountCategory.startTime.toString())
+            );
+            const tokensToBuy = parseInt(
+              publicSaleWithoutDiscountCategory.perTransactionLimit.toString()
+            );
+            const cost = BigNumber.from(
+              publicSaleWithoutDiscountCategory.price.toString()
+            ).mul(tokensToBuy);
+            controllerInstance.mintPublic(receiver.address, tokensToBuy, 1, {
+              value: cost,
+            });
+            await expect(
+              controllerInstance.mintPublic(
+                receiver.address,
+                parseInt(
+                  publicSaleWithoutDiscountCategory.perTransactionLimit.toString()
+                ),
+                1
+              )
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "ExceedsTokensPerWalletLimit"
+            );
+          });
+          it("cannot mint at discounted rate without sale being discounted", async () => {
+            await time.increaseTo(
+              parseInt(publicSaleWithoutDiscountCategory.startTime.toString())
+            );
+            const tokensToBuy = 1;
+            const cost = BigNumber.from(
+              publicSaleWithoutDiscountCategory.price.toString()
+            ).mul(tokensToBuy);
+            await expect(
+              controllerInstance.mintDiscounted(
+                receiver.address,
+                tokensToBuy,
+                1,
+                0,
+                0,
+                "0x",
+                { value: cost }
+              )
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "SaleNotDiscounted"
+            );
+          });
+          it("mints token on correct inputs", async () => {
+            await time.increaseTo(
+              parseInt(publicSaleWithoutDiscountCategory.startTime.toString())
+            );
+            const tokensToBuy = 1;
+            const cost = BigNumber.from(
+              publicSaleWithoutDiscountCategory.price.toString()
+            ).mul(tokensToBuy);
+            await controllerInstance.mintPublic(
+              receiver.address,
+              tokensToBuy,
+              1,
+              { value: cost }
+            );
+            expect(
+              await controllerInstance.tokensMintedByOwnerInSale(
+                1,
+                receiver.address
+              )
+            ).to.equal(tokensToBuy);
+          });
+          it("can mint more tokens until wallet limit is reached", async () => {
+            await time.increaseTo(
+              parseInt(publicSaleWithoutDiscountCategory.startTime.toString())
+            );
+            const tokensToBuy = parseInt(
+              publicSaleWithoutDiscountCategory.perTransactionLimit.toString()
+            );
+            const cost = BigNumber.from(
+              publicSaleWithoutDiscountCategory.price.toString()
+            ).mul(tokensToBuy);
+            await controllerInstance.mintPublic(
+              receiver.address,
+              tokensToBuy,
+              1,
+              { value: cost }
+            );
+            expect(
+              await controllerInstance.tokensMintedByOwnerInSale(
+                1,
+                receiver.address
+              )
+            ).to.equal(publicSaleWithoutDiscountCategory.perWalletLimit);
+          });
+          it("can mint until the supply is reached", async () => {
+            await time.increaseTo(
+              parseInt(publicSaleWithoutDiscountCategory.startTime.toString())
+            );
+            const buyPerTransaction = parseInt(
+              publicSaleWithoutDiscountCategory.perTransactionLimit.toString()
+            );
+            let remaining = parseInt(
+              publicSaleWithoutDiscountCategory.supply.toString()
+            );
+            const price = BigNumber.from(
+              publicSaleWithoutDiscountCategory.price.toString()
+            );
+            const totalCost = price.mul(buyPerTransaction);
+
+            while (remaining > 0) {
+              const newWallet = ethers.Wallet.createRandom();
+              if (remaining >= buyPerTransaction) {
+                await controllerInstance.mintPublic(
+                  newWallet.address,
+                  buyPerTransaction,
+                  1,
+                  { value: totalCost }
+                );
+                remaining = remaining - buyPerTransaction;
+              } else {
+                await controllerInstance.mintPublic(
+                  newWallet.address,
+                  remaining,
+                  1,
+                  { value: price.mul(remaining) }
+                );
+                remaining = 0;
+              }
+            }
+            // cannot mint more than supply
+            await expect(
+              controllerInstance.mintPublic(receiver.address, 1, 1, {
+                value: price.mul(1),
+              })
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "ExceedsSaleSupply"
+            );
+          });
+          it("cannot mint after the end time", async () => {
+            await time.increaseTo(
+              parseInt(publicSaleWithoutDiscountCategory.endTime.toString())
+            );
+            await expect(
+              controllerInstance.mintPublic(receiver.address, 1, 1)
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "SaleNotActive"
+            );
+          });
+        });
+        context("wit discount", () => {
+          let validDiscountCode: string;
+          let invalidDiscountCode: string;
+          let tenPercentDiscountedPrice; // 10% discount
+          let twentyPercentDiscountedPrice;
+          beforeEach("!! setup discount codes", async () => {
+            tenPercentDiscountedPrice = BigNumber.from(
+              publicSaleWithDiscountCategory.price.toString()
+            )
+              .mul(9)
+              .div(10);
+            twentyPercentDiscountedPrice = BigNumber.from(
+              publicSaleWithDiscountCategory.price.toString()
+            )
+              .mul(8)
+              .div(10);
+            validDiscountCode = await discountManager.generateNewDiscountCode(
+              twentyPercentDiscountedPrice,
+              receiver.address
+            );
+            invalidDiscountCode =
+              await invalidDiscountManager.generateNewDiscountCode(
+                tenPercentDiscountedPrice,
+                receiver.address
+              );
+            await time.increaseTo(
+              parseInt(publicSaleWithDiscountCategory.startTime.toString())
+            );
+          });
+          it("cannot mint at discount price if discount code is invalid", async () => {
+            const invalidDiscountResponceCode =
+              invalidDiscountManager.parseCode(invalidDiscountCode);
+            await expect(
+              controllerInstance.mintDiscounted(
+                receiver.address,
+                1,
+                2,
+                invalidDiscountResponceCode.discountIndex,
+                invalidDiscountResponceCode.discountedPrice,
+                invalidDiscountResponceCode.signature
+              )
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "InvalidDiscountCode"
+            );
+          });
+          it("cannot mint if correct amount calculated at discounted rice is not sent", async () => {
+            const discountResponseCode =
+              discountManager.parseCode(validDiscountCode);
+            const price = BigNumber.from(
+              publicSaleWithDiscountCategory.price.toString()
+            );
+            await expect(
+              controllerInstance.mintDiscounted(
+                receiver.address,
+                1,
+                2,
+                discountResponseCode.discountIndex,
+                discountResponseCode.discountedPrice,
+                discountResponseCode.signature,
+                { value: price.mul(2) }
+              )
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "TransferExactAmount"
+            );
+          });
+          it("mints token as discounted rate", async () => {
+            const discountResponseCode =
+              discountManager.parseCode(validDiscountCode);
+            const price = discountResponseCode.discountedPrice;
+            await controllerInstance.mintDiscounted(
+              receiver.address,
+              1,
+              2,
+              discountResponseCode.discountIndex,
+              discountResponseCode.discountedPrice,
+              discountResponseCode.signature,
+              { value: price.mul(1) }
+            );
+          });
+          it("cannot mint at discounted price for used discount code", async () => {
+            // use the discount code first
+            const discountResponseCode =
+              discountManager.parseCode(validDiscountCode);
+            const price = discountResponseCode.discountedPrice;
+            await controllerInstance.mintDiscounted(
+              receiver.address,
+              1,
+              2,
+              discountResponseCode.discountIndex,
+              discountResponseCode.discountedPrice,
+              discountResponseCode.signature,
+              { value: price.mul(1) }
+            );
+
+            // try using the same code again
+            await expect(
+              controllerInstance.mintDiscounted(
+                receiver.address,
+                1,
+                2,
+                discountResponseCode.discountIndex,
+                discountResponseCode.discountedPrice,
+                discountResponseCode.signature,
+                { value: price.mul(1) }
+              )
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "DiscountCodeAlreadyUsed"
+            );
+          });
+        });
+      });
+      context("mint tokens in allowlist sale", () => {
+        let allowlistedSaleWithDiscountCategory: SaleCategoryParams;
+        let allowlistedSaleWithoutDiscountCategory: SaleCategoryParams;
+        let nonAllowlistedSaleWithoutDiscountCategory: SaleCategoryParams;
+        const twoTokensPerWallet = 2;
+        const twoTokensPerTransaction = 2;
+        const fiveTokensPerWallet = 5;
+        const fiveTokensPerTransaction = 5;
+        const fiftySupply = 50;
+        const twentySupply = 20;
+        const fiveKeyCardPerAvatar = 5;
+        const twoKeyCardPerAvatar = 2;
+        const phaseOne = 0;
+        const discountEnabled = true;
+        const discountDisabled = false;
+        let merkleTree: MerkleTreeManagement;
+        let discountManager: DiscountManager;
+        let invalidDiscountManager: DiscountManager;
+        beforeEach("!! add sale category", async () => {
+          discountManager = new DiscountManager(isProduction, discountSigner);
+          invalidDiscountManager = new DiscountManager(isProduction, receiver);
+          // create array of addresses to be added to allowlist
+          const allowList = [notOwner.address, receiver.address];
+          if (IPFS_API === undefined) {
+            throw Error(
+              "IPFS_API key is undefined, please add it to ENV variable under WEB3_STORAGE_API_TOKEN env name."
+            );
+          }
+          // create merkle root
+          merkleTree = new MerkleTreeManagement(allowList, "", IPFS_API);
+          await merkleTree.setup();
+
+          // create a allowlisted sale category with discount
+          const startInTenSeconds = (await time.latest()) + 100;
+          const endAfterTenSeconds = startInTenSeconds + 100;
+          const startAfterDiscountSale = endAfterTenSeconds + 100;
+          const endAfterFifteenSeconds = startAfterDiscountSale + 150;
+          // create a allowlisted sale without discount
+          allowlistedSaleWithoutDiscountCategory = {
+            price: pointOneEthPrice,
+            merkleRoot: merkleTree.getRoot(),
+            perWalletLimit: twoTokensPerWallet,
+            perTransactionLimit: twoTokensPerTransaction,
+            supply: fiftySupply,
+            keyCardPerAvatar: twoKeyCardPerAvatar,
+            startTime: startInTenSeconds,
+            endTime: endAfterTenSeconds,
+            phase: phaseOne,
+            isDiscountEnabled: discountDisabled,
+          };
+          // create a allowlisted sale category with discount
+          allowlistedSaleWithDiscountCategory = {
+            price: pointOneEthPrice,
+            merkleRoot: merkleTree.getRoot(),
+            perWalletLimit: fiveTokensPerWallet,
+            perTransactionLimit: fiveTokensPerTransaction,
+            supply: twentySupply,
+            keyCardPerAvatar: fiveKeyCardPerAvatar,
+            startTime: startAfterDiscountSale,
+            endTime: endAfterFifteenSeconds,
+            phase: phaseOne,
+            isDiscountEnabled: discountEnabled,
+          };
+
+          // non allowlisted sale
+          nonAllowlistedSaleWithoutDiscountCategory = {
+            price: pointOneEthPrice,
+            merkleRoot: HashZero,
+            perWalletLimit: twoTokensPerWallet,
+            perTransactionLimit: twoTokensPerTransaction,
+            supply: fiftySupply,
+            keyCardPerAvatar: twoKeyCardPerAvatar,
+            startTime: startAfterDiscountSale,
+            endTime: endAfterFifteenSeconds,
+            phase: phaseOne,
+            isDiscountEnabled: discountDisabled,
+          };
+
+          // crete sale category without discount and allowlist
+          await addSaleCategory(
+            nonAllowlistedSaleWithoutDiscountCategory,
+            controllerInstance
+          );
+
+          // create sale category without discount
+          await addSaleCategory(
+            allowlistedSaleWithoutDiscountCategory,
+            controllerInstance
+          );
+          // create sale category with discount
+          await addSaleCategory(
+            allowlistedSaleWithDiscountCategory,
+            controllerInstance
+          );
+
+          await time.increaseTo(
+            parseInt(
+              allowlistedSaleWithoutDiscountCategory.startTime.toString()
+            )
+          );
+        });
+        context("without discount", () => {
+          it("cannot mint allowlisted if sale is not allowlisted", async () => {
+            await expect(
+              controllerInstance.mintAllowlisted(receiver.address, 1, [], 1)
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "SaleNotAllowlisted"
+            );
+          });
+          it("cannot mint allowlisted if the account is not allowlisted", async () => {
+            // activate phase 2
+
+            const nonAllowlistedSigner = ethers.Wallet.createRandom();
+            const proofs = merkleTree.getProof(nonAllowlistedSigner.address);
+            await expect(
+              controllerInstance.mintAllowlisted(
+                nonAllowlistedSigner.address,
+                1,
+                proofs,
+                2
+              )
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "AccountNotInAllowlist"
+            );
+          });
+          it("can mint after the account is added to allowlist", async () => {
+            // cannot mint with account that is not allowlisted
+            const nonAllowlistedSigner = ethers.Wallet.createRandom();
+            const proofs = merkleTree.getProof(nonAllowlistedSigner.address);
+            await expect(
+              controllerInstance.mintAllowlisted(
+                nonAllowlistedSigner.address,
+                1,
+                proofs,
+                2
+              )
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "AccountNotInAllowlist"
+            );
+
+            // add account to merkle tree
+            await merkleTree.addToAllowlist([nonAllowlistedSigner.address]);
+            const merkleRoot = merkleTree.getRoot();
+
+            // update allowlist on-chain
+            await controllerInstance.editMerkleRootOfSaleCategory(
+              2,
+              merkleRoot
+            );
+
+            // get proofs
+            const newProofs = merkleTree.getProof(nonAllowlistedSigner.address);
+
+            const price = BigNumber.from(
+              allowlistedSaleWithoutDiscountCategory.price.toString()
+            );
+
+            // mint tokens with non allowlisted address
+            await controllerInstance.mintAllowlisted(
+              nonAllowlistedSigner.address,
+              1,
+              newProofs,
+              2,
+              { value: price }
+            );
+          });
+          it("mints allowlisted token on correct inputs", async () => {
+            // get proofs
+            const newProofs = merkleTree.getProof(receiver.address);
+
+            const price = BigNumber.from(
+              allowlistedSaleWithoutDiscountCategory.price.toString()
+            );
+
+            // mint tokens with non allowlisted address
+            await controllerInstance.mintAllowlisted(
+              receiver.address,
+              1,
+              newProofs,
+              2,
+              { value: price }
+            );
+          });
+        });
+        context("with discount", () => {
+          let validDiscountCode: string;
+          let invalidDiscountCode: string;
+          let tenPercentDiscountedPrice; // 10% discount
+          let twentyPercentDiscountedPrice;
+          let proofs: string[];
+          beforeEach("!! setup discount codes", async () => {
+            tenPercentDiscountedPrice = BigNumber.from(
+              allowlistedSaleWithDiscountCategory.price.toString()
+            )
+              .mul(9)
+              .div(10);
+            twentyPercentDiscountedPrice = BigNumber.from(
+              allowlistedSaleWithDiscountCategory.price.toString()
+            )
+              .mul(8)
+              .div(10);
+            validDiscountCode = await discountManager.generateNewDiscountCode(
+              twentyPercentDiscountedPrice,
+              receiver.address
+            );
+            invalidDiscountCode =
+              await invalidDiscountManager.generateNewDiscountCode(
+                tenPercentDiscountedPrice,
+                receiver.address
+              );
+            proofs = merkleTree.getProof(receiver.address);
+            await time.increaseTo(
+              parseInt(allowlistedSaleWithDiscountCategory.startTime.toString())
+            );
+          });
+          it("cannot mint at discount price if discount code is invalid", async () => {
+            const invalidDiscountResponceCode =
+              invalidDiscountManager.parseCode(invalidDiscountCode);
+            await expect(
+              controllerInstance.mintDiscountedAllowlist(
+                receiver.address,
+                1,
+                proofs,
+                3,
+                invalidDiscountResponceCode.discountIndex,
+                invalidDiscountResponceCode.discountedPrice,
+                invalidDiscountResponceCode.signature
+              )
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "InvalidDiscountCode"
+            );
+          });
+          it("cannot mint if correct amount calculated at discounted rice is not sent", async () => {
+            const discountResponseCode =
+              discountManager.parseCode(validDiscountCode);
+            const price = BigNumber.from(
+              allowlistedSaleWithDiscountCategory.price.toString()
+            );
+            await expect(
+              controllerInstance.mintDiscountedAllowlist(
+                receiver.address,
+                1,
+                proofs,
+                3,
+                discountResponseCode.discountIndex,
+                discountResponseCode.discountedPrice,
+                discountResponseCode.signature,
+                { value: price.mul(2) }
+              )
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "TransferExactAmount"
+            );
+          });
+          it("mints token as discounted rate", async () => {
+            const discountResponseCode =
+              discountManager.parseCode(validDiscountCode);
+            const price = discountResponseCode.discountedPrice;
+            await controllerInstance.mintDiscountedAllowlist(
+              receiver.address,
+              1,
+              proofs,
+              3,
+              discountResponseCode.discountIndex,
+              discountResponseCode.discountedPrice,
+              discountResponseCode.signature,
+              { value: price.mul(1) }
+            );
+          });
+          it("cannot mint at discounted price for used discount code", async () => {
+            // use the discount code first
+            const discountResponseCode =
+              discountManager.parseCode(validDiscountCode);
+            const price = discountResponseCode.discountedPrice;
+            await controllerInstance.mintDiscountedAllowlist(
+              receiver.address,
+              1,
+              proofs,
+              3,
+              discountResponseCode.discountIndex,
+              discountResponseCode.discountedPrice,
+              discountResponseCode.signature,
+              { value: price.mul(1) }
+            );
+
+            // try using the same code again
+            await expect(
+              controllerInstance.mintDiscountedAllowlist(
+                receiver.address,
+                1,
+                proofs,
+                3,
+                discountResponseCode.discountIndex,
+                discountResponseCode.discountedPrice,
+                discountResponseCode.signature,
+                { value: price.mul(1) }
+              )
+            ).to.be.revertedWithCustomError(
+              controllerInstance,
+              "DiscountCodeAlreadyUsed"
+            );
+          });
         });
       });
     });
