@@ -56,8 +56,8 @@ export class DiscountManager {
     // return data
     const discountRespone: DiscountResponse = {
       discountIndex: currentDiscountIndex,
-      discountedPrice: discountedPrice,
-      signature: signature,
+      discountedPrice,
+      signature,
     };
     const discountCode = this.generateCode(discountRespone);
     return discountCode;

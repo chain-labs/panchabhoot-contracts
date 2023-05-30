@@ -147,18 +147,18 @@ export class MerkleTreeManagement {
     if (!this.connected) {
       throw Error("Not Connected IPFS");
     }
-    var data = JSON.stringify({
+    const data = JSON.stringify({
       pinataContent: addresses,
     });
 
-    var config = {
+    const config = {
       method: "post",
       url: "https://api.pinata.cloud/pinning/pinJSONToIPFS",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.ipfsJwt}`,
       },
-      data: data,
+      data,
     };
 
     const res = await axios.post(config.url, data, {
