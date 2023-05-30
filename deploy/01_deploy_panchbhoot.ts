@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { contractsName } from "../test/Constants";
 import {
-  Admin_ADDRESS,
+  ADMIN_ADDRESS,
   AvatarName,
   AvatarSymbol,
   ChainLabsAddress,
@@ -28,13 +28,13 @@ const deployFunction = async (
   const { ethers, deployments, upgrades, getChainId, network } = hre;
 
   // get deploy function from deployments
-	const { save, getExtendedArtifact } = deployments;
+  const { save, getExtendedArtifact } = deployments;
 
   const [deployer] = await ethers.getSigners();
 
   await getChainId();
 
-  const adminAddress = DEPLOYER_IS_ADMIN ? deployer.address : Admin_ADDRESS;
+  const adminAddress = DEPLOYER_IS_ADMIN ? deployer.address : ADMIN_ADDRESS;
 
   // deploy controller
   const controllerFactory = await ethers.getContractFactory(
@@ -45,8 +45,10 @@ const deployFunction = async (
     initializer: false,
   })) as Controller;
 
-	console.log(`Waiting for ${contractsName.CONTROLLER} deployment confirmation...`);
-	await controller.deployed();
+  console.log(
+    `Waiting for ${contractsName.CONTROLLER} deployment confirmation...`
+  );
+  await controller.deployed();
 
   // deploy avatar contract
   const avatarFactory = await ethers.getContractFactory(
@@ -74,77 +76,82 @@ const deployFunction = async (
     adminAddress,
     controller.address,
   ])) as KeyCard;
-  console.log(`Waiting for ${contractsName.KEY_CARD} deployment confirmation...`);
+  console.log(
+    `Waiting for ${contractsName.KEY_CARD} deployment confirmation...`
+  );
   await keyCardInstance.deployed();
 
   // initialise controller
-  await (await controller.initialize(
-    avatarInstance.address,
-    keyCardInstance.address,
-    DISCOUNT_SIGNER,
-    [adminAddress, ChainLabsAddress],
-    [parseEther("0.90"), parseEther("0.10")],
-    TOKENS_TO_RESERVE
-  )).wait();
+  await (
+    await controller.initialize(
+      avatarInstance.address,
+      keyCardInstance.address,
+      DISCOUNT_SIGNER,
+      [adminAddress, ChainLabsAddress],
+      [parseEther("0.90"), parseEther("0.10")],
+      TOKENS_TO_RESERVE
+    )
+  ).wait();
 
+  console.log("Waiting for few blocks to verify...");
+  console.log("Saving Artifacts now...");
 
-	console.log("Waiting for few blocks to verify...");
-	console.log("Saving Artifacts now...");
+  // controller
+  const controllerArtifact = await getExtendedArtifact(
+    contractsName.CONTROLLER
+  );
+  await save(contractsName.CONTROLLER, {
+    ...controllerArtifact,
+    address: controller.address,
+  });
+  console.log("Controller Artifacts Saved");
 
-    // controller
-	const controllerArtifact = await getExtendedArtifact(contractsName.CONTROLLER);
-	await save(contractsName.CONTROLLER, {
-		...controllerArtifact,
-		address: controller.address,
-	});
-	console.log("Controller Artifacts Saved");
+  // Avatar
+  const avatarArtifact = await getExtendedArtifact(contractsName.AVATAR);
+  await save(contractsName.AVATAR, {
+    ...avatarArtifact,
+    address: avatarInstance.address,
+  });
+  console.log("Avatar Artifacts Saved");
 
-    // Avatar
-	const avatarArtifact = await getExtendedArtifact(contractsName.AVATAR);
-	await save(contractsName.AVATAR, {
-		...avatarArtifact,
-		address: avatarInstance.address,
-	});
-	console.log("Avatar Artifacts Saved");
+  // Key Card
+  const keyCardArtifact = await getExtendedArtifact(contractsName.KEY_CARD);
+  await save(contractsName.KEY_CARD, {
+    ...keyCardArtifact,
+    address: keyCardInstance.address,
+  });
+  console.log("Key Card Artifacts Saved");
 
-    // Key Card
-	const keyCardArtifact = await getExtendedArtifact(contractsName.KEY_CARD);
-	await save(contractsName.KEY_CARD, {
-		...keyCardArtifact,
-		address: keyCardInstance.address,
-	});
-	console.log("Key Card Artifacts Saved");
-
-    // verify contract
-    await new Promise((resolve, reject) => {
-		setTimeout(async () => {
-			// Verify Contract on etherscan
-			console.log("Verifying contract on Etherscan");
-			if (network.name === "hardhat" || network.name === "localhost") {
-				console.log("Etherscan doesn't support network");
-			} else {
-				try {
-                    console.log(process.env.ETHERSCAN_KEY);
-                    // controller
-					await hre.run("verify:verify", {
-						address: controller.address,
-					});
-                    // avatar
-					await hre.run("verify:verify", {
-						address: avatarInstance.address,
-					});
-                    // key card
-					await hre.run("verify:verify", {
-						address: keyCardInstance.address,
-					});
-				} catch (e) {
-					console.log(e);
-				}
-				console.log("Contract Verified");
-			}
-			resolve(1);
-		}, 15000);
-	});
+  // verify contract
+  await new Promise((resolve, reject) => {
+    setTimeout(async () => {
+      // Verify Contract on etherscan
+      console.log("Verifying contract on Etherscan");
+      if (network.name === "hardhat" || network.name === "localhost") {
+        console.log("Etherscan doesn't support network");
+      } else {
+        try {
+          console.log(process.env.ETHERSCAN_KEY);
+          // controller
+          await hre.run("verify:verify", {
+            address: controller.address,
+          });
+          // avatar
+          await hre.run("verify:verify", {
+            address: avatarInstance.address,
+          });
+          // key card
+          await hre.run("verify:verify", {
+            address: keyCardInstance.address,
+          });
+        } catch (e) {
+          console.log(e);
+        }
+        console.log("Contract Verified");
+      }
+      resolve(1);
+    }, 15000);
+  });
 };
 
 deployFunction.tags = CONTRACT_NAME;
