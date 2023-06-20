@@ -7,7 +7,7 @@ import "hardhat-packager";
 import "hardhat-tracer";
 import "hardhat-deploy";
 import "@openzeppelin/hardhat-upgrades";
-import "./tasks/saleCategoryManagement.task"
+import "./tasks/saleCategoryManagement.task";
 import "./tasks/discountCodeManagement.task";
 dotenv.config({ path: "./.env" });
 

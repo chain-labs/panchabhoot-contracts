@@ -1,3 +1,4 @@
+/* eslint no-empty-pattern: 1 */
 import { task } from "hardhat/config";
 import { SaleCategoryParams } from "../types/ContractParameters";
 import { parseUnits } from "ethers/lib/utils";
@@ -5,7 +6,6 @@ import { Transaction, constants } from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { contractsName } from "../test/Constants";
 import { Controller } from "../typechain-types";
-import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 const pointOneEthPrice = parseUnits("0.1", "ether");
 
 const getParams = (currentTime: number) => {
@@ -53,23 +53,28 @@ const getParams = (currentTime: number) => {
   };
 };
 
-async function addSale(func: Function, params: SaleCategoryParams): Promise<Transaction> {
-  return await (await func(
-    params.startTime,
-    params.endTime,
-    params.price,
-    params.merkleRoot,
-    params.perWalletLimit,
-    params.perTransactionLimit,
-    params.supply,
-    params.keyCardPerAvatar,
-    params.phase,
-    params.isDiscountEnabled as boolean
-  )).wait();
+async function addSale(
+  func: Function,
+  params: SaleCategoryParams
+): Promise<Transaction> {
+  return await (
+    await func(
+      params.startTime,
+      params.endTime,
+      params.price,
+      params.merkleRoot,
+      params.perWalletLimit,
+      params.perTransactionLimit,
+      params.supply,
+      params.keyCardPerAvatar,
+      params.phase,
+      params.isDiscountEnabled as boolean
+    )
+  ).wait();
 }
-
+// @ts-ignore
 async function addInitialSales({}, hre: HardhatRuntimeEnvironment) {
-  const { ethers, network } = hre;
+  const { ethers } = hre;
   const {
     presalecategoryParams,
     discountedCategoryParams,
@@ -96,12 +101,8 @@ async function addInitialSales({}, hre: HardhatRuntimeEnvironment) {
 }
 
 async function addPublicSale({}, hre: HardhatRuntimeEnvironment) {
-    const { ethers, network } = hre;
-  const {
-    presalecategoryParams,
-    discountedCategoryParams,
-    publicSaleCategoryParams,
-  } = getParams(Math.ceil(Date.now() / 1000));
+  const { ethers } = hre;
+  const { publicSaleCategoryParams } = getParams(Math.ceil(Date.now() / 1000));
   const controllerInstance = (await ethers.getContract(
     contractsName.CONTROLLER
   )) as Controller;
@@ -112,12 +113,8 @@ async function addPublicSale({}, hre: HardhatRuntimeEnvironment) {
 }
 
 async function addDiscountedSale({}, hre: HardhatRuntimeEnvironment) {
-    const { ethers, network } = hre;
-  const {
-    presalecategoryParams,
-    discountedCategoryParams,
-    publicSaleCategoryParams,
-  } = getParams(Math.ceil(Date.now() / 1000));
+  const { ethers } = hre;
+  const { discountedCategoryParams } = getParams(Math.ceil(Date.now() / 1000));
   const controllerInstance = (await ethers.getContract(
     contractsName.CONTROLLER
   )) as Controller;
@@ -132,7 +129,8 @@ task(
   "Add a presale, discounted sale and public sale for newly created controller."
 ).setAction(addInitialSales);
 
-task("addNewDiscountedSale", "Add new discounted sale").setAction(addDiscountedSale);
-
+task("addNewDiscountedSale", "Add new discounted sale").setAction(
+  addDiscountedSale
+);
 
 task("addNewPublicSale", "Add new Public sale").setAction(addPublicSale);
