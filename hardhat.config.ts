@@ -2,6 +2,7 @@ import { checkForUndefined } from "./utils/checkers";
 import dotenv from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
 import { NetworkUserConfig } from "hardhat/types";
+import "@tenderly/hardhat-tenderly";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-packager";
 import "hardhat-tracer";
@@ -61,7 +62,10 @@ const config: HardhatUserConfig = {
     deploy: "deploy",
     sources: "contracts",
   },
-
+  tenderly: {
+    project: 'project',
+    username: 'codebuster22'
+  },
   networks: {
     ethereum: {
       ...sharedNetworkConfig,

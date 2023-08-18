@@ -211,7 +211,6 @@ task("addNewDiscountedSale", "Add new discounted sale").setAction(
 
 task("addNewPublicSale", "Add new Public sale").setAction(addPublicSale);
 
-
 task("addNewAllowlistSale", "Add new Allowlisted sale").setAction(addAllowlistSale);
 
 task("addNewAllowDiscountSale", "Add new Allowlisted Discounted sale").setAction(addAllowlistDiscountSale);

@@ -54,6 +54,7 @@
     "typescript": "*"
   },
   "dependencies": {
+    "@tenderly/hardhat-tenderly": "^1.7.7",
     "axios": "^1.2.1",
     "erc721a-upgradeable": "^4.2.3",
     "eslint-config-prettier": "^8.5.0",

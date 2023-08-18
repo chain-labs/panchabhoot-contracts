@@ -123,7 +123,6 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
   const avatarSymbol = "TAT";
   const keyCardName = "Test Key Card";
   const keyCardSymbol = "TKC";
-
   // constants
   beforeEach("!! deploy controller", async () => {
     [owner, notOwner, discountSigner, newDiscountSigner, receiver, admin] =
@@ -908,6 +907,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
         });
       });
       context("discount code signature", () => {
+        console.log("Discount code signature tests");
         let discountCodeIndex: BigNumberish;
         let receiverAddress: Address;
         let signature: BytesLike;
@@ -1538,6 +1538,8 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
             const discountResponseCode =
               discountManager.parseCode(validDiscountCode);
             const price = discountResponseCode.discountedPrice;
+            console.log("This test is working");
+            console.log(discountResponseCode);
             await controllerInstance.mintDiscounted(
               receiver.address,
               1,
@@ -1775,6 +1777,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
           let twentyPercentDiscountedPrice;
           let proofs: string[];
           beforeEach("!! setup discount codes", async () => {
+            console.log("Testing with discount");
             tenPercentDiscountedPrice = BigNumber.from(
               allowlistedSaleWithDiscountCategory.price.toString()
             )
@@ -1800,6 +1803,7 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
             );
           });
           it("cannot mint at discount price if discount code is invalid", async () => {
+            console.log("Testing with discount");
             const invalidDiscountResponceCode =
               invalidDiscountManager.parseCode(invalidDiscountCode);
             await expect(
@@ -1842,6 +1846,8 @@ describe(`${UNIT_TEST}${contractsName.CONTROLLER}`, () => {
           it("mints token as discounted rate", async () => {
             const discountResponseCode =
               discountManager.parseCode(validDiscountCode);
+            console.log("This test is working");
+            console.log(discountResponseCode);
             const price = discountResponseCode.discountedPrice;
             await controllerInstance.mintDiscountedAllowlist(
               receiver.address,
