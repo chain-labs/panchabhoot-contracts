@@ -19,7 +19,7 @@ const getParams = async (currentTime: number) => {
     "0x5F5A30564388e7277818c15DB0d511AAbbD0eC80",
     "0x0b563F844fFAb97E54150cd7D2Aa4aFbCD6B69Ca",
     "0xd18Cd50a6bDa288d331e3956BAC496AAbCa4960d",
-    "0x88477cF43CC870567dAaBC4FbA6700f105A54894"
+    "0x88477cF43CC870567dAaBC4FbA6700f105A54894",
   ];
   const merkleTree = new MerkleTreeManagement(
     whitelisted,
@@ -32,7 +32,7 @@ const getParams = async (currentTime: number) => {
   console.log(`IPFS CID of whitelist is: ${merkleTree.cid}`);
   const presalecategoryParams: SaleCategoryParams = {
     price: pointOneEthPrice,
-    merkleRoot: constants.HashZero,
+    merkleRoot: merkleRoot,
     perWalletLimit: "10000000000000000000",
     perTransactionLimit: "10000000000000000000",
     supply: "10000000000000000000",
@@ -126,6 +126,8 @@ async function addInitialSales({}, hre: HardhatRuntimeEnvironment) {
     presalecategoryParams,
     discountedCategoryParams,
     publicSaleCategoryParams,
+    allowlistedCategoryParams,
+    allowlistedDiscountedCategoryParams,
   } = await getParams(Math.ceil(Date.now() / 1000));
   const controllerInstance = (await ethers.getContract(
     contractsName.CONTROLLER
@@ -135,6 +137,17 @@ async function addInitialSales({}, hre: HardhatRuntimeEnvironment) {
   console.log("Add presale sale category");
   await addSale(controllerInstance.addSale, presalecategoryParams);
   console.log("Added presale sale category");
+
+  console.log("Add allowlist");
+  await addSale(controllerInstance.addSale, allowlistedCategoryParams);
+  console.log("Added Allowlist");
+
+  console.log("Add allowlist discounted");
+  await addSale(
+    controllerInstance.addSale,
+    allowlistedDiscountedCategoryParams
+  );
+  console.log("Added allowlist and discounted");
 
   // add discounted sale
   console.log("Add Discounted sale category");
@@ -171,7 +184,10 @@ async function addAllowlistDiscountSale({}, hre: HardhatRuntimeEnvironment) {
   )) as Controller;
   // add public sale
   console.log("Add Allowlist Discount category");
-  await addSale(controllerInstance.addSale, allowlistedDiscountedCategoryParams);
+  await addSale(
+    controllerInstance.addSale,
+    allowlistedDiscountedCategoryParams
+  );
   console.log("Added Allowlist Discount category");
 }
 
@@ -214,6 +230,11 @@ task("addNewDiscountedSale", "Add new discounted sale").setAction(
 
 task("addNewPublicSale", "Add new Public sale").setAction(addPublicSale);
 
-task("addNewAllowlistSale", "Add new Allowlisted sale").setAction(addAllowlistSale);
+task("addNewAllowlistSale", "Add new Allowlisted sale").setAction(
+  addAllowlistSale
+);
 
-task("addNewAllowDiscountSale", "Add new Allowlisted Discounted sale").setAction(addAllowlistDiscountSale);
+task(
+  "addNewAllowDiscountSale",
+  "Add new Allowlisted Discounted sale"
+).setAction(addAllowlistDiscountSale);

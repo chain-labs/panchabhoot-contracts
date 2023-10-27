@@ -5,7 +5,7 @@
       "chainId": "5",
       "contracts": {
         "Avatar": {
-          "address": "0x5Ef8d5D5296442919030c06a168bc36b8499Fe4b",
+          "address": "0x7a7f3dF74b9f935731D073729e627ad4118b31f6",
           "abi": [
             {
               "inputs": [],
@@ -802,7 +802,7 @@
           ]
         },
         "Controller": {
-          "address": "0xFFF3a2E37639A21a047f15b84a3b9C595a20dd3A",
+          "address": "0x4e8500c07F52377e66F4d114b0B5ca6D40fe2127",
           "abi": [
             {
               "inputs": [],
@@ -2485,7 +2485,7 @@
           ]
         },
         "KeyCard": {
-          "address": "0x013293eAA00E71816B9f3d1e0fda2b9c7B0754a5",
+          "address": "0x8051cEF6AeFCefd3E87B73C2761C969D50B9ed94",
           "abi": [
             {
               "inputs": [],
