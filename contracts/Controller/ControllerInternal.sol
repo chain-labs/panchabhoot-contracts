@@ -4,13 +4,14 @@ pragma solidity 0.8.17;
 
 import {ControllerStorage} from "./ControllerStorage.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
-import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+import {SignatureChecker, ECDSA} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import {IKeyCard} from "../KeyCard/IKeyCard.sol";
 import {IAvatar} from "../Avatar/IAvatar.sol";
 
 abstract contract ControllerInternal is ControllerStorage {
     using Counters for Counters.Counter;
+    using ECDSA for bytes32;
 
     // Errors
     error EndTimeBehindStartTime(
@@ -566,9 +567,7 @@ abstract contract ControllerInternal is ControllerStorage {
 
         // Signature is produced by signing a keccak256 hash with the following format:
         // "\x19Ethereum Signed Message\n" + len(msg) + msg
-        bytes32 ethSignedMessageHash = keccak256(
-            abi.encodePacked("\x19Ethereum Signed Message:\n32", _discountHash)
-        );
+        bytes32 ethSignedMessageHash = _discountHash.toEthSignedMessageHash();
 
         // check if discount code is applied or not
         _isDiscountValid = SignatureChecker.isValidSignatureNow(

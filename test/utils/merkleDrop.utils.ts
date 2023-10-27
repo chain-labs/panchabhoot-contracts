@@ -25,6 +25,7 @@ export class MerkleTreeManagement {
           "ipfsJwt is undefined. Cannot initialise without ipfsJwt Key"
         );
       }
+      console.log("Connected to internet");
       this.connected = true;
       // setup IPFS client
       this.ipfsJwt = ipfsJwt;

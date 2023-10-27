@@ -13,7 +13,7 @@ export interface DiscountResponse {
 
 export class DiscountManager {
   endpoint: string | undefined;
-  discountIndexCounter: number = 0;
+  discountIndexCounter: number = 15;
   isProduction: Boolean;
   discountSigner: SignerWithAddress | Signer;
   static readonly discountPostfix: string = DISCOUNT_CODE_MESSAGE;
