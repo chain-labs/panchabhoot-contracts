@@ -64,8 +64,8 @@ const config: HardhatUserConfig = {
     sources: "contracts",
   },
   tenderly: {
-    project: 'project',
-    username: 'codebuster22'
+    project: "project",
+    username: "codebuster22",
   },
   networks: {
     ethereum: {

@@ -54,12 +54,9 @@ contract Controller is
         _setAvatar(_newAvatar);
     }
 
-    function setKeyCard(address _newKeyCard)
-        external
-        virtual
-        override
-        onlyOwner
-    {
+    function setKeyCard(
+        address _newKeyCard
+    ) external virtual override onlyOwner {
         _setKeyCard(_newKeyCard);
     }
 
@@ -119,10 +116,10 @@ contract Controller is
     /// @dev edit new price of sale category
     /// @param _saleCategoryId sale category id
     /// @param _newPrice new price for this sale category
-    function editPriceOfSaleCategory(uint256 _saleCategoryId, uint256 _newPrice)
-        external
-        onlyOwner
-    {
+    function editPriceOfSaleCategory(
+        uint256 _saleCategoryId,
+        uint256 _newPrice
+    ) external onlyOwner {
         // set price of sale category
         _setPriceOfSaleCategory(_saleCategoryId, _newPrice);
     }
@@ -198,10 +195,10 @@ contract Controller is
         }
     }
 
-    function togglePauseSale(uint256 _saleCategoryId, bool _isPaused)
-        external
-        onlyOwner
-    {
+    function togglePauseSale(
+        uint256 _saleCategoryId,
+        bool _isPaused
+    ) external onlyOwner {
         if (_isPaused) {
             _pauseSale(_saleCategoryId);
         } else {
@@ -220,13 +217,9 @@ contract Controller is
     /// @dev get sale category
     /// @param _saleCategoryId sale category id
     /// @return returns sale category struct
-    function getSaleCategory(uint256 _saleCategoryId)
-        external
-        view
-        virtual
-        override
-        returns (SaleCategory memory)
-    {
+    function getSaleCategory(
+        uint256 _saleCategoryId
+    ) external view virtual override returns (SaleCategory memory) {
         return _getSaleCategory(_saleCategoryId);
     }
 
@@ -299,19 +292,15 @@ contract Controller is
         return _getCurrentPhase();
     }
 
-    function getTokensToReserveInPhase(PHASE_ID _phaseId)
-        external
-        view
-        returns (uint96)
-    {
+    function getTokensToReserveInPhase(
+        PHASE_ID _phaseId
+    ) external view returns (uint96) {
         return _getTokensToReserveInPhase(_phaseId);
     }
 
-    function checkIfTokenReservedForPhase(PHASE_ID _phaseId)
-        external
-        view
-        returns (bool)
-    {
+    function checkIfTokenReservedForPhase(
+        PHASE_ID _phaseId
+    ) external view returns (bool) {
         return _checkIfTokenReservedForPhase(_phaseId);
     }
 
@@ -332,11 +321,10 @@ contract Controller is
         _reserveTokens(_phaseId);
     }
 
-    function tokensMintedByOwnerInSale(uint256 _saleId, address _receiver)
-        external
-        view
-        returns (uint256)
-    {
+    function tokensMintedByOwnerInSale(
+        uint256 _saleId,
+        address _receiver
+    ) external view returns (uint256) {
         // todo: convert it to internal function
         return _tokensMintedByUser[_saleId][_receiver];
     }

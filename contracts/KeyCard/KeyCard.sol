@@ -26,7 +26,9 @@ contract KeyCard is
         _grantRole(MINTER_ROLE, _minter);
     }
 
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
         virtual
@@ -36,10 +38,10 @@ contract KeyCard is
         super.supportsInterface(interfaceId);
     }
 
-    function mint(address _receiver, uint256 _quantity)
-        external
-        onlyRole(MINTER_ROLE)
-    {
+    function mint(
+        address _receiver,
+        uint256 _quantity
+    ) external onlyRole(MINTER_ROLE) {
         _safeMint(_receiver, _quantity);
     }
 }

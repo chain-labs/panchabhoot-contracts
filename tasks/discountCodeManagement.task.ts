@@ -46,21 +46,32 @@ interface SetDiscountSignerUserArguments {
   discountsigner?: Address;
 }
 
-async function setNewDiscountSigner({discountsigner}: SetDiscountSignerUserArguments, hre: HardhatRuntimeEnvironment) {
-  const {ethers, network} = hre;
+async function setNewDiscountSigner(
+  { discountsigner }: SetDiscountSignerUserArguments,
+  hre: HardhatRuntimeEnvironment
+) {
+  const { ethers } = hre;
   const [deployer] = await ethers.getSigners();
   let discountSigner: Address;
-  const controller = await ethers.getContract(contractsName.CONTROLLER) as Controller;
-  if(discountsigner === undefined) {
+  const controller = (await ethers.getContract(
+    contractsName.CONTROLLER
+  )) as Controller;
+  if (discountsigner === undefined) {
     discountSigner = deployer.address;
-    console.log(`Setting current signer ${deployer.address} as the dsicount signer on ${controller.address} contract`);
+    console.log(
+      `Setting current signer ${deployer.address} as the dsicount signer on ${controller.address} contract`
+    );
   } else {
     discountSigner = discountsigner;
-    console.log(`Setting ${discountsigner} as the Discount Signer on ${controller.address} contract`);
+    console.log(
+      `Setting ${discountsigner} as the Discount Signer on ${controller.address} contract`
+    );
   }
   const transaction = await controller.setDiscountSigner(discountSigner);
-  const receipt = await transaction.wait();
-  console.log(`Successfully added discount signer`)
+  await transaction.wait();
+  console.log(`Successfully added discount signer`);
 }
 
-task("setNewDiscountSigner", "Set new discount signer").addOptionalParam("discountsigner", "discount signer address").setAction(setNewDiscountSigner);
+task("setNewDiscountSigner", "Set new discount signer")
+  .addOptionalParam("discountsigner", "discount signer address")
+  .setAction(setNewDiscountSigner);

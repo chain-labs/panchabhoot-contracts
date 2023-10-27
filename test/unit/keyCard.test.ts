@@ -3,14 +3,14 @@ import { INITIALIZABLE_ALREADY_INITIALIZED } from "./../ERROR_STRINGS";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { contractsName, UNIT_TEST } from "../Constants";
-import { KeyCard__factory } from "../../typechain-types";// eslint-disable-line
+import { KeyCard__factory } from "../../typechain-types"; // eslint-disable-line
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 const setupKeyCard = async (signer: SignerWithAddress) => {
   const keyCardFactory = (await ethers.getContractFactory(
     contractsName.KEY_CARD,
     signer
-  )) as KeyCard__factory;// eslint-disable-line
+  )) as KeyCard__factory; // eslint-disable-line
   const keyCardInstance = (await keyCardFactory.deploy()) as KeyCard;
   return { keyCardInstance, keyCardFactory };
 };

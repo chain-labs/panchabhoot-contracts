@@ -10,7 +10,7 @@ contract AvatarInternal is AvatarStorage {
         emit MaximumTokensUpdated(_newMaximumTokens);
     }
 
-    function _getMaximumTokens() internal view returns(uint256) {
+    function _getMaximumTokens() internal view returns (uint256) {
         return _maximumTokens;
     }
 }

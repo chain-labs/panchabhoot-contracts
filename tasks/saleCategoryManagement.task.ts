@@ -32,7 +32,7 @@ const getParams = async (currentTime: number) => {
   console.log(`IPFS CID of whitelist is: ${merkleTree.cid}`);
   const presalecategoryParams: SaleCategoryParams = {
     price: pointOneEthPrice,
-    merkleRoot: merkleRoot,
+    merkleRoot,
     perWalletLimit: "10000000000000000000",
     perTransactionLimit: "10000000000000000000",
     supply: "10000000000000000000",
@@ -44,7 +44,7 @@ const getParams = async (currentTime: number) => {
   };
   const allowlistedCategoryParams: SaleCategoryParams = {
     price: pointOneEthPrice,
-    merkleRoot: merkleRoot,
+    merkleRoot,
     perWalletLimit: "10000000000000000000",
     perTransactionLimit: "10000000000000000000",
     supply: "10000000000000000000",
@@ -56,7 +56,7 @@ const getParams = async (currentTime: number) => {
   };
   const allowlistedDiscountedCategoryParams: SaleCategoryParams = {
     price: pointOneEthPrice,
-    merkleRoot: merkleRoot,
+    merkleRoot,
     perWalletLimit: "10000000000000000000",
     perTransactionLimit: "10000000000000000000",
     supply: "10000000000000000000",
