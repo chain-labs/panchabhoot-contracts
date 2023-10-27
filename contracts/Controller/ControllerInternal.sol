@@ -150,9 +150,10 @@ abstract contract ControllerInternal is ControllerStorage {
     /// @dev set new price of sale category
     /// @param _saleCategoryId sale category id
     /// @param _newPrice new price for this sale category
-    function _setPriceOfSaleCategory(uint256 _saleCategoryId, uint256 _newPrice)
-        internal
-    {
+    function _setPriceOfSaleCategory(
+        uint256 _saleCategoryId,
+        uint256 _newPrice
+    ) internal {
         // checks
         _requireExistentSaleCategory(_saleCategoryId);
 
@@ -456,11 +457,9 @@ abstract contract ControllerInternal is ControllerStorage {
     /// @dev get sale category
     /// @param _saleCategoryId sale category id
     /// @return returns sale category struct
-    function _getSaleCategory(uint256 _saleCategoryId)
-        internal
-        view
-        returns (SaleCategory memory)
-    {
+    function _getSaleCategory(
+        uint256 _saleCategoryId
+    ) internal view returns (SaleCategory memory) {
         // checks
         _requireExistentSaleCategory(_saleCategoryId);
         // return sale category struct
@@ -500,11 +499,9 @@ abstract contract ControllerInternal is ControllerStorage {
         return _currentPhase;
     }
 
-    function _getTokensToReserveInPhase(PHASE_ID _phaseId)
-        internal
-        view
-        returns (uint96)
-    {
+    function _getTokensToReserveInPhase(
+        PHASE_ID _phaseId
+    ) internal view returns (uint96) {
         return _tokensToReserve[_phaseId];
     }
 
@@ -522,11 +519,9 @@ abstract contract ControllerInternal is ControllerStorage {
         _reservedForPhase[_phaseId] = true;
     }
 
-    function _checkIfTokenReservedForPhase(PHASE_ID _phaseId)
-        internal
-        view
-        returns (bool)
-    {
+    function _checkIfTokenReservedForPhase(
+        PHASE_ID _phaseId
+    ) internal view returns (bool) {
         return _reservedForPhase[_phaseId];
     }
 
@@ -583,10 +578,10 @@ abstract contract ControllerInternal is ControllerStorage {
     }
 
     // check internal functions
-    function _requireValidTimePeriod(uint96 _newStartTime, uint96 _newEndTime)
-        private
-        view
-    {
+    function _requireValidTimePeriod(
+        uint96 _newStartTime,
+        uint96 _newEndTime
+    ) private view {
         // checks
         // end time cannot be behind start time
         if (_newEndTime <= _newStartTime) {
@@ -613,30 +608,27 @@ abstract contract ControllerInternal is ControllerStorage {
         }
     }
 
-    function _requireExistentSaleCategory(uint256 _saleCategoryId)
-        private
-        view
-    {
+    function _requireExistentSaleCategory(
+        uint256 _saleCategoryId
+    ) private view {
         // check if sale category exists or not
         if (_saleCounter.current() < _saleCategoryId || _saleCategoryId == 0) {
             revert InexistentSaleCategory(_saleCategoryId);
         }
     }
 
-    function _requireDiscountCodeIndexValid(uint256 _discountIndex)
-        private
-        view
-    {
+    function _requireDiscountCodeIndexValid(
+        uint256 _discountIndex
+    ) private view {
         // check if discount code is already applied or not
         if (_appliedDiscountIndex[_discountIndex]) {
             revert DiscountCodeAlreadyUsed(_discountIndex);
         }
     }
 
-    function _requireTokensNotAlreadyReservedForPhase(PHASE_ID _phaseId)
-        private
-        view
-    {
+    function _requireTokensNotAlreadyReservedForPhase(
+        PHASE_ID _phaseId
+    ) private view {
         if (_reservedForPhase[_phaseId]) {
             revert TokensAlreadyReservedForPhase(_phaseId);
         }
@@ -723,10 +715,9 @@ abstract contract ControllerInternal is ControllerStorage {
         }
     }
 
-    function _requireSaleToBeAllowlisted(SaleCategory memory _sale)
-        private
-        pure
-    {
+    function _requireSaleToBeAllowlisted(
+        SaleCategory memory _sale
+    ) private pure {
         if (_sale.merkleRoot == bytes32(0)) {
             // sale not enabled
             revert SaleNotAllowlisted();
