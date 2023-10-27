@@ -49,7 +49,7 @@ import { DiscountManager } from "../utils/discountCodes.utils";
 dotenv.config({ path: "./.env" });
 const { AddressZero, HashZero } = ethers.constants;
 
-const IPFS_API = process.env.PINATA_JWT_KEY;
+const IPFS_API = process.env.Pinata_JWT;
 const isProduction = process.env.PRODUCTION === "true";
 const notCI = process.env.NOT_CI === "true";
 
