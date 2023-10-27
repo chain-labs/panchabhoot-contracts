@@ -13,8 +13,14 @@ import "./tasks/discountCodeManagement.task";
 import "./tasks/relayerCheck.task";
 dotenv.config({ path: "./.env" });
 
-const { INFURA_KEY, ETHERSCAN_KEY, POLYGONSCAN_KEY, PRIVATE_KEY, MNEMONIC, NOT_CI } =
-  process.env;
+const {
+  INFURA_KEY,
+  ETHERSCAN_KEY,
+  POLYGONSCAN_KEY,
+  PRIVATE_KEY,
+  MNEMONIC,
+  NOT_CI,
+} = process.env;
 
 if (NOT_CI === "true") {
   checkForUndefined("INFURA_KEY", INFURA_KEY);
@@ -80,7 +86,7 @@ const config: HardhatUserConfig = {
     matic: {
       ...sharedNetworkConfig,
       url: `https://polygon-mainnet.infura.io/v3/${INFURA_KEY}`,
-    }
+    },
   },
   solidity: {
     compilers: [
