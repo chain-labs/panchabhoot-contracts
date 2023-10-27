@@ -9,7 +9,7 @@ import { contractsName } from "../test/Constants";
 import { Controller } from "../typechain-types";
 import { MerkleTreeManagement } from "../test/utils/merkleDrop.utils";
 import { checkForUndefined } from "../utils/checkers";
-const pointOneEthPrice = parseUnits("0.1", "ether");
+const pointOneEthPrice = parseUnits("0.00001", "ether");
 dotenv.config({ path: "./.env" });
 
 const getParams = async (currentTime: number) => {
@@ -17,6 +17,9 @@ const getParams = async (currentTime: number) => {
   const whitelisted = [
     "0x67BE2C36e75B7439ffc2DCb99dBdF4fbB2455930",
     "0x5F5A30564388e7277818c15DB0d511AAbbD0eC80",
+    "0x0b563F844fFAb97E54150cd7D2Aa4aFbCD6B69Ca",
+    "0xd18Cd50a6bDa288d331e3956BAC496AAbCa4960d",
+    "0x88477cF43CC870567dAaBC4FbA6700f105A54894"
   ];
   const merkleTree = new MerkleTreeManagement(
     whitelisted,
@@ -30,9 +33,9 @@ const getParams = async (currentTime: number) => {
   const presalecategoryParams: SaleCategoryParams = {
     price: pointOneEthPrice,
     merkleRoot: constants.HashZero,
-    perWalletLimit: 4,
-    perTransactionLimit: 3,
-    supply: 100,
+    perWalletLimit: "10000000000000000000",
+    perTransactionLimit: "10000000000000000000",
+    supply: "10000000000000000000",
     keyCardPerAvatar: 2,
     startTime: currentTime + 1000,
     endTime: currentTime + 10000000,
@@ -42,9 +45,9 @@ const getParams = async (currentTime: number) => {
   const allowlistedCategoryParams: SaleCategoryParams = {
     price: pointOneEthPrice,
     merkleRoot: merkleRoot,
-    perWalletLimit: 4,
-    perTransactionLimit: 3,
-    supply: 100,
+    perWalletLimit: "10000000000000000000",
+    perTransactionLimit: "10000000000000000000",
+    supply: "10000000000000000000",
     keyCardPerAvatar: 2,
     startTime: currentTime + 1000,
     endTime: currentTime + 10000000,
@@ -54,9 +57,9 @@ const getParams = async (currentTime: number) => {
   const allowlistedDiscountedCategoryParams: SaleCategoryParams = {
     price: pointOneEthPrice,
     merkleRoot: merkleRoot,
-    perWalletLimit: 4,
-    perTransactionLimit: 3,
-    supply: 100,
+    perWalletLimit: "10000000000000000000",
+    perTransactionLimit: "10000000000000000000",
+    supply: "10000000000000000000",
     keyCardPerAvatar: 2,
     startTime: currentTime + 1000,
     endTime: currentTime + 10000000,
@@ -66,9 +69,9 @@ const getParams = async (currentTime: number) => {
   const discountedCategoryParams: SaleCategoryParams = {
     price: pointOneEthPrice,
     merkleRoot: constants.HashZero,
-    perWalletLimit: 4,
-    perTransactionLimit: 4,
-    supply: 100,
+    perWalletLimit: "10000000000000000000",
+    perTransactionLimit: "10000000000000000000",
+    supply: "10000000000000000000",
     keyCardPerAvatar: 1,
     startTime: currentTime + 1000,
     endTime: currentTime + 10000000,
@@ -78,9 +81,9 @@ const getParams = async (currentTime: number) => {
   const publicSaleCategoryParams: SaleCategoryParams = {
     price: pointOneEthPrice,
     merkleRoot: constants.HashZero,
-    perWalletLimit: 4,
-    perTransactionLimit: 3,
-    supply: 200,
+    perWalletLimit: "10000000000000000000",
+    perTransactionLimit: "10000000000000000000",
+    supply: "10000000000000000000",
     keyCardPerAvatar: 1,
     startTime: currentTime + 10000,
     endTime: currentTime + 10000000,

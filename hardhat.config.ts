@@ -10,6 +10,7 @@ import "hardhat-deploy";
 import "@openzeppelin/hardhat-upgrades";
 import "./tasks/saleCategoryManagement.task";
 import "./tasks/discountCodeManagement.task";
+import "./tasks/relayerCheck.task";
 dotenv.config({ path: "./.env" });
 
 const { INFURA_KEY, ETHERSCAN_KEY, PRIVATE_KEY, MNEMONIC, NOT_CI } =
