@@ -13,7 +13,7 @@ import "./tasks/discountCodeManagement.task";
 import "./tasks/relayerCheck.task";
 dotenv.config({ path: "./.env" });
 
-const { INFURA_KEY, ETHERSCAN_KEY, PRIVATE_KEY, MNEMONIC, NOT_CI } =
+const { INFURA_KEY, ETHERSCAN_KEY, POLYGONSCAN_KEY, PRIVATE_KEY, MNEMONIC, NOT_CI } =
   process.env;
 
 if (NOT_CI === "true") {
@@ -21,6 +21,7 @@ if (NOT_CI === "true") {
   checkForUndefined("ETHERSCAN_KEY", ETHERSCAN_KEY);
   checkForUndefined("PRIVATE_KEY", PRIVATE_KEY);
   checkForUndefined("MNEMONIC", MNEMONIC);
+  checkForUndefined("POLYGONSCAN_KEY", POLYGONSCAN_KEY);
 }
 
 const OPTIMIZER_RUNS = 1000;
@@ -76,6 +77,10 @@ const config: HardhatUserConfig = {
       ...sharedNetworkConfig,
       url: `https://goerli.infura.io/v3/${INFURA_KEY}`,
     },
+    matic: {
+      ...sharedNetworkConfig,
+      url: `https://polygon-mainnet.infura.io/v3/${INFURA_KEY}`,
+    }
   },
   solidity: {
     compilers: [
@@ -104,6 +109,7 @@ const config: HardhatUserConfig = {
     apiKey: {
       ethereum: ETHERSCAN_KEY,
       goerli: ETHERSCAN_KEY,
+      polygon: POLYGONSCAN_KEY,
     },
   },
   external: {
