@@ -12,6 +12,9 @@ contract KeyCard is
     ERC721AUpgradeable
 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    string internal baseURI;
+
+    uint256[50] internal __gap;
 
     function initialize(
         string memory _name,
@@ -43,5 +46,25 @@ contract KeyCard is
         uint256 _quantity
     ) external onlyRole(MINTER_ROLE) {
         _safeMint(_receiver, _quantity);
+    }
+
+    function _baseURI() internal view virtual override returns (string memory) {
+        return baseURI;
+    }
+
+    function setBaseURI(string memory _newBaseURI) external onlyOwner {
+        baseURI = _newBaseURI;
+    }
+
+    /// @inheritdoc	ERC721AUpgradeable
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        virtual
+        override
+        returns (string memory)
+    {
+        string memory baseUri = _baseURI();
+        return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseUri, _toString(tokenId), ".json")) : "";
     }
 }

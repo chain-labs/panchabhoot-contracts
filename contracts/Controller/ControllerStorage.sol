@@ -146,4 +146,6 @@ abstract contract ControllerStorage is IController {
     /// @notice counter of sales category that have been added
     /// @dev used to keep track of latest index of sale
     Counters.Counter internal _saleCounter;
+
+    uint256[50] internal __gap;
 }

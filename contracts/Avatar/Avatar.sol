@@ -53,7 +53,38 @@ contract Avatar is
         return _getMaximumTokens();
     }
 
-    function setMaximumTokens(uint256 _newMaximumTokens) external {
+    function setMaximumTokens(uint256 _newMaximumTokens) external onlyOwner {
         _setMaximumTokens(_newMaximumTokens);
+    }
+
+    function _beforeTokenTransfers(
+        address,
+        address,
+        uint256,
+        uint256 quantity
+    ) internal virtual override {
+        if(totalSupply() + quantity > _getMaximumTokens()) {
+            revert MintExceedsSupply();
+        }
+    }
+
+    function _baseURI() internal view virtual override returns (string memory) {
+        return baseURI;
+    }
+
+    function setBaseURI(string memory _newBaseURI) external onlyOwner {
+        baseURI = _newBaseURI;
+    }
+
+    /// @inheritdoc	ERC721AUpgradeable
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        virtual
+        override
+        returns (string memory)
+    {
+        string memory baseUri = _baseURI();
+        return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseUri, _toString(tokenId), ".json")) : "";
     }
 }

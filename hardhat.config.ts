@@ -11,6 +11,7 @@ import "@openzeppelin/hardhat-upgrades";
 import "./tasks/saleCategoryManagement.task";
 import "./tasks/discountCodeManagement.task";
 import "./tasks/relayerCheck.task";
+import "./tasks/upgradeContracts.task";
 dotenv.config({ path: "./.env" });
 
 const {

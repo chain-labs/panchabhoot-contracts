@@ -5,6 +5,7 @@ pragma solidity 0.8.17;
 import {AvatarStorage} from "./AvatarStorage.sol";
 
 contract AvatarInternal is AvatarStorage {
+    error MintExceedsSupply();
     function _setMaximumTokens(uint256 _newMaximumTokens) internal {
         _maximumTokens = _newMaximumTokens;
         emit MaximumTokensUpdated(_newMaximumTokens);

@@ -11,6 +11,11 @@ import type {
 
 const _abi = [
   {
+    inputs: [],
+    name: "MintExceedsSupply",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -26,7 +31,7 @@ const _abi = [
 ];
 
 const _bytecode =
-  "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220e8840e57a8c226a2a712b0b53f7fd121c8dd6920338f0e57be2be29fa8f3df1064736f6c63430008110033";
+  "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220026c48350a1160d05f80d846a68ad5e7419415b7b7e79c3d2dc075a689c11c8064736f6c63430008110033";
 
 type AvatarInternalConstructorParams =
   | [signer?: Signer]

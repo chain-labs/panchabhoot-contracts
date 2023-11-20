@@ -3270,6 +3270,11 @@
             },
             {
               "inputs": [],
+              "name": "MintExceedsSupply",
+              "type": "error"
+            },
+            {
+              "inputs": [],
               "name": "MintToZeroAddress",
               "type": "error"
             },
@@ -3923,6 +3928,19 @@
                 }
               ],
               "name": "setApprovalForAll",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "_newBaseURI",
+                  "type": "string"
+                }
+              ],
+              "name": "setBaseURI",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
@@ -6372,6 +6390,19 @@
                 }
               ],
               "name": "setApprovalForAll",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "_newBaseURI",
+                  "type": "string"
+                }
+              ],
+              "name": "setBaseURI",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
